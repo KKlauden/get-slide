@@ -1,0 +1,49 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npm/
+.yarn/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# Build artifacts
+dist/
+build/
+out/
+.cache/
+
+# OS / temp
+Thumbs.db
+*.tmp
+*.bak
+
+# Test sandbox / scratch
+/tmp/
+.tmp/
+scratch/
+
+# v1 archive (kept on disk for reference, not in git)
+/old/
