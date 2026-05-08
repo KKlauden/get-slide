@@ -375,7 +375,149 @@ theme: ./spec.md     # 同文件夹内的 spec（samples/<slug>/spec.md）
 
 每一步都是验证假设的最小切片，不要一次性铺完。
 
-## 12. v1 → v2 选择性回收
+## 12. 外部参考：open-design 借鉴清单
+
+> 源：[nexu-io/open-design](https://github.com/nexu-io/open-design) `skills/html-ppt/` + 50+ 派生 theme skill + 71 个 `design-systems/<brand>/DESIGN.md`。
+> 33k stars，定位 "Anthropic Claude Design 的本地开源替代"。
+> 我们做选择性吸纳——只抄结构上对的、回避方向上错的。
+
+### 高优先级（短期落地，挂到 chrome / runtime 层）
+
+#### A. Presenter Mode（S 键演讲者模式）—— 杀手级特性
+
+按 S 弹出**新窗口**，4 张磁吸卡：
+- 🔵 **CURRENT** — 当前页 iframe（用 `?preview=N` 加载，单页无 chrome）
+- 🟣 **NEXT** — 下一页 iframe（同样 preview 模式）
+- 🟠 **SPEAKER SCRIPT** — 大字号 `<div class="notes">` 内容，可滚动
+- 🟢 **TIMER** — 已用时长 + 当前页码 + prev/next/reset 按钮
+
+实现要点：
+- 主窗 ↔ 预览窗用 `BroadcastChannel` 双向同步翻页
+- iframe 收到 `postMessage({type:'preview-goto', idx:N})` 只切 `.is-active`，**不刷新**
+- 卡片 header 可拖、右下角可拉伸、`localStorage` 记住布局
+- iframe 用 `?preview=N` URL 参数 → runtime 检测到则只渲染第 N 页、隐藏所有 chrome → 预览像素级一致
+
+**为什么不能省**：任何"我要去给团队讲 xxx / 怕讲不流畅"场景的入门门槛。我们若没有这个，就只是"好看的 HTML 文件"。
+
+#### B. `<div class="notes">` 逐字稿规范
+
+- 每页内嵌一个 hidden `<div class="notes">…</div>`，CSS 默认 `display:none`
+- 仅 S 键 presenter window 把它捞出来大字号显示
+- **铁律**："NEVER put presenter-only text on the slide"——叙述性文字（"这一页讲…"、"speaker: 提到 X 时…"）必须放进 notes，不准漏到正文 `<p>` / `<span>`
+- 写作三规：
+  1. **不是讲稿，是提示信号**——加粗核心词 + 过渡句独立成段
+  2. **每页 150–300 字**——2–3 分钟/页节奏
+  3. **用口语，不用书面语**——"因此"→"所以"，"该方案"→"这个方案"
+- 收进 SKILL.md 作为强约束 + samples 都补齐 notes
+
+#### C. T 键主题循环
+
+```html
+<body data-themes="dark,lite,forest" data-theme-base="../themes/">
+```
+
+- runtime 监听 T → 切 `<link id="theme-link">` 的 href，循环 `data-themes` 列表
+- 极轻量：用户能"按 T 现场试 3 套风格"
+- 我们已有 `data-variant` 概念，可以扩为同 spec 多 variant 直接 cycle，或跨 spec.md 文件 cycle
+
+#### D. O 键 Overview 网格
+
+- 每个 `.slide` 必须有 `data-title="..."` 属性
+- O 键展示所有页缩略图（CSS scale + grid），点击跳转
+- 长 deck（> 10 页）必备
+- runtime.js 实现成本低（每页 `transform: scale(0.18)` + grid）
+
+#### E. URL hash 深链 `#/N` + `?preview=N` 单页模式
+
+- `#/N` 直接定位到第 N 页（用于嵌入分享、刷新保留位置）
+- `?preview=N` 只渲染单页 + 隐藏所有 chrome（presenter iframe 必需）
+- runtime 启动时解析这两个参数
+
+### 中优先级（架构启发，落地时机灵活）
+
+#### F. DESIGN.md 设计系统 spec 格式升级
+
+参考 `design-systems/linear-app/DESIGN.md`（370 行）、`apple/DESIGN.md`（250 行）。
+**散文 + 表格 + token 列表混合**的结构，AI 读完就能生成一致风格组件：
+
+```
+1. Visual Theme & Atmosphere   ← 一段散文，描述整体感受
+2. Color Palette & Roles       ← 表格 + 用途说明（不只是 hex 列表）
+3. Typography Rules            ← 完整字号矩阵 + 三层权重原则
+4. Component Stylings          ← 每个组件的视觉规则
+5. Layout Principles           ← 间距系统、网格规则
+6. Decorative Vocabulary       ← chrome / 装饰元素的语法
+```
+
+我们现在的 `spec.md` 偏纯 CSS 块，信息密度低、AI 生成新 sample 时缺背景。可以升级 spec.md 模板，把"风格原则"用散文写出来。
+
+#### G. 通用语义类去前缀
+
+他们所有 theme 共用一套不带前缀的 primitive 类：
+`.kicker / .lede / .eyebrow / .dim / .dim2 / .pill / .card / .row / .grid.g2/g3/g4 / .gradient-text`
+
+我们现在 `archive-page-title / archive-body / archive-impact-rule` 这种 sample 前缀化命名是**反过来的**。
+- 教训：**block 层类名不应带 sample 前缀**——primitive 跨主题共用、theme 通过更具体 selector 锁视觉
+- 已经做的（bar-chart / chart-gauge）正确，但 archive sample 内部还有大量 `archive-*` 该重新审视哪些可以提为 unprefixed
+
+#### H. 强制的 3 问预飞 workflow
+
+SKILL.md 里写死，AI 不对齐 3 件事不准动笔：
+1. **内容/页数/受众**——engineer / exec / 小红书 / VC？
+2. **风格主题**——从 N 套里推荐 2-3 个候选
+3. **起点**——从哪个 sample 复制？还是空白？
+
+我们现在 SKILL.md 没有这种硬性 gate——AI 容易直接开冲。
+
+#### I. `od:` machine-readable frontmatter
+
+如果未来发布 skill，参考这个 schema：
+```yaml
+od:
+  mode: deck
+  scenario: marketing | tech-sharing | report | xhs
+  preview: { type: html, entry: example.html }
+  design_system: { requires: false }
+  speaker_notes: true
+  animations: true
+```
+便于 skill registry 索引。
+
+#### J. 极少量动画基元（不抄全套）
+
+只抄三个真正有用的：
+- `data-anim="fade-up"` — 元素入场
+- `class="anim-stagger-list"` + `data-anim-target` — 列表/grid 子项级联出现
+- `class="counter"` `data-to="92"` — 数字滚动
+
+不抄他们的 27 CSS + 20 canvas FX 全集（粒子/烟花/星空/矩阵雨大部分是噪声）。
+
+### 不抄（明确放弃）
+
+- ❌ **每个 theme 一个独立 skill 包**（50+ html-ppt-* 派生 skill）——他们牺牲 DRY 换发现率，我们 4 层组合架构方向相反
+- ❌ **71 个 brand DESIGN.md**——他们 prototype/web 通用，我们只做 slide
+- ❌ **27 CSS animations + 20 canvas FX 全集**——大部分对严肃 deck 是噪声
+- ❌ **过宽的 trigger 词覆盖**（"monochrome / restrained / literary / considered…"）——容易误激活
+- ❌ **`scripts/render.sh` headless Chrome → PNG/PPTX/MP4 export**——v2 不进入导出战场，浏览器打印 PDF 已够用
+
+### 落地节奏
+
+挂到现有 roadmap，建议插入位置：
+
+| 项 | 优先级 | 落地阶段 | 备注 |
+|---|---|---|---|
+| A. Presenter Mode (S) | P0 | Step 16（chrome runtime）核心模块 | 单独大块 |
+| B. `<div class="notes">` 规范 | P0 | Step 16 同期 + 回填到 archive/pitch 已有 sample | A 的前置依赖 |
+| C. T 键主题循环 | P1 | Step 16 | 5 行 runtime |
+| D. O 键 Overview | P1 | Step 16 | 30 行 runtime + CSS |
+| E. `#/N` + `?preview=N` | P0 | Step 16 | A 的前置依赖（preview iframe 必需）|
+| F. DESIGN.md 格式升级 | P1 | Step 8 之后回填，或第三套 spec 时 | 写新 spec 时按新模板 |
+| G. block 去前缀 | P1 | Step 14 完成后整理 | 跟 archive sample 收尾一起做 |
+| H. 3 问预飞 workflow | P2 | SKILL.md rewrite 时（Step 8 决议项）| 文档而非代码 |
+| I. `od:` frontmatter | P3 | 发布 skill 前 | 未定 |
+| J. 三个动画基元 | P2 | Step 16 之后单独小批次 | 不必跟 chrome 绑定 |
+
+## 13. v1 → v2 选择性回收
 
 v2 完成后，从 `old/` 里挑可复用的内容：
 
