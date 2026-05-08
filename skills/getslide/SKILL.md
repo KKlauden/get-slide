@@ -28,7 +28,7 @@ description: Use for any task involving a getslide v2 HTML slide deck — buildi
 | 任务 | 起点 |
 |---|---|
 | **看整体架构 / 4 层模型 / token 命名** | `PLAN.md`（必读） |
-| **写新 deck** | 1) 通读 `framework/{deck.html, design.md, content.md}` 三件套 2) 在用户选的位置建 `<my-deck>/` 文件夹 3) 写 `<my-deck>/design.md` + `<my-deck>/content.md` 4) `cp framework/deck.html → <my-deck>/<my-deck>.html` 5) 替换 § TOKENS（按 design.md §8 程序）+ 替换 § SLIDES（按 content.md 每页填）|
+| **写新 deck** | 0) 跑 **Pre-flight 3 问**（受众/风格/起点）、用户确认 1) 通读 `framework/{deck.html, design.md, content.md}` 三件套 2) 在用户选的位置建 `<my-deck>/` 文件夹 3) 写 `<my-deck>/design.md` + `<my-deck>/content.md` 4) `cp framework/deck.html → <my-deck>/<my-deck>.html` 5) 替换 § TOKENS（按 design.md §8 程序）+ 替换 § SLIDES（按 content.md 每页填）|
 | **切换 deck 风格**（不动内容）| 改 deck 的 `content.md` 的 `theme:` 指向另一份 design.md；按 framework/design.md §8 程序重生成 § TOKENS 块 |
 | **写新主题** | 严格按 `framework/design.md` §1-§7 schema 写 deck 文件夹下的 `design.md`：Atmosphere 散文 + Palette/Typography/Shape 值 + Variants + Decorative signature + Red lines。**design.md 不放 CSS**——CSS 由 framework/design.md §8 程序生成 |
 | **写新 deck 大纲** | 严格按 `framework/content.md` §1 schema 写 deck 文件夹下的 `content.md`：每页 H2 + 4 子段（block / variant / content / chrome / notes）。notes 必须遵循 §3 三规 |
@@ -75,7 +75,47 @@ description: Use for any task involving a getslide v2 HTML slide deck — buildi
 - 「在 spec 里加 component 二级 alias」——v2 已经决议删除（B2 路线）
 - 「改 palette token 命名」——已对齐 shadcn 锁定
 
+## Pre-flight 3 问（从零做新 deck 必跑）
+
+**触发条件**：用户从零类请求——"做一份 X 的 deck"、"build a deck about Y"、"做个 demo day pitch"、"写份内部分享"等。
+
+**不触发 / 跳过 3 问**：
+- 用户已有 deck 文件夹要换皮 / 改单页 / 加新页
+- 用户开请求时已经一并给出 audience + 风格 + 起点
+
+**触发后**：**一次性**问完下面 3 题、复述用户答案、用户确认对齐，**才能动笔**写 `design.md` / `content.md` / `<deck>.html`。AI 自己拍板 = 跳过 align = 90% 概率返工。
+
+### Q1 内容 → 决定 content.md 大纲
+- **受众**（多选其一或自描述）：VC pitch / 客户 demo / 团队 all-hands / 工程内部分享 / 小红书 / 行业大会 keynote / 其他
+- **核心 message**（必填）：要讲的 1-3 个核心点
+- **页数候选**：3-5（mini）/ 7-9（标准 9 页 pitch）/ 12-16（详尽）/ 自定
+- （可选）时长 / 现场互动还是单向讲
+
+### Q2 风格 → 决定 design.md
+- **现成 reference 候选**：
+  - **pitch** — YC / TechCrunch 现代科技：单 Cabinet Grotesk + 3 variant 轮换（lite/dark/forest）+ 几何装饰（M18 ambient frames / M20 pill highlight）+ 全 chrome ring。**适合**: 标准 9 页 pitch、产品发布、品牌 deck
+  - **archive** — 工业档案 file-aesthetic：Geist + 黑白 2 variant + mono 系统标签 chrome + 大字 hero（≥112px）+ 锐角 `--radius: 0` + abs 钉位。**适合**: 工程 / 系统 / 数据型 deck，工业 / 学术气质
+  - **空白起步** — 都不像，从 `framework/design.md` 模板填
+- **关键变量**：氛围词（"现代 / 沉稳 / 工业 / 学术 / 极简 / 杂志感 / cyber"）；颜色锚点；字族偏好
+
+### Q3 起点 → 决定 inline 哪些砖块
+> 默认跟随 Q2：选 pitch → 抄 pitch sample 的 components；选 archive → 抄 archive-* blocks；选空白 → 从 `components/` + `blocks/` 现成原子组合。
+> 仅当用户想 **mix**（如"pitch design 但要 archive 的 mono labels"）才需要单独定 Q3。
+
+- **pitch sample 的 components**（选 pitch 默认）：hero-block / pitch-card / ambient-frames / pill-highlight / contact-list / cards-row / solution-staggered / feature-grid / stat-split / compare-stagger / chart-card / pricing-3up
+- **archive sample 的 archive-***（选 archive 默认）：archive-hero / archive-toc / archive-mega-title / archive-page-title / archive-stat-list / archive-numbered-list / archive-stat-cards / archive-coverage-panel / archive-perf-list / archive-stage-grid / archive-mega-stat / archive-impact-rule
+- **现成原子**（任意 deck 可用，参考 `framework/content.md` §5 索引）：alert / badge / button / card / numeral / pill-highlight + 11 个 block
+
+### 答完之后
+1. **复述用户答案** + 等用户确认：「我理解你想做一份 受众=X / 风格=Y / 起点=Z / N 页的 deck，核心 message 是 [...]」
+2. 用户确认 → 进入下面的 Bootstrap 6 步
+3. 用户答得模糊（"现代风格"、"5-9 页都行"），AI **必须**追问具体化，**不准**凭推测开冲
+
+---
+
 ## Bootstrap from scratch
+
+**前置**：如果是从零做新 deck，先跑完上面的 [Pre-flight 3 问](#pre-flight-3-问从零做新-deck-必跑)。
 
 **起点**：通读 `framework/deck.html`（HTML 骨架）+ `framework/design.md`（主题契约）+ `framework/content.md`（内容契约）。这三份是 v2 的契约，理解了再开工。
 

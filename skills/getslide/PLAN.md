@@ -522,7 +522,7 @@ od:
 | E. `#/N` + `?preview=N` | P0 | Step 16 | A 的前置依赖（preview iframe 必需）|
 | F. DESIGN.md 格式升级 | P1 | ✅ 完整落地（2026-05-08）：framework/{design,content}.md skeleton + pitch/archive 两 sample 已迁移 spec.md → design.md（§1-§8 schema），content.md frontmatter 同步 | framework/ 三件套就位 |
 | G. block 去前缀 | P1 | Step 14 完成后整理 | 跟 archive sample 收尾一起做 |
-| H. 3 问预飞 workflow | P2 | SKILL.md rewrite 时（Step 8 决议项）| 文档而非代码 |
+| H. 3 问预飞 workflow | P2 | ✅ 落地（2026-05-08）：SKILL.md 加「Pre-flight 3 问」硬 gate（Q1 内容/受众/页数 + Q2 风格 + Q3 component 起点），新 deck 必跑、改样跳过；Routing 表「写新 deck」加 step 0 | 文档 gate |
 | I. `od:` frontmatter | P3 | 发布 skill 前 | 未定 |
 | J. 三个动画基元 | P2 | Step 16 之后单独小批次 | 不必跟 chrome 绑定 |
 
