@@ -1,52 +1,452 @@
----
-name: runtime
-deps: []
-tokens:
-  - --chrome-bg
-  - --canvas-bg
-  - --chrome-fg
-  - --chrome-muted-fg
-  - --chrome-border
-  - --chrome-accent
-  - --chrome-accent-fg
-  - --font-body
-source: "迁移自 old/skills/getslide/runtime.html — CSS 视觉抄 v1，token 用 chrome-* 独立 namespace"
----
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-# Chrome Runtime
+  <!--
+  ==============================================================================
+   framework/deck.html — getslide v2 deck 模板（canonical 拷贝源）
+  ==============================================================================
 
-deck 级别的运行时外壳——topbar + sidebar 缩略图 + 中央 viewport（自动 scale-to-fit）+ 键盘 / 鼠标翻页 + present 全屏模式。
+  这是 getslide framework 的 HTML 骨架。新 deck 走这个流程：
 
-**原则**：
-- **跨主题通用**——chrome 不知道 spec 的视觉细节，只管"deck 怎么浏览"
-- **几何参数硬编码**（topbar 高 48px / sidebar 宽 264px / thumb-frame 184×103.5px / padding 12px 等）——chrome 尺寸是它自己的事
-- **颜色用 chrome-namespace token**——`--chrome-bg / --chrome-fg / --chrome-muted-fg / --chrome-border / --chrome-accent / --chrome-accent-fg / --canvas-bg`。spec 给默认值（通常指向 palette），主题可单独改 chrome 视觉而不影响 slide 内部
+    1. 在你选的位置建文件夹 `<my-deck>/`（**不**强制放 samples/ 下）
+    2. 按 framework/design.md schema 写 `<my-deck>/design.md`
+    3. 按 framework/content.md schema 写 `<my-deck>/content.md`
+    4. cp framework/deck.html → `<my-deck>/<my-deck>.html`
+    5. 替换 § TOKENS 块（按 framework/design.md §8 程序代入 design.md 值）
+    6. 替换 § SLIDES 块（按 content.md 每页填 1 个 .slide-shell）
+    7. <title> 改成 deck 名字
+    8. 浏览器打开验证
 
-## Token 接口（chrome 暴露给 spec 的 7 个 token）
+  ── 哪些块可以改 ──
+   ✔  § TOKENS         — 必须按 design.md 替换
+   ✔  § SLIDES         — 必须按 content.md 替换
+   ✔  <title>          — 改成 deck 标题
+   ✔  topbar 上的 deck title (<span class="title">)
+   ✗  § RUNTIME CSS    — canonical，不要改（要改回 framework/deck.html 改完同步所有 deck）
+   ✗  § RUNTIME JS     — canonical，不要改
+   ✗  chrome ring 8 锚点元素类型 + class 名（class 名是 runtime 硬约束）
 
-| chrome token | 控制 | 推荐默认 |
-|---|---|---|
-| `--chrome-bg`        | topbar / sidebar 底色 | 主题自定（lite 风通常是浅灰） |
-| `--canvas-bg`        | canvas 外围底色 | 主题自定 |
-| `--chrome-fg`        | topbar 标题、icon-btn 默认文字 | `var(--foreground)` |
-| `--chrome-muted-fg`  | PAGES / thumb-num / sidebar-head 次要文字 | `var(--muted-foreground)` |
-| `--chrome-border`    | topbar/sidebar/thumb-frame 描边、hairline-v | `var(--border)` |
-| `--chrome-accent`    | icon-btn.active / present-btn 底 / thumb.active 高亮 | `var(--accent)` |
-| `--chrome-accent-fg` | present-btn 文字 | `var(--accent-foreground)` |
+  ── 键盘快捷键（runtime 自带） ──
+   ← → ↑ ↓ PgUp PgDn Space   翻页
+   Home / End                  跳首/末页
+   1-9                         直跳第 N 页（0 跳末页）
+   F                           全屏 / present 模式
+   T                           主题循环（仅当 body 有 data-themes 才生效）
+   O                           Overview 网格
+   S                           Presenter 演讲者窗口（4 张磁吸卡）
+   #/N                         URL hash 深链跳第 N 页
+   ?preview=N                  单页无 chrome 模式（presenter iframe 用）
+   Esc                         关闭 overlay
 
-**主题想 chrome 跟 slide 解耦**（比如 slide 是 dark，chrome 用浅色编辑器风）：在 spec 里把 `--chrome-bg / --chrome-fg / --chrome-accent` 等改成不同值即可，不影响 `--background / --foreground` 给 slide 用。
+  ── 演讲者模式（S 键）的 4 卡 ──
+   🔵 CURRENT  — 当前页 iframe（preview 模式）
+   🟣 NEXT     — 下一页 iframe
+   🟠 SCRIPT   — <div class="notes"> 内容大字号显示
+   🟢 TIMER    — 已用时长 + 当前页 + prev/next/reset
 
-## Template
+  ── 强约束 ──
+   - 每个 .slide-shell 必须包 1 个 .page-shell
+   - 每个 .page-shell 必须有 data-title="..."（O 键 / NEXT 卡片用）
+   - 每个 .page-shell 应内嵌 <div class="notes">…</div>（S 键 SCRIPT 卡读取）
+   - notes 内容遵循 framework/content.md §3 写作三规
+  -->
 
-```html
-<!-- body 上声明可选的多 theme 链接（T 键循环） -->
+  <title>getslide framework</title>
+
+  <style>
+    /* ===========================================================
+       § TOKENS — 按 framework/design.md §8 程序生成（针对此 deck 主题）
+       ===========================================================
+       下面是 fallback 默认值，让 deck.html 能直接 open 看到空骨架。
+       新 deck 须把这一整块替换成由 design.md 值生成的 :root + variant。 */
+    :root {
+      /* palette */
+      --background: #ffffff;
+      --foreground: #111111;
+      --card: #ffffff;
+      --card-foreground: #111111;
+      --primary: #111111;
+      --primary-foreground: #ffffff;
+      --secondary: #f5f5f5;
+      --secondary-foreground: #111111;
+      --muted: rgba(0, 0, 0, 0.06);
+      --muted-foreground: rgba(0, 0, 0, 0.55);
+      --accent: #4f8af5;
+      --accent-foreground: #ffffff;
+      --destructive: #ef5b5b;
+      --destructive-foreground: #ffffff;
+      --border: rgba(0, 0, 0, 0.10);
+
+      /* typography */
+      --font-display: -apple-system, "SF Pro Display", system-ui, sans-serif;
+      --font-body:    -apple-system, "SF Pro Text", system-ui, sans-serif;
+      --font-mono:    ui-monospace, "SF Mono", Menlo, monospace;
+
+      /* canvas + chrome runtime */
+      --canvas-bg: #dcdcdc;
+      --chrome-bg: #f0f0f0;
+      --chrome-fg: var(--foreground);
+      --chrome-muted-fg: var(--muted-foreground);
+      --chrome-border: var(--border);
+      --chrome-accent: var(--accent);
+      --chrome-accent-fg: var(--accent-foreground);
+    }
+
+    /* ===========================================================
+       § RUNTIME CSS — canonical，不改
+       =========================================================== */
+    :root { --fit-scale: 1; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      font-family: var(--font-body);
+      color: var(--chrome-fg);
+      background: var(--canvas-bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ============ APP SHELL ============ */
+    .app { height: 100vh; display: flex; flex-direction: column; }
+
+    .topbar {
+      height: 48px; flex-shrink: 0;
+      background: var(--chrome-bg);
+      border-bottom: 1px solid var(--chrome-border);
+      display: flex; align-items: center;
+      padding: 0 12px; position: relative; z-index: 10;
+    }
+    .topbar-left, .topbar-right {
+      display: flex; align-items: center; gap: 8px;
+      flex: 1; min-width: 0;
+    }
+    .topbar-right { justify-content: flex-end; }
+    .topbar-center {
+      position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none; max-width: 50%;
+    }
+    .topbar-center .title {
+      font-size: 13px; font-weight: 500; color: var(--chrome-fg);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      pointer-events: auto;
+    }
+    .topbar-center .title .sep { color: var(--chrome-muted-fg); margin: 0 6px; }
+
+    /* button reset — 防止 user agent 默认 text-align: center 通过 inheritance
+       传给 thumb-inner 内 deep-clone 的 page-shell */
+    button { text-align: inherit; }
+
+    .icon-btn {
+      width: 28px; height: 28px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 0; background: transparent;
+      border-radius: 6px; color: var(--chrome-fg);
+      cursor: pointer; font: inherit;
+      transition: background 0.12s;
+    }
+    .icon-btn:hover { background: rgba(0,0,0,0.05); }
+    .icon-btn.active { background: rgba(0,0,0,0.08); color: var(--chrome-accent); }
+    .icon-btn svg { width: 16px; height: 16px; }
+
+    .hairline-v {
+      width: 1px; height: 20px; background: var(--chrome-border);
+      margin: 0 4px;
+    }
+
+    .present-btn {
+      height: 28px; padding: 0 12px;
+      background: var(--chrome-accent); color: var(--chrome-accent-fg);
+      border: 0; border-radius: 6px;
+      font-size: 13px; font-weight: 500;
+      font-family: inherit;
+      display: inline-flex; align-items: center;
+      cursor: pointer;
+      transition: opacity 0.12s;
+    }
+    .present-btn:hover { opacity: 0.9; }
+    .present-btn kbd {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 11px;
+      padding: 1px 5px; border-radius: 3px;
+      background: color-mix(in srgb, var(--chrome-accent-fg) 14%, transparent);
+      color: color-mix(in srgb, var(--chrome-accent-fg) 80%, transparent);
+      margin-left: 6px;
+    }
+
+    /* ============ LAYOUT ============ */
+    .layout { flex: 1; min-height: 0; display: flex; flex-direction: row; }
+
+    .sidebar {
+      width: 264px; flex-shrink: 0;
+      background: var(--chrome-bg);
+      border-right: 1px solid var(--chrome-border);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .sidebar-head {
+      height: 36px; padding: 0 16px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--chrome-muted-fg);
+      border-bottom: 1px solid var(--chrome-border);
+    }
+    .thumb-rail {
+      flex: 1; overflow-y: auto;
+      padding: 12px;
+      display: flex; flex-direction: column; gap: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+    }
+    .thumb-rail::-webkit-scrollbar { width: 8px; height: 8px; }
+    .thumb-rail::-webkit-scrollbar-track { background: transparent; }
+    .thumb-rail::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.14);
+      border-radius: 4px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      transition: background 0.15s;
+    }
+    .thumb-rail:hover::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.28);
+      background-clip: padding-box;
+    }
+    .thumb-rail::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.4);
+      background-clip: padding-box;
+    }
+
+    /* ============ THUMBNAIL ============ */
+    .thumb {
+      display: flex; align-items: center; gap: 10px;
+      padding: 6px;
+      border: 0; background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      flex-shrink: 0;
+      transition: background 0.12s;
+    }
+    .thumb:hover  { background: rgba(0,0,0,0.04); }
+    .thumb.active { background: color-mix(in srgb, var(--chrome-accent) 8%, transparent); }
+    .thumb.active .thumb-num   { color: var(--chrome-accent); }
+    .thumb.active .thumb-frame { box-shadow: 0 0 0 1.5px var(--chrome-accent); }
+    .thumb-num {
+      font-size: 11px; font-weight: 600; color: var(--chrome-muted-fg);
+      font-family: ui-monospace, "SF Mono", monospace;
+      min-width: 22px; text-align: right;
+      flex-shrink: 0;
+    }
+    .thumb-frame {
+      width: 184px; height: 103.5px;
+      background: var(--background);
+      border-radius: 4px;
+      overflow: hidden; position: relative;
+      box-shadow: 0 0 0 1px var(--chrome-border);
+      transition: box-shadow 0.12s;
+      flex-shrink: 0;
+    }
+    .thumb-inner {
+      width: 1920px; height: 1080px;
+      transform-origin: top left;
+      transform: scale(0.0958);     /* 184/1920 */
+      pointer-events: none;
+      --fit-scale: 1;
+    }
+    .thumb-inner * {
+      animation: none !important;
+      transition: none !important;
+    }
+
+    /* ============ CANVAS / SLIDE-SHELL ============ */
+    .canvas {
+      flex: 1; min-width: 0; min-height: 0;
+      position: relative; overflow: hidden;
+      background: var(--canvas-bg);
+    }
+    .slide-shell {
+      position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      width:  calc(1920px * var(--fit-scale));
+      height: calc(1080px * var(--fit-scale));
+      background: var(--background);
+      border-radius: calc(16px * var(--fit-scale));
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+    }
+    .slide-shell.active { display: block; }
+    .slide-shell > .page-shell {
+      transform: scale(var(--fit-scale));
+      transform-origin: top left;
+      width: 1920px; height: 1080px;
+      position: relative;
+    }
+
+    /* chrome-rule 默认隐形——浏览器原生 <hr> 自带 inset border + margin，
+       不 reset 会有一条灰线漏出。design.md 想画分隔线就 override
+       （e.g. `border-top: 1px solid var(--border); margin: 12px 64px 0;`）。
+       4 个角 div 的定位/字体由 design.md 决定，框架不预设。 */
+    .page-shell > .chrome-rule { border: 0; margin: 0; height: 0; }
+
+    /* ============ PRESENT MODE (F 键 fullscreen) ============ */
+    body.present .topbar,
+    body.present .sidebar { display: none !important; }
+    body.present .canvas { background: #000; }
+    body.present .slide-shell {
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    /* sidebar toggle */
+    body.no-sidebar .sidebar { display: none; }
+
+    /* ============ PREVIEW MODE (?preview=N URL 参数) ============ */
+    body.is-preview .topbar,
+    body.is-preview .sidebar { display: none !important; }
+    body.is-preview .canvas { background: transparent; padding: 0; }
+    body.is-preview .slide-shell { border-radius: 0; box-shadow: none; }
+
+    /* ============ NOTES（演讲者逐字稿，主视图永远隐藏） ============ */
+    .slide-shell .notes,
+    .thumb-frame .notes,
+    .overview-frame .notes { display: none !important; }
+
+    /* ============ OVERVIEW OVERLAY (O 键) ============ */
+    .overview-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 100;
+      display: none;
+      padding: 48px;
+      overflow-y: auto;
+      grid-template-columns: repeat(auto-fill, 360px);
+      justify-content: center;
+      gap: 24px 28px;
+      align-content: start;
+    }
+    body.show-overview .overview-overlay { display: grid; }
+    body.show-overview { overflow: hidden; }
+    .overview-cell {
+      display: flex; flex-direction: column; gap: 8px;
+      background: transparent; border: 0; padding: 0;
+      cursor: pointer; font: inherit; text-align: left;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .overview-cell .overview-num {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.16em;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+    }
+    .overview-cell .overview-title {
+      font-size: 13px; font-weight: 500;
+      color: rgba(255, 255, 255, 0.85);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .overview-frame {
+      width: 360px; height: 202.5px;
+      background: var(--background);
+      border-radius: 6px; overflow: hidden;
+      position: relative;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+      transition: box-shadow 0.12s, transform 0.12s;
+    }
+    .overview-cell:hover .overview-frame {
+      box-shadow: 0 0 0 2px var(--chrome-accent, #4f8af5);
+      transform: translateY(-2px);
+    }
+    .overview-cell.active .overview-frame {
+      box-shadow: 0 0 0 2px var(--chrome-accent, #4f8af5);
+    }
+    .overview-inner {
+      width: 1920px; height: 1080px;
+      transform: scale(0.1875);
+      transform-origin: top left;
+      pointer-events: none;
+      --fit-scale: 1;
+    }
+    .overview-inner * {
+      animation: none !important;
+      transition: none !important;
+    }
+
+    /* ============ PRINT (PDF) ============ */
+    @media print {
+      @page { size: 1920px 1080px; margin: 0; }
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      html, body {
+        height: auto; overflow: visible;
+        background: var(--background);
+      }
+      .topbar, .sidebar, .thumb-rail { display: none !important; }
+      .app, .layout, .canvas {
+        display: block !important;
+        position: static !important;
+        height: auto !important; width: auto !important;
+        overflow: visible !important;
+        background: var(--background) !important;
+      }
+      .slide-shell {
+        position: relative !important;
+        display: block !important;
+        left: 0 !important; top: 0 !important;
+        transform: none !important;
+        width: 1920px !important; height: 1080px !important;
+        border-radius: 0 !important; box-shadow: none !important;
+        background: var(--background) !important;
+        page-break-after: always; break-inside: avoid;
+        margin: 0 !important;
+      }
+      .slide-shell > .page-shell {
+        transform: none !important;
+        width: 1920px !important; height: 1080px !important;
+      }
+    }
+
+    /* ===========================================================
+       § PLACEHOLDER PAGE — 仅 deck.html 自展示用
+       新 deck 复制后会被 § SLIDES 替换；保留这段让 deck.html
+       open 浏览器时有内容可看。
+       =========================================================== */
+    .placeholder-page {
+      padding: 96px;
+      display: flex; flex-direction: column; gap: 24px;
+      color: var(--foreground);
+      font-family: var(--font-body);
+    }
+    .placeholder-page .ph-title {
+      font-size: 64px; font-weight: 600;
+      letter-spacing: -0.02em; line-height: 1.1;
+    }
+    .placeholder-page .ph-lede {
+      font-size: 22px; color: var(--muted-foreground);
+      max-width: 1100px; line-height: 1.5;
+    }
+    .placeholder-page kbd {
+      display: inline-block;
+      padding: 3px 7px; margin: 0 2px;
+      background: var(--muted); color: var(--foreground);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+    }
+  </style>
+</head>
+
+<!-- data-themes / data-theme-base 选填：列出多 CSS 文件让 T 键循环。
+     自包含 deck（CSS 全 inline）不写。 -->
 <body
-  data-themes="dark,lite,forest"
-  data-theme-base="../themes/"
+  data-themes=""
+  data-theme-base=""
 >
-<!-- 注：data-themes 是可选的；不写则 T 键无操作。
-     若写了，必须同时有 <link id="theme-link" href="..."> 在 head 里。
-     适用于多 spec 文件的 deck（外置 CSS 文件）；自包含 deck 不写。 -->
 
 <div class="app">
   <header class="topbar">
@@ -60,7 +460,7 @@ deck 级别的运行时外壳——topbar + sidebar 缩略图 + 中央 viewport�
       <div class="hairline-v"></div>
     </div>
     <div class="topbar-center">
-      <span class="title">{deck title}</span>
+      <span class="title">getslide framework</span>
     </div>
     <div class="topbar-right">
       <button class="icon-btn" id="downloadBtn" title="Export PDF">
@@ -77,370 +477,121 @@ deck 级别的运行时外壳——topbar + sidebar 缩略图 + 中央 viewport�
     <aside class="sidebar">
       <div class="sidebar-head">PAGES <span id="pageCount"></span></div>
       <div class="thumb-rail" id="thumbRail">
-        <!-- thumbnails 由 JS 生成 -->
+        <!-- thumbnails 由 runtime JS 自动生成 -->
       </div>
     </aside>
 
     <main class="canvas" id="canvas">
-      <div class="slide-shell" data-slide-index="0">
+
+      <!--
+      ============================================================
+       § SLIDES — 此 deck 的页面列表（按 content.md 每页填一个 .slide-shell）
+      ============================================================
+
+       规则：
+       - 每页一个 <div class="slide-shell" data-slide-index="N">
+       - 第一个加 .active class 让首屏可见
+       - <section class="page-shell"> 的 data-variant、data-title 必填
+       - chrome 8 锚点元素类型 + class 名不可改
+       - <div class="notes"> 写演讲者逐字稿（150-300 字，遵循 content.md §3）
+
+       下面的 placeholder slide 是 deck.html 自展示用，新 deck 删掉，
+       按 content.md 每页生成 N 个 .slide-shell 块。
+      -->
+
+      <div class="slide-shell active" data-slide-index="0">
         <section
           class="page-shell"
           data-variant="lite"
-          data-title="Cover"            <!-- O 键 overview / 演讲者 NEXT 卡片用 -->
+          data-title="Welcome"
         >
-          <!-- chrome ring 8 锚点（HTML 元素类型 chrome 约束，文字 spec 填） -->
-          <div class="chrome-top-left">…</div>      <!-- logo / brand mark -->
-          <div class="chrome-top-right">…</div>     <!-- nav / 当前页号 -->
-          <hr class="chrome-rule" />                <!-- 顶部 96px 处的 hairline -->
-          <div class="chrome-bottom-left">…</div>   <!-- copyright / footer -->
-          <div class="chrome-bottom-right">…</div>  <!-- page-num / brand letter -->
+          <!-- chrome 8 锚点（class 名是 runtime 硬约束）。
+               框架默认留空，由每份 deck 的 content.md 每页 chrome 子段填。 -->
+          <div class="chrome-top-left"></div>
+          <div class="chrome-top-right"></div>
+          <hr class="chrome-rule" />
+          <div class="chrome-bottom-left"></div>
+          <div class="chrome-bottom-right"></div>
 
-          <!-- 页面内容容器：block / component 由 spec + content 决定填什么 -->
-          <div class="page-content" data-layout="strict">…</div>
+          <!-- 页面内容（block markup） -->
+          <div class="placeholder-page">
+            <div class="ph-title">getslide framework</div>
+            <p class="ph-lede">
+              这是 framework/deck.html 的自展示页。新 deck 删掉这两个
+              占位 slide，按 content.md 列出的每页生成一个
+              <code>&lt;div class="slide-shell"&gt;</code>。
+            </p>
+            <p class="ph-lede" style="font-size: 18px; line-height: 1.7;">
+              <kbd>↑</kbd> <kbd>↓</kbd> 翻页 ·
+              滚轮翻页 ·
+              <kbd>1</kbd>-<kbd>9</kbd> 跳第 N 页 ·
+              <kbd>0</kbd> 跳末页 ·
+              <kbd>S</kbd> 演讲者 ·
+              <kbd>F</kbd> 全屏 ·
+              <kbd>O</kbd> Overview ·
+              <kbd>?preview=0</kbd> 单页 ·
+              <kbd>#/2</kbd> hash 跳页
+            </p>
+          </div>
 
-          <!-- 演讲者 notes（CSS hidden；仅 S 键 presenter 窗口读取展示） -->
+          <!-- 演讲者逐字稿（CSS 自动隐藏，仅 S 键 presenter SCRIPT 卡片显示） -->
           <div class="notes">
-            这一页要传达的核心是 X。**关键词加粗**作为提示信号，
-            过渡到下一页用"接下来我们看 Y"。150-300 字 / 2-3 分钟节奏。
+            示例 notes：每页都该有一段 <strong>150-300 字</strong>的演讲者
+            提示信号。<strong>不是讲稿</strong>——把核心词加粗，过渡句独立成段，
+            用口语而不是书面语。详见 framework/content.md §3 写作三规。
           </div>
         </section>
       </div>
-      <!-- 更多 slide-shell -->
+
+      <!-- ↓ 第二个示例页 ↓ 演示 sidebar 缩略图 + O 键 overview 多页效果 -->
+      <div class="slide-shell" data-slide-index="1">
+        <section
+          class="page-shell"
+          data-variant="lite"
+          data-title="Second Page"
+        >
+          <div class="chrome-top-left"></div>
+          <div class="chrome-top-right"></div>
+          <hr class="chrome-rule" />
+          <div class="chrome-bottom-left"></div>
+          <div class="chrome-bottom-right"></div>
+
+          <div class="placeholder-page">
+            <div class="ph-title">第二页占位</div>
+            <p class="ph-lede">
+              新 deck 时删掉本页（和上一页），按 content.md 写真正内容。
+            </p>
+          </div>
+
+          <div class="notes">
+            第二页 notes 占位——也是 150-300 字的提示信号节奏。
+          </div>
+        </section>
+      </div>
+
+      <!-- ↑ 模板 slide 结束。新 deck 按 content.md 每页 cp 一份 ↑ -->
+
     </main>
   </div>
 </div>
 
-<!-- Overview overlay（O 键，由 JS 注入） -->
-<!-- Presenter window（S 键，window.open 弹出独立窗口，不在主 DOM 里） -->
-</body>
-```
+<script>
+/* ===========================================================
+   § RUNTIME JS — canonical，不改
 
-## Style
-
-```css
-:root { --fit-scale: 1; }
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; overflow: hidden; }
-body {
-  font-family: var(--font-body);
-  color: var(--chrome-fg);
-  background: var(--canvas-bg);
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ============ APP SHELL ============ */
-.app { height: 100vh; display: flex; flex-direction: column; }
-
-.topbar {
-  height: 48px; flex-shrink: 0;
-  background: var(--chrome-bg);
-  border-bottom: 1px solid var(--chrome-border);
-  display: flex; align-items: center;
-  padding: 0 12px; position: relative; z-index: 10;
-}
-.topbar-left, .topbar-right {
-  display: flex; align-items: center; gap: 8px;
-  flex: 1; min-width: 0;
-}
-.topbar-right { justify-content: flex-end; }
-.topbar-center {
-  position: absolute; left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none; max-width: 50%;
-}
-.topbar-center .title {
-  font-size: 13px; font-weight: 500; color: var(--chrome-fg);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  pointer-events: auto;
-}
-.topbar-center .title .sep { color: var(--chrome-muted-fg); margin: 0 6px; }
-
-/* button reset — 防止 user agent 默认 text-align: center 通过 inheritance
-   传给 thumb-inner 内 deep-clone 的 page-shell，导致缩略图文字居中而 main 左对齐 */
-button { text-align: inherit; }
-
-.icon-btn {
-  width: 28px; height: 28px;
-  display: inline-flex; align-items: center; justify-content: center;
-  border: 0; background: transparent;
-  border-radius: 6px; color: var(--chrome-fg);
-  cursor: pointer; font: inherit;
-  transition: background 0.12s;
-}
-.icon-btn:hover { background: rgba(0,0,0,0.05); }
-.icon-btn.active { background: rgba(0,0,0,0.08); color: var(--chrome-accent); }
-.icon-btn svg { width: 16px; height: 16px; }
-
-.hairline-v {
-  width: 1px; height: 20px; background: var(--chrome-border);
-  margin: 0 4px;
-}
-
-.present-btn {
-  height: 28px; padding: 0 12px;
-  background: var(--chrome-accent); color: var(--chrome-accent-fg);
-  border: 0; border-radius: 6px;
-  font-size: 13px; font-weight: 500;
-  font-family: inherit;
-  display: inline-flex; align-items: center;
-  cursor: pointer;
-  transition: opacity 0.12s;
-}
-.present-btn:hover { opacity: 0.9; }
-.present-btn kbd {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 11px;
-  padding: 1px 5px; border-radius: 3px;
-  /* 基于 chrome-accent-fg（按钮文字色），跨 dark/lite accent 都可见 */
-  background: color-mix(in srgb, var(--chrome-accent-fg) 14%, transparent);
-  color: color-mix(in srgb, var(--chrome-accent-fg) 80%, transparent);
-  margin-left: 6px;
-}
-
-/* ============ LAYOUT ============ */
-.layout { flex: 1; min-height: 0; display: flex; flex-direction: row; }
-
-.sidebar {
-  width: 264px; flex-shrink: 0;
-  background: var(--chrome-bg);
-  border-right: 1px solid var(--chrome-border);
-  display: flex; flex-direction: column;
-  overflow: hidden;
-}
-.sidebar-head {
-  height: 36px; padding: 0 16px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: space-between;
-  font-size: 11px; font-weight: 600; letter-spacing: 0.16em;
-  text-transform: uppercase; color: var(--chrome-muted-fg);
-  border-bottom: 1px solid var(--chrome-border);
-}
-.thumb-rail {
-  flex: 1; overflow-y: auto;
-  padding: 12px;
-  display: flex; flex-direction: column; gap: 8px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
-}
-.thumb-rail::-webkit-scrollbar { width: 8px; height: 8px; }
-.thumb-rail::-webkit-scrollbar-track { background: transparent; }
-.thumb-rail::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.14);
-  border-radius: 4px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-  transition: background 0.15s;
-}
-.thumb-rail:hover::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.28);
-  background-clip: padding-box;
-}
-.thumb-rail::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.4);
-  background-clip: padding-box;
-}
-
-/* ============ THUMBNAIL ============ */
-.thumb {
-  display: flex; align-items: center; gap: 10px;
-  padding: 6px;
-  border: 0; background: transparent;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: inherit;
-  flex-shrink: 0;
-  transition: background 0.12s;
-}
-.thumb:hover  { background: rgba(0,0,0,0.04); }
-.thumb.active { background: color-mix(in srgb, var(--chrome-accent) 8%, transparent); }
-.thumb.active .thumb-num   { color: var(--chrome-accent); }
-.thumb.active .thumb-frame { box-shadow: 0 0 0 1.5px var(--chrome-accent); }
-.thumb-num {
-  font-size: 11px; font-weight: 600; color: var(--chrome-muted-fg);
-  font-family: ui-monospace, "SF Mono", monospace;
-  min-width: 22px; text-align: right;
-  flex-shrink: 0;
-}
-.thumb-frame {
-  width: 184px; height: 103.5px;
-  background: var(--background);          /* slide 自己的底色 */
-  border-radius: 4px;
-  overflow: hidden; position: relative;
-  box-shadow: 0 0 0 1px var(--chrome-border);
-  transition: box-shadow 0.12s;
-  flex-shrink: 0;
-}
-.thumb-inner {
-  width: 1920px; height: 1080px;
-  transform-origin: top left;
-  transform: scale(0.0958);     /* 184/1920 */
-  pointer-events: none;
-  --fit-scale: 1;               /* 打破继承，thumb 内容不缩放 */
-}
-.thumb-inner * {
-  animation: none !important;
-  transition: none !important;
-}
-
-/* ============ CANVAS / SLIDE-SHELL ============ */
-.canvas {
-  flex: 1; min-width: 0; min-height: 0;
-  position: relative; overflow: hidden;
-  background: var(--canvas-bg);
-}
-.slide-shell {
-  position: absolute; left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
-  width:  calc(1920px * var(--fit-scale));
-  height: calc(1080px * var(--fit-scale));
-  background: var(--background);          /* slide 自己的底色 */
-  border-radius: calc(16px * var(--fit-scale));
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
-  overflow: hidden;
-  display: none;
-}
-.slide-shell.active { display: block; }
-.slide-shell > .page-shell {
-  transform: scale(var(--fit-scale));
-  transform-origin: top left;
-}
-
-/* ============ PRESENT MODE ============ */
-body.present .topbar,
-body.present .sidebar { display: none !important; }
-body.present .canvas { background: #000; }
-body.present .slide-shell {
-  border-radius: 0;
-  box-shadow: none;
-}
-
-/* sidebar toggle */
-body.no-sidebar .sidebar { display: none; }
-
-/* ============ PREVIEW MODE (?preview=N URL 参数) ============ */
-/* 用于 presenter 窗口的 iframe：单页 + 无 chrome + 无内边距，像素级一致 */
-body.is-preview .topbar,
-body.is-preview .sidebar { display: none !important; }
-body.is-preview .canvas { background: transparent; padding: 0; }
-body.is-preview .slide-shell {
-  border-radius: 0;
-  box-shadow: none;
-}
-
-/* ============ NOTES（演讲者逐字稿，主视图永远隐藏） ============ */
-/* 铁律：notes 仅供 S 键 presenter 窗口读取，绝不出现在 slide 视图里 */
-.slide-shell .notes,
-.thumb-frame .notes,
-.overview-frame .notes { display: none !important; }
-
-/* ============ OVERVIEW OVERLAY (O 键) ============ */
-.overview-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0, 0, 0, 0.88);
-  z-index: 100;
-  display: none;
-  padding: 48px;
-  overflow-y: auto;
-  grid-template-columns: repeat(auto-fill, 360px);   /* 固定宽，对齐 transform: scale 360/1920 */
-  justify-content: center;
-  gap: 24px 28px;
-  align-content: start;
-}
-body.show-overview .overview-overlay { display: grid; }
-body.show-overview { overflow: hidden; }
-
-.overview-cell {
-  display: flex; flex-direction: column; gap: 8px;
-  background: transparent; border: 0; padding: 0;
-  cursor: pointer; font: inherit; text-align: left;
-  color: rgba(255, 255, 255, 0.85);
-}
-.overview-cell .overview-num {
-  font-size: 11px; font-weight: 600; letter-spacing: 0.16em;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  color: rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
-}
-.overview-cell .overview-title {
-  font-size: 13px; font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.overview-frame {
-  width: 360px; height: 202.5px;                      /* 16:9 @ scale 0.1875 */
-  background: var(--background);
-  border-radius: 6px; overflow: hidden;
-  position: relative;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
-  transition: box-shadow 0.12s, transform 0.12s;
-}
-.overview-cell:hover .overview-frame {
-  box-shadow: 0 0 0 2px var(--chrome-accent, #4f8af5);
-  transform: translateY(-2px);
-}
-.overview-cell.active .overview-frame {
-  box-shadow: 0 0 0 2px var(--chrome-accent, #4f8af5);
-}
-.overview-inner {
-  width: 1920px; height: 1080px;
-  transform: scale(0.1875);     /* 360/1920 */
-  transform-origin: top left;
-  pointer-events: none;
-  --fit-scale: 1;
-}
-.overview-inner * {
-  animation: none !important;
-  transition: none !important;
-}
-
-/* ============ PRINT (PDF) ============ */
-@media print {
-  @page { size: 1920px 1080px; margin: 0; }
-  /* print-color-adjust 必须挂在 selector 上（裸写会被 drop）——
-     否则 dark / accent 主题会被印成白底，颜色全失 */
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  html, body {
-    height: auto; overflow: visible;
-    background: var(--background);
-  }
-  .topbar, .sidebar, .thumb-rail { display: none !important; }
-  .app, .layout, .canvas {
-    display: block !important;
-    position: static !important;
-    height: auto !important; width: auto !important;
-    overflow: visible !important;
-    background: var(--background) !important;
-  }
-  /* 关键：强制所有 slide-shell 都显示（不只 .active 的那一个）。
-     v2 默认 .slide-shell { display: none } + .active { display: block }，
-     不 override 的话打印只输出当前页 */
-  .slide-shell {
-    position: relative !important;
-    display: block !important;
-    left: 0 !important; top: 0 !important;
-    transform: none !important;
-    width: 1920px !important; height: 1080px !important;
-    border-radius: 0 !important; box-shadow: none !important;
-    background: var(--background) !important;
-    page-break-after: always; break-inside: avoid;
-    margin: 0 !important;
-  }
-  /* page-shell 取消 fit-scale 缩放 */
-  .slide-shell > .page-shell {
-    transform: none !important;
-    width: 1920px !important; height: 1080px !important;
-  }
-}
-```
-
-## Script
-
-```javascript
+   功能：
+   - 缩略图生成（preview 模式跳过）
+   - 翻页（键盘 / 滚轮 / 缩略图 / 数字键 / hash / present 模式鼠标）
+   - URL hash #/N 双向同步
+   - ?preview=N 单页无 chrome 模式
+   - F 键全屏 / 演示模式
+   - T 键主题循环（仅当 body 有 data-themes 才生效）
+   - O 键 Overview 网格
+   - S 键 Presenter Mode（独立窗口 + 4 张磁吸卡）
+   - BroadcastChannel 主 ↔ presenter 双向同步
+   - postMessage 单向 preview-goto（presenter → 自家 iframe）
+   =========================================================== */
 (function () {
-  // ===== 状态 =====
   const slides      = Array.from(document.querySelectorAll('.slide-shell'));
   const total       = slides.length;
   const canvas      = document.getElementById('canvas');
@@ -448,17 +599,14 @@ body.show-overview { overflow: hidden; }
   const pageCountEl = document.getElementById('pageCount');
   let current = 0;
 
-  // ===== Preview 模式（?preview=N，演讲者 iframe 用） =====
   const params       = new URLSearchParams(location.search);
   const previewParam = params.get('preview');
   const isPreview    = previewParam !== null;
   if (isPreview) document.body.classList.add('is-preview');
 
-  // ===== BroadcastChannel：主窗口 ↔ presenter 双向同步 =====
   let channel = null;
   try { channel = new BroadcastChannel('getslide-presenter'); } catch (e) {}
 
-  // ===== 缩略图（preview 模式跳过） =====
   if (!isPreview) {
     if (pageCountEl) pageCountEl.textContent = String(total).padStart(2, '0');
     slides.forEach((slide, i) => {
@@ -481,7 +629,6 @@ body.show-overview { overflow: hidden; }
     });
   }
 
-  // ===== 翻页（统一入口） =====
   function goto(i, opts) {
     opts = opts || {};
     i = Math.max(0, Math.min(total - 1, i));
@@ -497,7 +644,6 @@ body.show-overview { overflow: hidden; }
     }
   }
 
-  // ===== 启动定位：?preview 优先 → URL hash → 0 =====
   let bootIdx = 0;
   if (isPreview) {
     bootIdx = parseInt(previewParam, 10) || 0;
@@ -507,21 +653,18 @@ body.show-overview { overflow: hidden; }
   }
   goto(bootIdx, { silent: true });
 
-  // hash 变化（外部跳转 / 浏览器前进后退）
   window.addEventListener('hashchange', () => {
     if (isPreview) return;
     const m = location.hash.match(/^#\/(\d+)/);
     if (m) goto(parseInt(m[1], 10) - 1, { silent: true });
   });
 
-  // postMessage：presenter → 自家 iframe（preview-goto，不刷新切页）
   window.addEventListener('message', (e) => {
     if (e.data && e.data.type === 'preview-goto' && typeof e.data.idx === 'number') {
       goto(e.data.idx, { silent: true });
     }
   });
 
-  // BroadcastChannel：presenter ↔ 主窗口
   channel?.addEventListener('message', (e) => {
     if (isPreview) return;
     if (e.data && e.data.type === 'goto' && typeof e.data.idx === 'number') {
@@ -529,10 +672,8 @@ body.show-overview { overflow: hidden; }
     }
   });
 
-  // ===== 键盘 =====
   window.addEventListener('keydown', (e) => {
     if (e.target.matches('input, textarea, [contenteditable]')) return;
-    // 字母快捷键 F/T/O/S 必须无修饰键，避免劫持 Cmd+S / Cmd+O 触发系统警告音
     const plain = !e.metaKey && !e.ctrlKey && !e.altKey;
     if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) {
       e.preventDefault(); goto(current + 1);
@@ -552,14 +693,12 @@ body.show-overview { overflow: hidden; }
     } else if (e.key === 'Escape') {
       document.body.classList.remove('show-overview');
     } else if (plain && /^[0-9]$/.test(e.key)) {
-      // 数字键跳页：1-9 直跳第 N 页；0 跳到最后一页
       e.preventDefault();
       const n = parseInt(e.key, 10);
       goto(n === 0 ? total - 1 : n - 1);
     }
   });
 
-  // ===== 演示模式（fullscreen） =====
   if (!isPreview) {
     document.addEventListener('fullscreenchange', () => {
       document.body.classList.toggle('present', !!document.fullscreenElement);
@@ -584,7 +723,6 @@ body.show-overview { overflow: hidden; }
     });
   }
 
-  // ===== 滚轮翻页（preview 模式不接） =====
   if (!isPreview) {
     let wheelLock = false;
     canvas.addEventListener('wheel', (e) => {
@@ -597,7 +735,6 @@ body.show-overview { overflow: hidden; }
     }, { passive: false });
   }
 
-  // ===== scale-to-fit =====
   const PADDING = isPreview ? 0 : 32;
   const ro = new ResizeObserver(([entry]) => {
     const { width, height } = entry.contentRect;
@@ -609,7 +746,6 @@ body.show-overview { overflow: hidden; }
   });
   ro.observe(canvas);
 
-  // ===== T 键：主题循环（外置 CSS 文件场景；自包含 deck 不接） =====
   const themesAttr = document.body.dataset.themes;
   const themeBase  = document.body.dataset.themeBase || '';
   const themes     = themesAttr
@@ -623,7 +759,6 @@ body.show-overview { overflow: hidden; }
     themeLink.href = themeBase + t + (t.endsWith('.css') ? '' : '.css');
   }
 
-  // ===== O 键：Overview 网格 =====
   let overviewBuilt = false;
   function buildOverview() {
     if (overviewBuilt) return;
@@ -666,7 +801,6 @@ body.show-overview { overflow: hidden; }
     document.body.classList.toggle('show-overview');
   }
 
-  // ===== S 键：Presenter Mode（独立窗口 + 4 张磁吸卡） =====
   let presenterWin = null;
   function openPresenter() {
     if (presenterWin && !presenterWin.closed) { presenterWin.focus(); return; }
@@ -689,7 +823,6 @@ body.show-overview { overflow: hidden; }
     w.document.close();
   }
 
-  // 演讲者窗口的 HTML（独立窗口、独立 script，模板字符串拼装一次性写入）
   function renderPresenterDoc(ctx) {
     const { deckUrl, total, current, notes, titles } = ctx;
     return [
@@ -855,60 +988,6 @@ body.show-overview { overflow: hidden; }
     ].join('\n');
   }
 })();
-```
-
-## Constraints
-
-### 结构
-
-- 每个 slide 必须是 `.slide-shell > .page-shell` 结构（`.page-shell` 由当前 spec 提供）
-- **page-shell 的 8 锚点元素类型 + class 名 由 chrome 约束**（见 Template 段）：`.chrome-top-left/-right/-bottom-left/-bottom-right` 是 `<div>`，`.chrome-rule` 是 `<hr>`。spec 仅填锚点内的文字 / SVG，不改元素类型与 class 名
-- **每个 page-shell 必须有 `data-title="..."`**——O 键 overview 网格 + S 键 presenter NEXT 卡片都用这个字段；缺失则 fallback 到 "Slide N"
-
-### 翻页 + 同步
-
-- **page 切换由 JS toggle `.slide-shell.active` 实现**——所有 slide-shell 默认 `display: none`，仅 `.active` 的 `display: block`。新增页面只要标 class，不需手动管显隐
-- 翻页支持 5 种入口：键盘（Arrow / PageUp/Down / Space / Home / End / **数字键 1-9 直跳；0 跳末页**）、**滚轮（canvas 区域内，throttled 400ms 防触摸板连发）**、缩略图点击、present 模式下鼠标左/右键、URL hash `#/N`。sidebar 内滚轮仍滚 thumb 列表，不触发翻页
-- 字母快捷键（F / T / O / S）必须裸按、不带任何修饰键（`!metaKey && !ctrlKey && !altKey`），避免劫持 `Cmd+S` / `Cmd+O` 触发系统 NSBeep 警告音
-- **URL hash `#/N`**：每次翻页 `history.replaceState` 同步；外部改 hash 也会触发翻页（`hashchange` 监听）。N 是 1-indexed
-- **`?preview=N` 单页模式**：URL 参数触发 `body.is-preview` → 隐藏 topbar/sidebar/边框，scale-to-fit 用 0 padding。专为 presenter iframe 设计，**不要**手工触发；preview 模式下 T/O/S/F 全部禁用
-- present 模式（fullscreen）靠 `body.present` class；浏览器拒绝时无副作用
-- 缩略图是 `.page-shell` 的 DOM 克隆 + 缩放；克隆内 `--fit-scale: 1` 打破继承避免双重缩放
-
-### Notes（演讲者逐字稿）—— 铁律
-
-- 每个 page-shell 应内嵌一个 `<div class="notes">…</div>`；CSS 默认 `display: none`，**永远不会**出现在主视图、缩略图、overview 网格、preview iframe 里
-- **绝不允许把演讲者面向的描述文字（"这一页讲…"、"speaker: 提到 X 时…"、灰色解释 caption）放在 notes 之外**。叙述性文字一律进 notes；slide 正文只放观众面向的标题/数据/图
-- notes 写作三规：① 不是讲稿，是**提示信号**（核心词加粗 + 过渡句独立段）② 每页 150–300 字（2–3 分钟节奏）③ 用口语，不写书面语
-- presenter 窗口（S 键）从每页的 `.notes innerHTML` 读取并大字号渲染；空的会显示"（这一页没有 notes）"
-
-### Presenter Mode（S 键）
-
-- 弹出**新窗口** 1280×820，4 张磁吸卡（CURRENT iframe / NEXT iframe / SCRIPT / TIMER）
-- 卡片 head 可拖、右下角 14×14 三角可拉伸；位置 + 尺寸持久化到 `localStorage["getslide-presenter-layout"]`，"Reset layout" 按钮恢复默认
-- iframe 用 `?preview=N` 加载同一份 deck HTML，所以**像素级与主视图一致**（同 CSS / fonts / fit-scale）
-- 主窗 ↔ presenter 窗口靠 `BroadcastChannel("getslide-presenter")` 双向同步；presenter → 自家 iframe 用 `postMessage({type:'preview-goto', idx:N})` **不刷新只切 `.is-active`**
-- presenter 窗口键盘：← → / Space / PageUp/Down / Home/End 翻页（同步主窗）· R 复位计时 · Esc 关闭
-
-### T 键主题循环
-
-- 仅当 `<body data-themes="a,b,c">` + `<link id="theme-link">` 都存在时才工作；否则 no-op
-- `data-theme-base` 是 CSS 文件相对路径前缀（如 `"../themes/"`）
-- 每按一次 T，把 `theme-link.href` 切到下一个；自包含 deck（CSS 全 inline）不接此机制
-
-### Overview Grid（O 键）
-
-- 第一次按 O 时构建 overlay；之后只 toggle `body.show-overview`
-- 卡片宽 360px 固定（`grid-template-columns: repeat(auto-fill, 360px)`），`.overview-inner` `transform: scale(0.1875)`
-- 点击 cell → `goto(idx)` + 关闭 overlay；点 overlay 空白处 / Esc 也关闭
-
-## Why
-
-- **chrome CSS 直接抄 v1**——v1 已经验证过的视觉，重写没意义
-- **chrome 颜色 namespace 化**（`--chrome-*`）——chrome 是产品 UI，跟 slide 设计内容解耦。spec 通常给 `--chrome-fg: var(--foreground)` 这样的默认指向，但主题想 chrome 跟 slide 走不同视觉时（编辑器风浅色 chrome + dark slide），单独改 chrome token 即可
-- **几何 hardcoded 不破规则**——chrome 是 deck 运行时层，几何参数（48px topbar / 264px sidebar / 184px thumb-frame）跨主题一致，硬编码反而清楚
-- **`thumb-frame` / `slide-shell` 用 `var(--background)`**——它们显示的是 *slide 自己*的底色（缩略图就是 slide 缩小版），不是 chrome 视觉，所以仍然引 spec 的 background
-- **preview 模式用 URL 参数而非 class 输入**——iframe 里 JS 启动一次性读 `?preview=N` 进入只读单页态。CSS 通过 `body.is-preview` 触发，跟运行时切换的 `.present` 解耦
-- **presenter 用独立窗口而非 modal**——投屏时观众屏（主窗 fullscreen）和演讲者屏（presenter 窗口）通常在不同显示器；独立窗口可拖到第二屏。`localStorage` 存布局让用户的两屏布局跨次复用
-- **iframe 像素级一致**靠 `?preview=N` + 同一份 HTML/CSS/fonts，无需双份模板。切页用 `postMessage` 不 reload —— 跨页切换无白闪 / 字体加载抖动
-- **BroadcastChannel 而非 opener.postMessage**——双向 + 同源 + 不依赖 window reference 仍存活；presenter 窗口被关也不会 leak 到主窗
+</script>
+</body>
+</html>

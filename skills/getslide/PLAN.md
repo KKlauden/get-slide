@@ -82,9 +82,10 @@ blocks/                     ← 组合（依赖 component）
   cover.md
   chart-card.md             ← chart 视觉外壳（card + legend），SVG 直接 inline 到 sample
   ...
-chrome/                     ← 运行时外壳（sidebar / 导航 / present 模式 / print）  [TODO]
-  sidebar.md
-  ...
+framework/                  ← v2 契约三件套（曾叫 chrome/）
+  deck.html                 ← 可直接拷贝的 HTML 骨架（topbar/sidebar/canvas + § TOKENS / § SLIDES 占位 + canonical CSS/JS）
+  design.md                 ← 主题设计契约（schema + 氛围写作指南 + CSS 生成程序，写 design 文档时读）
+  content.md                ← 内容结构契约（schema + notes 三规 + 页数节奏 + 常用页模板，写 content 文档时读）
 samples/<slug>/             ← 每 deck 一个文件夹（spec + content + 产物三件套）
   spec.md                   ← 主题（palette + scale + chrome 模板）
   content.md                ← 内容大纲（每页 block + 文案 + placement）
@@ -169,6 +170,9 @@ source: "@shadcn/card"      # 上游来源（可选，便于将来同步）
 **铁律**：CSS 里**只用** `var(--xxx)`，绝不写死颜色/数值。直接吃 palette + scale，**不设 component 二级 alias**。
 
 ## 6. Spec `.md`（设计规范文档）
+
+> **更新（2026-05-08）**：本节是 v2 早期 spec.md 格式的历史记录。**新主题统一按 `framework/design.md` schema 写**——文件改名为 `design.md`，结构升级为 Atmosphere 散文 + 值表 + 装饰系统 + Red lines（不再含 fenced CSS 块）。CSS 由 framework/design.md §8 程序生成。
+> 现有 `samples/pitch/spec.md` 和 `samples/archive/spec.md` 保留旧格式直到逐份迁移。
 
 ```markdown
 ---
@@ -259,6 +263,9 @@ version: 0.2.0
 ```
 
 ## 7. Content `.md`（deck 大纲）
+
+> **更新（2026-05-08）**：本节是 v2 早期 content.md 格式的历史记录。**新 deck 统一按 `framework/content.md` schema 写**——每页 4 子段（block / variant / content / chrome / notes，notes 强制），加 §3 写作三规、§2 页数节奏、§6 常用页模板。
+> 现有 `samples/pitch/content.md` 和 `samples/archive/content.md` 已大致符合新 schema（仅 notes 部分需补全）。
 
 每页一个 H2 + 三个段：`block` / `content` / `styling`。bullet 格式（自由形态、便于阅读）。
 
@@ -370,7 +377,9 @@ theme: ./spec.md     # 同文件夹内的 spec（samples/<slug>/spec.md）
   Step 13  批次 6：pricing → P8
   Step 14  完整 9 页 pitch sample
   Step 15  build 工具落地
-  Step 16  chrome runtime（独立桶）
+  Step 16  chrome runtime（独立桶 → 改为 framework/runtime.md，已落地，2026-05-08）
+✓ Step 17  framework 三件套：runtime + design + content（schema skeleton），样板待迁移
+✓ Step 18  runtime.md → deck.html：runtime 改为可直接 cp 的 HTML 骨架（framework/deck.html），删除 .md 形式（2026-05-08）
 ```
 
 每一步都是验证假设的最小切片，不要一次性铺完。
@@ -511,7 +520,7 @@ od:
 | C. T 键主题循环 | P1 | Step 16 | 5 行 runtime |
 | D. O 键 Overview | P1 | Step 16 | 30 行 runtime + CSS |
 | E. `#/N` + `?preview=N` | P0 | Step 16 | A 的前置依赖（preview iframe 必需）|
-| F. DESIGN.md 格式升级 | P1 | Step 8 之后回填，或第三套 spec 时 | 写新 spec 时按新模板 |
+| F. DESIGN.md 格式升级 | P1 | ✅ framework/design.md + content.md skeleton 已落地（2026-05-08）；samples 迁移待批 | framework/ 三件套就位 |
 | G. block 去前缀 | P1 | Step 14 完成后整理 | 跟 archive sample 收尾一起做 |
 | H. 3 问预飞 workflow | P2 | SKILL.md rewrite 时（Step 8 决议项）| 文档而非代码 |
 | I. `od:` frontmatter | P3 | 发布 skill 前 | 未定 |
@@ -521,7 +530,7 @@ od:
 
 v2 完成后，从 `old/` 里挑可复用的内容：
 
-- `old/skills/getslide/runtime.html` → 拆解为 `chrome/*.md`
+- `old/skills/getslide/runtime.html` → 拆解为 `framework/deck.html` + `framework/design.md` + `framework/content.md`
 - `old/skills/getslide/designs/pitch/sample.html` 里的 `.compare-card / .chart-card / .pricing-card` CSS → 重写为 component .md + spec token
 - `old/skills/getslide/SLIDE.md` 的 P1-P7 设计原则 → 留作 cross-cutting concern，可能放 `docs/principles.md`
 - `old/skills/getslide/designs/*.md` 的主题 token → 改造成新 spec.md 格式
