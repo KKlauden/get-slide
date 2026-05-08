@@ -448,6 +448,76 @@
   /* sidebar toggle */
   body.no-sidebar .sidebar { display: none; }
 
+  /* ============ PREVIEW MODE (?preview=N，演讲者 iframe 单页无 chrome) ============ */
+  body.is-preview .topbar,
+  body.is-preview .sidebar { display: none !important; }
+  body.is-preview .canvas { background: transparent; padding: 0; }
+  body.is-preview .slide-shell { border-radius: 0; box-shadow: none; }
+
+  /* ============ NOTES（演讲者逐字稿，主视图永远隐藏） ============ */
+  .slide-shell .notes,
+  .thumb-frame .notes,
+  .overview-frame .notes { display: none !important; }
+
+  /* ============ OVERVIEW OVERLAY (O 键) ============ */
+  .overview-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    z-index: 100;
+    display: none;
+    padding: 48px;
+    overflow-y: auto;
+    grid-template-columns: repeat(auto-fill, 360px);
+    justify-content: center;
+    gap: 24px 28px;
+    align-content: start;
+  }
+  body.show-overview .overview-overlay { display: grid; }
+  body.show-overview { overflow: hidden; }
+  .overview-cell {
+    display: flex; flex-direction: column; gap: 8px;
+    background: transparent; border: 0; padding: 0;
+    cursor: pointer; font: inherit; text-align: left;
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .overview-cell .overview-num {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.16em;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+  }
+  .overview-cell .overview-title {
+    font-size: 13px; font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .overview-frame {
+    width: 360px; height: 202.5px;
+    background: var(--background);
+    border-radius: 6px; overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+    transition: box-shadow 0.12s, transform 0.12s;
+  }
+  .overview-cell:hover .overview-frame {
+    box-shadow: 0 0 0 2px var(--chrome-accent, #4f8af5);
+    transform: translateY(-2px);
+  }
+  .overview-cell.active .overview-frame {
+    box-shadow: 0 0 0 2px var(--chrome-accent, #4f8af5);
+  }
+  .overview-inner {
+    width: 1920px; height: 1080px;
+    transform: scale(0.1875);
+    transform-origin: top left;
+    pointer-events: none;
+    --fit-scale: 1;
+  }
+  .overview-inner * {
+    animation: none !important;
+    transition: none !important;
+  }
+
   /* ============ PRINT (PDF) ============ */
   @media print {
     @page { size: 1920px 1080px; margin: 0; }
@@ -921,7 +991,7 @@
 
       <!-- ===== P1 — Cover ===== -->
       <div class="slide-shell" data-slide-index="0">
-        <section class="page-shell" data-variant="lite" data-slide="P1">
+        <section class="page-shell" data-variant="lite" data-slide="P1" data-title="Cover">
           <div class="chrome-top-left">
             <span class="logo-mark">P</span>
             <strong>Pitch.</strong>
@@ -954,7 +1024,7 @@
 
       <!-- ===== P2 — Problem ===== -->
       <div class="slide-shell" data-slide-index="1">
-        <section class="page-shell" data-variant="dark" data-slide="P2">
+        <section class="page-shell" data-variant="dark" data-slide="P2" data-title="Problem">
           <div class="chrome-top-left">
             <span class="logo-mark">P</span>
             <strong>Pitch.</strong>
@@ -996,7 +1066,7 @@
 
       <!-- ===== P3 — Solution ===== -->
       <div class="slide-shell" data-slide-index="2">
-        <section class="page-shell" data-variant="forest" data-slide="P3">
+        <section class="page-shell" data-variant="forest" data-slide="P3" data-title="Solution">
           <div class="chrome-top-left">
             <span class="logo-mark">P</span>
             <strong>Pitch.</strong>
@@ -1045,7 +1115,7 @@
 
       <!-- ===== P4 — Feature Grid ===== -->
       <div class="slide-shell" data-slide-index="3">
-        <section class="page-shell" data-variant="lite" data-slide="P4">
+        <section class="page-shell" data-variant="lite" data-slide="P4" data-title="Feature Grid">
           <div class="chrome-top-left">
             <span class="logo-mark">P</span>
             <strong>Pitch.</strong>
@@ -1109,7 +1179,7 @@
 
       <!-- ===== P5 — Stat Split ===== -->
       <div class="slide-shell" data-slide-index="4">
-        <section class="page-shell" data-variant="dark" data-slide="P5">
+        <section class="page-shell" data-variant="dark" data-slide="P5" data-title="Stat Split">
           <div class="chrome-top-left">
             <span class="logo-mark">P</span>
             <strong>Pitch.</strong>
@@ -1150,7 +1220,7 @@
 
       <!-- ===== P6 — Compare Stagger ===== -->
       <div class="slide-shell" data-slide-index="5">
-        <section class="page-shell" data-variant="forest" data-slide="P6">
+        <section class="page-shell" data-variant="forest" data-slide="P6" data-title="Compare Stagger">
           <div class="chrome-top-left">
             <span class="logo-mark">P</span>
             <strong>Pitch.</strong>
@@ -1196,7 +1266,7 @@
 
       <!-- ===== P7 — Chart Narrative ===== -->
       <div class="slide-shell" data-slide-index="6">
-        <section class="page-shell" data-variant="forest" data-slide="P7">
+        <section class="page-shell" data-variant="forest" data-slide="P7" data-title="Chart Narrative">
           <div class="chrome-top-left">
             <span class="logo-mark">P</span>
             <strong>Pitch.</strong>
@@ -1284,7 +1354,7 @@
 
       <!-- ===== P8 — Pricing ===== -->
       <div class="slide-shell" data-slide-index="7">
-        <section class="page-shell" data-variant="lite" data-slide="P8">
+        <section class="page-shell" data-variant="lite" data-slide="P8" data-title="Pricing">
           <div class="chrome-top-left">
             <span class="logo-mark">P</span>
             <strong>Pitch.</strong>
@@ -1351,7 +1421,7 @@
 
       <!-- ===== P9 — Closing ===== -->
       <div class="slide-shell" data-slide-index="8">
-        <section class="page-shell" data-variant="lite" data-slide="P9">
+        <section class="page-shell" data-variant="lite" data-slide="P9" data-title="Closing">
           <div class="chrome-top-left">
             <span class="logo-mark">P</span>
             <strong>Pitch.</strong>
@@ -1391,112 +1461,415 @@
 </div>
 
 <script>
-(function() {
-  const slides = Array.from(document.querySelectorAll('.slide-shell'));
-  const total  = slides.length;
-  const canvas = document.getElementById('canvas');
-  const thumbRail = document.getElementById('thumbRail');
+(function () {
+  // ===== 状态 =====
+  const slides      = Array.from(document.querySelectorAll('.slide-shell'));
+  const total       = slides.length;
+  const canvas      = document.getElementById('canvas');
+  const thumbRail   = document.getElementById('thumbRail');
   const pageCountEl = document.getElementById('pageCount');
   let current = 0;
 
-  // ───── 缩略图生成 ─────
-  if (pageCountEl) pageCountEl.textContent = String(total).padStart(2, '0');
-  slides.forEach((slide, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'thumb' + (i === 0 ? ' active' : '');
-    btn.dataset.idx = i;
-    btn.addEventListener('click', () => goto(i));
+  // ===== Preview 模式（?preview=N，演讲者 iframe 用） =====
+  const params       = new URLSearchParams(location.search);
+  const previewParam = params.get('preview');
+  const isPreview    = previewParam !== null;
+  if (isPreview) document.body.classList.add('is-preview');
 
-    const num = document.createElement('span');
-    num.className = 'thumb-num';
-    num.textContent = String(i + 1).padStart(2, '0');
+  // ===== BroadcastChannel：主窗口 ↔ presenter 双向同步 =====
+  let channel = null;
+  try { channel = new BroadcastChannel('getslide-presenter'); } catch (e) {}
 
-    const frame = document.createElement('div');
-    frame.className = 'thumb-frame';
-    const inner = document.createElement('div');
-    inner.className = 'thumb-inner';
-    const clone = slide.querySelector('.page-shell').cloneNode(true);
-    inner.appendChild(clone);
-    frame.appendChild(inner);
+  // ===== 缩略图（preview 模式跳过） =====
+  if (!isPreview) {
+    if (pageCountEl) pageCountEl.textContent = String(total).padStart(2, '0');
+    slides.forEach((slide, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'thumb' + (i === 0 ? ' active' : '');
+      btn.dataset.idx = i;
+      btn.addEventListener('click', () => goto(i));
+      const num = document.createElement('span');
+      num.className = 'thumb-num';
+      num.textContent = String(i + 1).padStart(2, '0');
+      const frame = document.createElement('div');
+      frame.className = 'thumb-frame';
+      const inner = document.createElement('div');
+      inner.className = 'thumb-inner';
+      inner.appendChild(slide.querySelector('.page-shell').cloneNode(true));
+      frame.appendChild(inner);
+      btn.appendChild(num);
+      btn.appendChild(frame);
+      thumbRail.appendChild(btn);
+    });
+  }
 
-    btn.appendChild(num);
-    btn.appendChild(frame);
-    thumbRail.appendChild(btn);
-  });
-
-  // ───── 翻页 ─────
-  function goto(i) {
+  // ===== 翻页（统一入口） =====
+  function goto(i, opts) {
+    opts = opts || {};
     i = Math.max(0, Math.min(total - 1, i));
     slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
-    document.querySelectorAll('.thumb').forEach((t, idx) => t.classList.toggle('active', idx === i));
+    document.querySelectorAll('.thumb')
+      .forEach((t, idx) => t.classList.toggle('active', idx === i));
+    document.querySelectorAll('.overview-cell')
+      .forEach((c, idx) => c.classList.toggle('active', idx === i));
     current = i;
+    if (!isPreview && !opts.silent) {
+      history.replaceState(null, '', '#/' + (i + 1));
+      if (channel) channel.postMessage({ type: 'goto', idx: i });
+    }
   }
-  goto(0);
 
-  // 键盘
-  window.addEventListener('keydown', (e) => {
-    if (e.target.matches('input, textarea, [contenteditable]')) return;
-    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) {
-      e.preventDefault();
-      goto(current + 1);
-    } else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) {
-      e.preventDefault();
-      goto(current - 1);
-    } else if (e.key === 'Home') { e.preventDefault(); goto(0); }
-    else if (e.key === 'End')  { e.preventDefault(); goto(total - 1); }
-    else if (e.key === 'f' || e.key === 'F') {
-      e.preventDefault();
-      document.documentElement.requestFullscreen?.().catch(() => {});
+  // ===== 启动定位：?preview 优先 → URL hash → 0 =====
+  let bootIdx = 0;
+  if (isPreview) {
+    bootIdx = parseInt(previewParam, 10) || 0;
+  } else {
+    const m = location.hash.match(/^#\/(\d+)/);
+    if (m) bootIdx = parseInt(m[1], 10) - 1;
+  }
+  goto(bootIdx, { silent: true });
+
+  window.addEventListener('hashchange', () => {
+    if (isPreview) return;
+    const m = location.hash.match(/^#\/(\d+)/);
+    if (m) goto(parseInt(m[1], 10) - 1, { silent: true });
+  });
+
+  window.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'preview-goto' && typeof e.data.idx === 'number') {
+      goto(e.data.idx, { silent: true });
     }
   });
 
-  // 演示模式
-  document.addEventListener('fullscreenchange', () => {
-    document.body.classList.toggle('present', !!document.fullscreenElement);
-  });
-  document.getElementById('presentBtn')?.addEventListener('click', () => {
-    document.documentElement.requestFullscreen?.().catch(() => {});
-  });
-  document.getElementById('downloadBtn')?.addEventListener('click', () => window.print());
-  window.addEventListener('click', (e) => {
-    if (!document.body.classList.contains('present')) return;
-    if (e.target.closest('button, a, input, textarea, [contenteditable]')) return;
-    if (e.button !== 0) return;
-    goto(current + 1);
-  });
-  window.addEventListener('contextmenu', (e) => {
-    if (!document.body.classList.contains('present')) return;
-    e.preventDefault();
-    goto(current - 1);
+  channel?.addEventListener('message', (e) => {
+    if (isPreview) return;
+    if (e.data && e.data.type === 'goto' && typeof e.data.idx === 'number') {
+      goto(e.data.idx, { silent: true });
+    }
   });
 
-  // sidebar toggle
-  document.getElementById('toggleSidebar')?.addEventListener('click', () => {
-    document.body.classList.toggle('no-sidebar');
+  // ===== 键盘 =====
+  window.addEventListener('keydown', (e) => {
+    if (e.target.matches('input, textarea, [contenteditable]')) return;
+    const plain = !e.metaKey && !e.ctrlKey && !e.altKey;
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) {
+      e.preventDefault(); goto(current + 1);
+    } else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) {
+      e.preventDefault(); goto(current - 1);
+    } else if (e.key === 'Home') { e.preventDefault(); goto(0); }
+    else if (e.key === 'End')    { e.preventDefault(); goto(total - 1); }
+    else if (plain && !isPreview && (e.key === 'f' || e.key === 'F')) {
+      e.preventDefault();
+      document.documentElement.requestFullscreen?.().catch(() => {});
+    } else if (plain && !isPreview && (e.key === 't' || e.key === 'T')) {
+      cycleTheme();
+    } else if (plain && !isPreview && (e.key === 'o' || e.key === 'O')) {
+      e.preventDefault(); toggleOverview();
+    } else if (plain && !isPreview && (e.key === 's' || e.key === 'S')) {
+      e.preventDefault(); openPresenter();
+    } else if (e.key === 'Escape') {
+      document.body.classList.remove('show-overview');
+    } else if (plain && /^[0-9]$/.test(e.key)) {
+      e.preventDefault();
+      const n = parseInt(e.key, 10);
+      goto(n === 0 ? total - 1 : n - 1);
+    }
   });
 
-  // 滚轮翻页（canvas 区域内；throttled 防触摸板连续触发）
-  let wheelLock = false;
-  canvas.addEventListener('wheel', (e) => {
-    if (Math.abs(e.deltaY) < 30) return;
-    e.preventDefault();
-    if (wheelLock) return;
-    wheelLock = true;
-    setTimeout(() => { wheelLock = false; }, 400);
-    goto(current + (e.deltaY > 0 ? 1 : -1));
-  }, { passive: false });
+  // ===== 演示模式（fullscreen） =====
+  if (!isPreview) {
+    document.addEventListener('fullscreenchange', () => {
+      document.body.classList.toggle('present', !!document.fullscreenElement);
+    });
+    document.getElementById('presentBtn')?.addEventListener('click', () => {
+      document.documentElement.requestFullscreen?.().catch(() => {});
+    });
+    document.getElementById('downloadBtn')?.addEventListener('click', () => window.print());
+    window.addEventListener('click', (e) => {
+      if (!document.body.classList.contains('present')) return;
+      if (e.target.closest('button, a, input, textarea, [contenteditable]')) return;
+      if (e.button !== 0) return;
+      goto(current + 1);
+    });
+    window.addEventListener('contextmenu', (e) => {
+      if (!document.body.classList.contains('present')) return;
+      e.preventDefault();
+      goto(current - 1);
+    });
+    document.getElementById('toggleSidebar')?.addEventListener('click', () => {
+      document.body.classList.toggle('no-sidebar');
+    });
+  }
 
-  // ───── scale-to-fit ─────
-  const PADDING = 32;
+  // ===== 滚轮翻页（preview 模式不接） =====
+  if (!isPreview) {
+    let wheelLock = false;
+    canvas.addEventListener('wheel', (e) => {
+      if (Math.abs(e.deltaY) < 30) return;
+      e.preventDefault();
+      if (wheelLock) return;
+      wheelLock = true;
+      setTimeout(() => { wheelLock = false; }, 400);
+      goto(current + (e.deltaY > 0 ? 1 : -1));
+    }, { passive: false });
+  }
+
+  // ===== scale-to-fit =====
+  const PADDING = isPreview ? 0 : 32;
   const ro = new ResizeObserver(([entry]) => {
     const { width, height } = entry.contentRect;
     const scale = Math.min(
-      (width - PADDING * 2) / 1920,
-      (height - PADDING * 2) / 1080
+      Math.max(1, width  - PADDING * 2) / 1920,
+      Math.max(1, height - PADDING * 2) / 1080
     );
     document.documentElement.style.setProperty('--fit-scale', Math.max(0.05, scale));
   });
   ro.observe(canvas);
+
+  // ===== T 键：主题循环（外置 CSS 文件场景；自包含 deck 不接） =====
+  const themesAttr = document.body.dataset.themes;
+  const themeBase  = document.body.dataset.themeBase || '';
+  const themes     = themesAttr
+    ? themesAttr.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const themeLink  = document.getElementById('theme-link');
+  let themeIdx = 0;
+  function cycleTheme() {
+    if (!themes.length || !themeLink) return;
+    themeIdx = (themeIdx + 1) % themes.length;
+    const t = themes[themeIdx];
+    themeLink.href = themeBase + t + (t.endsWith('.css') ? '' : '.css');
+  }
+
+  // ===== O 键：Overview 网格 =====
+  let overviewBuilt = false;
+  function buildOverview() {
+    if (overviewBuilt) return;
+    overviewBuilt = true;
+    const overlay = document.createElement('div');
+    overlay.className = 'overview-overlay';
+    slides.forEach((slide, i) => {
+      const cell = document.createElement('button');
+      cell.className = 'overview-cell' + (i === current ? ' active' : '');
+      cell.dataset.idx = i;
+      cell.addEventListener('click', () => {
+        goto(i);
+        document.body.classList.remove('show-overview');
+      });
+      const num = document.createElement('span');
+      num.className = 'overview-num';
+      num.textContent = String(i + 1).padStart(2, '0');
+      const titleEl = document.createElement('span');
+      titleEl.className = 'overview-title';
+      const ps = slide.querySelector('.page-shell');
+      titleEl.textContent = (ps && ps.dataset && ps.dataset.title) || '';
+      const frame = document.createElement('div');
+      frame.className = 'overview-frame';
+      const inner = document.createElement('div');
+      inner.className = 'overview-inner';
+      inner.appendChild(slide.querySelector('.page-shell').cloneNode(true));
+      frame.appendChild(inner);
+      cell.appendChild(num);
+      if (titleEl.textContent) cell.appendChild(titleEl);
+      cell.appendChild(frame);
+      overlay.appendChild(cell);
+    });
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) document.body.classList.remove('show-overview');
+    });
+    document.body.appendChild(overlay);
+  }
+  function toggleOverview() {
+    buildOverview();
+    document.body.classList.toggle('show-overview');
+  }
+
+  // ===== S 键：Presenter Mode（独立窗口 + 4 张磁吸卡） =====
+  let presenterWin = null;
+  function openPresenter() {
+    if (presenterWin && !presenterWin.closed) { presenterWin.focus(); return; }
+    const w = window.open('about:blank', 'getslide-presenter',
+      'width=1280,height=820,menubar=no,toolbar=no,location=no');
+    if (!w) return;
+    presenterWin = w;
+    const notes = slides.map(s => {
+      const el = s.querySelector('.notes');
+      return el ? (el.innerHTML || '').trim() : '';
+    });
+    const titles = slides.map((s, i) => {
+      const ps = s.querySelector('.page-shell');
+      return (ps && ps.dataset && ps.dataset.title) || ('Slide ' + (i + 1));
+    });
+    w.document.open();
+    w.document.write(renderPresenterDoc({
+      deckUrl: location.pathname, total, current, notes, titles
+    }));
+    w.document.close();
+  }
+
+  function renderPresenterDoc(ctx) {
+    const { deckUrl, total, current, notes, titles } = ctx;
+    return [
+      '<!doctype html><html lang="zh-CN"><head>',
+      '<meta charset="utf-8"><title>Presenter · getslide</title>',
+      '<style>',
+      '* { box-sizing: border-box; margin: 0; padding: 0; }',
+      'body { height: 100vh; overflow: hidden; background: #0d0e10; color: #e8e9ec;',
+      '  font: 13px/1.4 -apple-system, "SF Pro Text", system-ui, sans-serif; position: relative; }',
+      '.card { position: absolute; background: #16181d; border: 1px solid #2a2d35; border-radius: 10px;',
+      '  display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.4); }',
+      '.card-head { height: 32px; flex-shrink: 0; background: #1c1f26; border-bottom: 1px solid #2a2d35;',
+      '  display: flex; align-items: center; padding: 0 12px; font-size: 10px; font-weight: 600;',
+      '  letter-spacing: 0.16em; text-transform: uppercase; color: #8a8f99; cursor: grab; user-select: none; }',
+      '.card-head.dragging { cursor: grabbing; }',
+      '.card-head .dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }',
+      '.card-current .dot { background: #4f8af5; }',
+      '.card-next    .dot { background: #a479e0; }',
+      '.card-script  .dot { background: #f0a040; }',
+      '.card-timer   .dot { background: #62d29a; }',
+      '.card-body { flex: 1; min-height: 0; position: relative; overflow: hidden; }',
+      '.card iframe { width: 1920px; height: 1080px; transform-origin: top left; border: 0;',
+      '  background: #fff; position: absolute; left: 0; top: 0; }',
+      '.script-body { padding: 20px 24px; overflow-y: auto; font-size: 22px; line-height: 1.55;',
+      '  color: #f0f1f4; font-family: "SF Pro Text", -apple-system, system-ui, sans-serif; height: 100%; }',
+      '.script-body strong { color: #ffd866; font-weight: 600; }',
+      '.script-empty { color: #62666d; font-style: italic; font-size: 14px; }',
+      '.timer-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; height: 100%; }',
+      '.timer-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }',
+      '.timer-elapsed { font-size: 36px; font-weight: 600; font-family: ui-monospace, "SF Mono", Menlo, monospace; }',
+      '.timer-page { font-size: 13px; color: #8a8f99; font-family: ui-monospace, "SF Mono", Menlo, monospace; }',
+      '.timer-btns { display: flex; gap: 6px; flex-wrap: wrap; }',
+      '.timer-btns button { height: 28px; padding: 0 10px; background: #1c1f26; border: 1px solid #2a2d35;',
+      '  border-radius: 6px; color: #d0d6e0; cursor: pointer; font: inherit; font-size: 12px; }',
+      '.timer-btns button:hover { background: #23262e; }',
+      '.resize-handle { position: absolute; right: 0; bottom: 0; width: 14px; height: 14px;',
+      '  cursor: nwse-resize;',
+      '  background: linear-gradient(135deg, transparent 50%, #3a3d45 50%, #3a3d45 60%, transparent 60%,',
+      '    transparent 70%, #3a3d45 70%, #3a3d45 80%, transparent 80%); }',
+      '.toolbar { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 50; }',
+      '.toolbar button { height: 28px; padding: 0 12px; background: #1c1f26; border: 1px solid #2a2d35;',
+      '  border-radius: 6px; color: #d0d6e0; cursor: pointer; font: inherit; font-size: 12px; }',
+      '.toolbar button:hover { background: #23262e; }',
+      '</style></head><body>',
+      '<div class="toolbar"><button id="resetLayout">Reset layout</button></div>',
+      '<div class="card card-current" data-card="current" data-default="left:24;top:24;width:768;height:432">',
+      '  <div class="card-head"><span class="dot"></span>CURRENT · <span data-bind="title-cur"></span></div>',
+      '  <div class="card-body"><iframe data-iframe="cur"></iframe></div>',
+      '  <div class="resize-handle"></div></div>',
+      '<div class="card card-next" data-card="next" data-default="left:816;top:24;width:432;height:243">',
+      '  <div class="card-head"><span class="dot"></span>NEXT · <span data-bind="title-next"></span></div>',
+      '  <div class="card-body"><iframe data-iframe="next"></iframe></div>',
+      '  <div class="resize-handle"></div></div>',
+      '<div class="card card-script" data-card="script" data-default="left:24;top:476;width:768;height:316">',
+      '  <div class="card-head"><span class="dot"></span>SPEAKER SCRIPT</div>',
+      '  <div class="card-body"><div class="script-body" data-bind="script">—</div></div>',
+      '  <div class="resize-handle"></div></div>',
+      '<div class="card card-timer" data-card="timer" data-default="left:816;top:291;width:432;height:200">',
+      '  <div class="card-head"><span class="dot"></span>TIMER</div>',
+      '  <div class="card-body"><div class="timer-body">',
+      '    <div class="timer-row"><div class="timer-elapsed" id="elapsed">00:00</div>',
+      '      <div class="timer-page" id="pageInfo"></div></div>',
+      '    <div class="timer-btns"><button id="prevBtn">← Prev</button>',
+      '      <button id="nextBtn">Next →</button>',
+      '      <button id="resetBtn">Reset (R)</button></div>',
+      '  </div></div><div class="resize-handle"></div></div>',
+      '<script>',
+      '(function(){',
+      '  var TOTAL=' + total + ',',
+      '      DECK_URL=' + JSON.stringify(deckUrl) + ',',
+      '      NOTES=' + JSON.stringify(notes) + ',',
+      '      TITLES=' + JSON.stringify(titles) + ';',
+      '  var STORAGE_KEY="getslide-presenter-layout";',
+      '  var cur=' + current + ', startedAt=Date.now();',
+      '  var cards=document.querySelectorAll(".card");',
+      '  var layout=JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}");',
+      '  cards.forEach(function(c){ var def=parseLayout(c.dataset.default);',
+      '    var saved=layout[c.dataset.card]||def; applyLayout(c,saved);',
+      '    makeDraggable(c); makeResizable(c); });',
+      '  function parseLayout(s){ var o={}; s.split(";").forEach(function(p){',
+      '    var kv=p.split(":"); o[kv[0]]=parseInt(kv[1],10); }); return o; }',
+      '  function applyLayout(c,l){ c.style.left=l.left+"px"; c.style.top=l.top+"px";',
+      '    c.style.width=l.width+"px"; c.style.height=l.height+"px"; fitIframe(c); }',
+      '  function persist(){ var out={}; cards.forEach(function(c){ out[c.dataset.card]={',
+      '    left:parseInt(c.style.left,10), top:parseInt(c.style.top,10),',
+      '    width:parseInt(c.style.width,10), height:parseInt(c.style.height,10) }; });',
+      '    localStorage.setItem(STORAGE_KEY,JSON.stringify(out)); }',
+      '  function makeDraggable(c){ var head=c.querySelector(".card-head");',
+      '    var sx,sy,sl,st,dragging=false;',
+      '    head.addEventListener("mousedown",function(e){ if(e.target.closest("button"))return;',
+      '      dragging=true; head.classList.add("dragging");',
+      '      sx=e.clientX; sy=e.clientY;',
+      '      sl=parseInt(c.style.left,10); st=parseInt(c.style.top,10); e.preventDefault(); });',
+      '    window.addEventListener("mousemove",function(e){ if(!dragging)return;',
+      '      c.style.left=(sl+e.clientX-sx)+"px"; c.style.top=(st+e.clientY-sy)+"px"; });',
+      '    window.addEventListener("mouseup",function(){ if(!dragging)return;',
+      '      dragging=false; head.classList.remove("dragging"); persist(); }); }',
+      '  function makeResizable(c){ var h=c.querySelector(".resize-handle");',
+      '    var sx,sy,sw,sh,resizing=false;',
+      '    h.addEventListener("mousedown",function(e){ resizing=true;',
+      '      sx=e.clientX; sy=e.clientY;',
+      '      sw=parseInt(c.style.width,10); sh=parseInt(c.style.height,10);',
+      '      e.preventDefault(); e.stopPropagation(); });',
+      '    window.addEventListener("mousemove",function(e){ if(!resizing)return;',
+      '      c.style.width=Math.max(220,sw+e.clientX-sx)+"px";',
+      '      c.style.height=Math.max(120,sh+e.clientY-sy)+"px"; fitIframe(c); });',
+      '    window.addEventListener("mouseup",function(){ if(!resizing)return;',
+      '      resizing=false; persist(); }); }',
+      '  function fitIframe(c){ var iframe=c.querySelector("iframe"); if(!iframe)return;',
+      '    var body=c.querySelector(".card-body");',
+      '    var w=body.clientWidth, h=body.clientHeight;',
+      '    var scale=Math.min(w/1920,h/1080);',
+      '    iframe.style.transform="scale("+scale+")";',
+      '    iframe.style.left=((w-1920*scale)/2)+"px";',
+      '    iframe.style.top=((h-1080*scale)/2)+"px"; }',
+      '  document.getElementById("resetLayout").addEventListener("click",function(){',
+      '    cards.forEach(function(c){ applyLayout(c,parseLayout(c.dataset.default)); });',
+      '    persist(); });',
+      '  var iframeCur=document.querySelector("[data-iframe=cur]");',
+      '  var iframeNext=document.querySelector("[data-iframe=next]");',
+      '  iframeCur.src=DECK_URL+"?preview="+cur;',
+      '  iframeNext.src=DECK_URL+"?preview="+Math.min(cur+1,TOTAL-1);',
+      '  cards.forEach(fitIframe);',
+      '  window.addEventListener("resize",function(){ cards.forEach(fitIframe); });',
+      '  var channel=null; try{ channel=new BroadcastChannel("getslide-presenter"); }catch(e){}',
+      '  channel&&channel.addEventListener("message",function(e){',
+      '    if(e.data&&e.data.type==="goto"&&typeof e.data.idx==="number"){ updateState(e.data.idx,false); }',
+      '  });',
+      '  function updateState(idx,echo){ cur=Math.max(0,Math.min(TOTAL-1,idx));',
+      '    document.querySelector("[data-bind=title-cur]").textContent=TITLES[cur]||"";',
+      '    document.querySelector("[data-bind=title-next]").textContent=TITLES[Math.min(cur+1,TOTAL-1)]||"";',
+      '    var sc=document.querySelector("[data-bind=script]"); var t=NOTES[cur];',
+      '    sc.innerHTML=(t&&t.length)?t:"<span class=script-empty>（这一页没有 notes）</span>";',
+      '    document.getElementById("pageInfo").textContent=',
+      '      String(cur+1).padStart(2,"0")+" / "+String(TOTAL).padStart(2,"0");',
+      '    iframeCur.contentWindow&&iframeCur.contentWindow.postMessage({type:"preview-goto",idx:cur},"*");',
+      '    iframeNext.contentWindow&&iframeNext.contentWindow.postMessage(',
+      '      {type:"preview-goto",idx:Math.min(cur+1,TOTAL-1)},"*");',
+      '    if(echo&&channel) channel.postMessage({type:"goto",idx:cur}); }',
+      '  updateState(cur,false);',
+      '  window.addEventListener("keydown",function(e){',
+      '    if(["ArrowRight","ArrowDown","PageDown"," "].indexOf(e.key)>=0){',
+      '      e.preventDefault(); updateState(cur+1,true); }',
+      '    else if(["ArrowLeft","ArrowUp","PageUp"].indexOf(e.key)>=0){',
+      '      e.preventDefault(); updateState(cur-1,true); }',
+      '    else if(e.key==="Home"){ updateState(0,true); }',
+      '    else if(e.key==="End"){ updateState(TOTAL-1,true); }',
+      '    else if(e.key==="r"||e.key==="R"){ startedAt=Date.now(); tick(); }',
+      '    else if(e.key==="Escape"){ window.close(); }',
+      '  });',
+      '  document.getElementById("prevBtn").addEventListener("click",function(){updateState(cur-1,true);});',
+      '  document.getElementById("nextBtn").addEventListener("click",function(){updateState(cur+1,true);});',
+      '  document.getElementById("resetBtn").addEventListener("click",function(){startedAt=Date.now();tick();});',
+      '  function pad(n){return String(n).padStart(2,"0");}',
+      '  function tick(){ var sec=Math.floor((Date.now()-startedAt)/1000);',
+      '    var m=Math.floor(sec/60), s=sec%60, h=Math.floor(m/60);',
+      '    document.getElementById("elapsed").textContent=h>0?',
+      '      h+":"+pad(m%60)+":"+pad(s):pad(m)+":"+pad(s); }',
+      '  setInterval(tick,500); tick();',
+      '})();',
+      '</' + 'script>',
+      '</body></html>'
+    ].join('\n');
+  }
 })();
 </script>
 
