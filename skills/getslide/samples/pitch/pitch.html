@@ -4,9 +4,13 @@
 <meta charset="utf-8" />
 <title>Pitch deck</title>
 <style>
-  /* ============================================================
-     ⬇ 来自 designs/pitch/spec.md
-     ============================================================ */
+  /* ===========================================================
+     § TOKENS — 来自 design.md §8（token 程序输出 + Append CSS）
+     - :root tokens（palette / typography / shape / grid / chrome）
+     - [data-variant="..."] 覆盖
+     - design.md §8 Append CSS：chrome 8 锚点位置 / page-shell /
+       page-content grid / .h*-* / .v*-* utility / component bend
+     =========================================================== */
   :root {
     --canvas-bg: #dcdcdc;
     --chrome-bg: #f0f0f0;
@@ -258,10 +262,10 @@
   .v6-7  { grid-row: 6 / 8; }
   .v1-8  { grid-row: 1 / 9; }
 
-  /* ============================================================
-     ⬇ 来自 chrome/runtime.md
-     直接采用 v1 视觉，token 用 chrome-* 独立 namespace
-     ============================================================ */
+  /* ===========================================================
+     § RUNTIME CSS — canonical（来源 framework/deck.html，不要在此改）
+     framework 一旦更新，此段需重新同步过来
+     =========================================================== */
   .app { height: 100vh; display: flex; flex-direction: column; }
 
   .topbar {
@@ -553,9 +557,13 @@
     }
   }
 
-  /* ============================================================
-     ⬇ 来自 blocks/hero-block.md
-     ============================================================ */
+  /* ===========================================================
+     § COMPONENT CSS — 内联 components/blocks（pitch deck 用到的砖块）
+     来自 components/*.md + blocks/*.md，按需 inline；新 deck 复用时按
+     content.md 的「block 索引」选用
+     =========================================================== */
+
+  /* ── from blocks/hero-block.md ── */
   .hero-block {
     display: flex;
     flex-direction: column;
@@ -988,6 +996,12 @@
     </aside>
 
     <main class="canvas" id="canvas">
+
+      <!-- ===========================================================
+           § SLIDES — 来自 content.md（每页一个 .slide-shell）
+           每个 .page-shell 必须有 data-title="..."（O 键 / NEXT 卡用）
+           应内嵌 <div class="notes">…</div>（S 键 SCRIPT 卡读取）
+           =========================================================== -->
 
       <!-- ===== P1 — Cover ===== -->
       <div class="slide-shell" data-slide-index="0">
@@ -1461,6 +1475,12 @@
 </div>
 
 <script>
+/* ===========================================================
+   § RUNTIME JS — canonical（来源 framework/deck.html，不要在此改）
+   含：翻页 / hash 深链 / preview / present / overview / 演讲者窗口
+       / 数字键 / 滚轮 / fit-scale / 打印 / 主题循环
+   framework 一旦更新，此段需重新同步过来
+   =========================================================== */
 (function () {
   // ===== 状态 =====
   const slides      = Array.from(document.querySelectorAll('.slide-shell'));

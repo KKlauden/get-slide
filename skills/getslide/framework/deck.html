@@ -287,10 +287,11 @@
     }
 
     /* chrome-rule 默认隐形——浏览器原生 <hr> 自带 inset border + margin，
-       不 reset 会有一条灰线漏出。design.md 想画分隔线就 override
-       （e.g. `border-top: 1px solid var(--border); margin: 12px 64px 0;`）。
+       不 reset 会有一条灰线漏出。:where() 归零 specificity，design.md §8
+       Append CSS 想画分隔线（如 `.chrome-rule { height: 1px; background: var(--border); }`）
+       不论 selector / 顺序都能直接 override。
        4 个角 div 的定位/字体由 design.md 决定，框架不预设。 */
-    .page-shell > .chrome-rule { border: 0; margin: 0; height: 0; }
+    :where(.page-shell > .chrome-rule) { border: 0; margin: 0; height: 0; }
 
     /* ============ PRESENT MODE (F 键 fullscreen) ============ */
     body.present .topbar,

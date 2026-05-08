@@ -5,9 +5,14 @@
     <meta name="viewport" content="width=1920" />
     <title>Faultline — Autonomous Geological Intelligence Network</title>
     <style>
-      /* ============================================================
-     ⬇ 来自 ./spec.md（archive 主题专属）
-     ============================================================ */
+      /* ===========================================================
+         § TOKENS — 来自 design.md §8（token 程序输出 + Append CSS）
+         - :root tokens（palette / typography / shape / chrome）
+         - [data-variant="..."] 覆盖（dark / lite）
+         - design.md §8 Append CSS：chrome 8 锚点位置 / chrome-rule
+           三档模式 / page-shell + dark gradient / archive-* abs
+           钉位 selector（P1-P9 整套）
+         =========================================================== */
       :root {
         --canvas-bg: #1a1a1a;
         --chrome-bg: #0d0d0d;
@@ -939,9 +944,10 @@
       }
       /* dark 用 bar-chart 默认 var(--foreground) */
 
-      /* ============================================================
-     ⬇ 来自 chrome/runtime.md
-     ============================================================ */
+      /* ===========================================================
+         § RUNTIME CSS — canonical（来源 framework/deck.html，不要在此改）
+         framework 一旦更新，此段需重新同步过来
+         =========================================================== */
 
       :root {
         --fit-scale: 1;
@@ -1459,6 +1465,12 @@
         </aside>
 
         <main class="canvas" id="canvas">
+          <!-- ===========================================================
+               § SLIDES — 来自 content.md（每页一个 .slide-shell）
+               每个 .page-shell 必须有 data-title="..."（O 键 / NEXT 卡用）
+               应内嵌 <div class="notes">…</div>（S 键 SCRIPT 卡读取）
+               =========================================================== -->
+
           <!-- ═══════════════════════════════ P1 — Cover ═══════════════════════════════ -->
           <div class="slide-shell active" data-slide-index="0">
             <section
@@ -2255,6 +2267,12 @@
     </div>
 
     <script>
+      /* =========================================================
+         § RUNTIME JS — canonical（来源 framework/deck.html，不要在此改）
+         含：翻页 / hash 深链 / preview / present / overview / 演讲者窗口
+             / 数字键 / 滚轮 / fit-scale / 打印 / 主题循环
+         framework 一旦更新，此段需重新同步过来
+         ========================================================= */
       (function () {
         // ===== 状态 =====
         const slides = Array.from(document.querySelectorAll(".slide-shell"));
