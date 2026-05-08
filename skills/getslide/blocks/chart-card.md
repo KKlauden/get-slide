@@ -78,7 +78,7 @@ related: ["chart-line-default (components/, reference 样板)"]
 
 ## Constraints
 
-- 父是 page-shell（block 自身 abs 钉位）
+- **chart-card 必须直接是 `.page-shell` 的子元素**——不可塞进 `.page-content` 内。原因：`.page-content` 默认无 `position: relative`，chart-card 的 `position: absolute` 会跳过它落到 `.page-shell`，造成 DOM 嵌套语义跟视觉分层不一致；另外 page-content 的 `data-layout="strict"` 网格也不该把 abs 块算入
 - SVG 容器固定 1664 × 400（width 1664 = 1920 - 96×2 - 32×2 padding；height 400 = block 内固定档位）
 - legend 仅 2 项（primary + secondary）—— 多于 2 项需求该用 bar-chart 而非 chart-line-default
 

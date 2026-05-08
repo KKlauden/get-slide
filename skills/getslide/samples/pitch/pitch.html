@@ -448,6 +448,41 @@
   /* sidebar toggle */
   body.no-sidebar .sidebar { display: none; }
 
+  /* ============ PRINT (PDF) ============ */
+  @media print {
+    @page { size: 1920px 1080px; margin: 0; }
+    /* print-color-adjust 必须挂 selector，裸写会被 drop —— 否则 dark/accent 主题印成白底 */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    html, body { height: auto; overflow: visible; background: var(--background); }
+    .topbar, .sidebar, .thumb-rail { display: none !important; }
+    .app, .layout, .canvas {
+      display: block !important;
+      position: static !important;
+      height: auto !important; width: auto !important;
+      overflow: visible !important;
+      background: var(--background) !important;
+    }
+    /* 强制所有 slide-shell 显示（不只 .active）—— v2 默认 display:none + .active 切显 */
+    .slide-shell {
+      position: relative !important;
+      display: block !important;
+      left: 0 !important; top: 0 !important;
+      transform: none !important;
+      width: 1920px !important; height: 1080px !important;
+      border-radius: 0 !important; box-shadow: none !important;
+      background: var(--background) !important;
+      page-break-after: always; break-inside: avoid;
+      margin: 0 !important;
+    }
+    .slide-shell > .page-shell {
+      transform: none !important;
+      width: 1920px !important; height: 1080px !important;
+    }
+  }
+
   /* ============================================================
      ⬇ 来自 blocks/hero-block.md
      ============================================================ */
@@ -1439,6 +1474,17 @@
   document.getElementById('toggleSidebar')?.addEventListener('click', () => {
     document.body.classList.toggle('no-sidebar');
   });
+
+  // 滚轮翻页（canvas 区域内；throttled 防触摸板连续触发）
+  let wheelLock = false;
+  canvas.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaY) < 30) return;
+    e.preventDefault();
+    if (wheelLock) return;
+    wheelLock = true;
+    setTimeout(() => { wheelLock = false; }, 400);
+    goto(current + (e.deltaY > 0 ? 1 : -1));
+  }, { passive: false });
 
   // ───── scale-to-fit ─────
   const PADDING = 32;
