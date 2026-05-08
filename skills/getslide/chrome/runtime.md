@@ -169,8 +169,9 @@ button { text-align: inherit; }
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 11px;
   padding: 1px 5px; border-radius: 3px;
-  background: rgba(255,255,255,0.18);
-  color: rgba(255,255,255,0.9);
+  /* 基于 chrome-accent-fg（按钮文字色），跨 dark/lite accent 都可见 */
+  background: color-mix(in srgb, var(--chrome-accent-fg) 14%, transparent);
+  color: color-mix(in srgb, var(--chrome-accent-fg) 80%, transparent);
   margin-left: 6px;
 }
 
