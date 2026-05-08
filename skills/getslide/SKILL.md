@@ -119,14 +119,34 @@ description: Use for any task involving a getslide v2 HTML slide deck — buildi
 
 **起点**：通读 `framework/deck.html`（HTML 骨架）+ `framework/design.md`（主题契约）+ `framework/content.md`（内容契约）。这三份是 v2 的契约，理解了再开工。
 
-新 deck 最小流程：
+### 起步路径（Pre-flight Q2 答完后决定）
+
+- **Path A: 基于现成 sample 起步**（Q2 选 **pitch** 或 **archive**）
+
+  1. **`cp samples/<theme>/design.md <my-deck>/design.md`** ——一次性拿到主题完整契约（含 §8 Append CSS 的 chrome 锚点位置 / page-shell / grid / utility classes / archive-* abs 钉位等）
+  2. 在 cp 来的 design.md 里**只改**：
+     - §1 Atmosphere（重写氛围散文匹配新主题——4 段 prose 全换）
+     - §2 Palette values（按新色调改 hex / rgba；variant 数量 + 命名一般不变）
+     - §6 Decorative signature（如果换了 motif 叙事；motif **系统**保留，**叙事文案**换）
+  3. **保留**不动：§3 Typography / §4 Shape / §5 Variants / §7 Red Lines / §8 Append CSS（全部 abs 坐标 / class 名 / utility 都跟 sample 共享）
+  4. content.md：可参考 `samples/<theme>/content.md` 的页节奏（如 archive 9 页 cover / contents / about / problem / solution / sub-solution / performance / market / closing），但**每页内容自己写**
+  5. 拼 `<my-deck>.html` 时，§ SLIDES 区可参照 `samples/<theme>/<theme>.html` 看具体 abs 坐标 / archive-* class 怎么用，**内容全新**
+
+- **Path B: 完全空白起步**（Q2 选**「都不像」**）
+
+  1. 按 `framework/design.md` 空白模板从零写 §1-§7 + §8 Append CSS（chrome 锚点 / page-shell / 是否要 grid / utility classes / motif 都自己设计）
+  2. 没有 sample 抄，更费时；考虑组合 `components/` + `blocks/` 11 个现成原子起步
+
+两条路径都进入下面的「6 步流程」。
+
+### 6 步流程
 
 1. **在用户选的位置建 deck 文件夹** `<my-deck>/`（**不**强制 samples/ 下；samples/ 是我们维护的参考样本，不是 AI 必须放新 deck 的位置）
-2. 写 `<my-deck>/design.md` 按 `framework/design.md` §1-§7 schema
-3. 写 `<my-deck>/content.md` 按 `framework/content.md` §1 schema
+2. 写 `<my-deck>/design.md`：Path A 用 cp + 局部改；Path B 按 framework/design.md schema 从零写
+3. 写 `<my-deck>/content.md` 按 `framework/content.md` §1 schema（Path A 可参照 sample content.md 的页节奏；Path B 自由）
 4. **`cp framework/deck.html <my-deck>/<my-deck>.html`**——一次性拿到全部 chrome 运行时
 5. 在 `<my-deck>.html` 里只编辑两块：
-   - **§ TOKENS** 块（`:root { ... }`）：用 `framework/design.md` §8 程序代入 design.md 的值
+   - **§ TOKENS** 块（`:root { ... }`）：用 `framework/design.md` §8 程序代入 design.md 的值 + 把 design.md §8 Append CSS 整段贴在 `:root` 块下方（Path A 是从 cp 的 design.md 直接拿；Path B 是自己写的）
    - **§ SLIDES** 块：按 content.md 每页生成一个 `<div class="slide-shell">`，每个 page-shell 必填 `data-title` + `<div class="notes">`
    - `<title>` 改成 deck 名 / topbar 中 `<span class="title">` 改成 deck 名
    - **§ RUNTIME CSS / § RUNTIME JS 块完全不动**——它们是 canonical，碰一行就坏
