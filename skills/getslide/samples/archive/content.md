@@ -2,7 +2,7 @@
 title: Faultline — Autonomous Geological Intelligence Network
 author: kklauden
 date: 2026-05-08
-theme: ./spec.md
+theme: ./design.md
 brand: "Faultline"
 ---
 
@@ -37,6 +37,18 @@ brand: "Faultline"
     FOR GLOBAL INFRASTRUCTURE
     ```
   - 背景：dark variant 默认 gradient（中间晕染散开）
+- **notes**: |
+    开场白：大家好，今天我想用十分钟的时间，介绍一下
+    <strong>FAULTLINE</strong> 在做的事——一个面向全球关键基础设施的
+    <strong>实时地质风险情报网络</strong>。
+
+    先做一个简单类比：现在所有大型工程项目都装了大量传感器，
+    但传感器读数是<strong>孤岛式</strong>的——大坝有自己的监控系统，
+    桥梁有自己的，地铁有自己的，没有人在做横向关联。我们要解决的
+    就是这个"孤岛"问题。
+
+    接下来，我会先讲三个数据点说明问题的<strong>规模</strong>，
+    然后看我们的产品怎么落地，最后用全球部署情况说明我们已经到的位置。
 
 ## P2 — Contents
 
@@ -179,6 +191,16 @@ brand: "Faultline"
     - col2 `data-tone="muted-light"`: `520K` / `DEPLOYMENT` / `Field-active nodes integrated with operator systems.` / 16 bars `--bar-fill: 52%`
     - col3 `data-tone="muted-mid"`: `890K` / `CONTINENTAL` / `Cross-border mesh coverage of high-risk zones.` / 16 bars `--bar-fill: 70%`
     - col4 `data-tone="dark"`: `1.4M` / `PLANETARY` / `Unified observation grid powered by FAULTLINE.` / 16 bars `--bar-fill: 95%`
+- **notes**: |
+    收尾页：用三个递进的<strong>数量级</strong>来收束：从 LOCAL 部署的
+    230 台站，到 REGIONAL 的 14K 台，再到我们的远期目标——<strong>1.4M
+    行星级网格</strong>。
+
+    每一个数量级的跨越，背后都是不同的技术挑战：LOCAL 解决的是"有没有"，
+    REGIONAL 解决的是"互联互通"，PLANETARY 要解决"全球统一观测"。
+
+    我们今天处于 REGIONAL 阶段的中段。如果对 FAULTLINE 在做的事感兴趣，
+    欢迎下来聊。<strong>谢谢。</strong>
 
 ---
 

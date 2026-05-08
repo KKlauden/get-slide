@@ -520,7 +520,7 @@ od:
 | C. T 键主题循环 | P1 | Step 16 | 5 行 runtime |
 | D. O 键 Overview | P1 | Step 16 | 30 行 runtime + CSS |
 | E. `#/N` + `?preview=N` | P0 | Step 16 | A 的前置依赖（preview iframe 必需）|
-| F. DESIGN.md 格式升级 | P1 | ✅ framework/design.md + content.md skeleton 已落地（2026-05-08）；samples 迁移待批 | framework/ 三件套就位 |
+| F. DESIGN.md 格式升级 | P1 | ✅ 完整落地（2026-05-08）：framework/{design,content}.md skeleton + pitch/archive 两 sample 已迁移 spec.md → design.md（§1-§8 schema），content.md frontmatter 同步 | framework/ 三件套就位 |
 | G. block 去前缀 | P1 | Step 14 完成后整理 | 跟 archive sample 收尾一起做 |
 | H. 3 问预飞 workflow | P2 | SKILL.md rewrite 时（Step 8 决议项）| 文档而非代码 |
 | I. `od:` frontmatter | P3 | 发布 skill 前 | 未定 |

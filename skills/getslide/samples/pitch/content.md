@@ -2,7 +2,7 @@
 title: Pitch deck
 author: kklauden
 date: 2026-05-08
-theme: ./spec.md
+theme: ./design.md
 brand: "Pitch."
 brand-letter: "P"
 copyright: "© Brand, Inc<br>All Rights Reserved"
@@ -10,7 +10,7 @@ copyright: "© Brand, Inc<br>All Rights Reserved"
 
 # Pitch Deck
 
-V2 pitch spec 完整 9 页 deck — 验证全栈 chrome ring + hero-block + ambient-frames + contact-list + cards-row + pitch-card + solution-staggered + pill-highlight + feature-grid + stat-split + compare-stagger + chart-card + chart-line-default + pricing-3up。
+V2 pitch design 完整 9 页 deck — 验证全栈 chrome ring + hero-block + ambient-frames + contact-list + cards-row + pitch-card + solution-staggered + pill-highlight + feature-grid + stat-split + compare-stagger + chart-card + chart-line-default + pricing-3up。
 
 **Variant 节奏**：lite → dark → forest → lite → dark → forest → forest → lite → lite
 
@@ -34,11 +34,22 @@ V2 pitch spec 完整 9 页 deck — 验证全栈 chrome ring + hero-block + ambi
   - top-right: `© Brand, Inc<br>All Rights Reserved`
   - bottom-left: `Pitch`
   - bottom-right: `01`
+- **notes**: |
+    开场白：大家好。今天我想用八分钟的时间，介绍一份我们做了两年的
+    **生产力工具**——它跟你用过的所有 productivity tool 都不一样。
+
+    先抛一个反直觉的观察：现在市面上每一个生产力工具，本质上都在
+    **训练你分心**——push 通知、活跃度仪表盘、聊天 + 文档 + 看板
+    的多窗口切换……我们盯着这些屏幕越久，**真正完成的事反而越少**。
+
+    接下来 9 页，我会按这个顺序讲清楚：第一段讲<strong>问题的本质</strong>，
+    第二段讲<strong>我们的方案</strong>，第三段讲<strong>数据验证</strong>，
+    最后讲价格和怎么开始。
 
 ## P2 — Problem
 
 - **block**: cards-row (3 列) + pitch-card × 3 (num + label，无 icon/body)
-- **variant**: dark（forest green cards on black bg，spec selector override）
+- **variant**: dark（forest green cards on black bg，design.md §8 selector override）
 - **grid 模式**: flow
 - **content**:
   - title: `Productivity is broken.<br>Here's why.` (font-size 64px, line-height 1.2, h1-12)
@@ -182,6 +193,18 @@ V2 pitch spec 完整 9 页 deck — 验证全栈 chrome ring + hero-block + ambi
   - hero-block(`--top`): `.h1-9 .v3-8`（左上, `align-self: start`）
   - ambient-frames: 容器 `top: 180; right: -237`（cover 整体下移 480px，字母 P 从 slide 下沿溢出）
 - **chrome**: `09` page-number
+- **notes**: |
+    收尾页：用三句话收束。<strong>第一</strong>，我们的产品反对当下
+    productivity tool 的所有默认设置——通知默认关、仪表盘看交付不看活跃、
+    一个窗口一个目标。
+
+    <strong>第二</strong>，数据证明这个方向是对的：用户平均每天找回
+    <strong>4 小时</strong>专注时间；周交付目标命中率 <strong>92%</strong>，
+    是其他工具的两倍多。
+
+    <strong>第三</strong>，今天不需要做决定。如果上面任何一点引起共鸣，
+    页面右上有联系方式——<strong>email / phone / web</strong> 三选一，
+    都能直接到我。<strong>谢谢。</strong>
 
 ---
 

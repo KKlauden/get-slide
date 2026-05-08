@@ -512,9 +512,26 @@ body {
 - `{{chrome.X}}` → §2 Chrome Runtime 区段的 X
 - `{{#each variants}}...{{/each}}` → 对每个 variant 重复渲染块
 
-### Component-level overrides（如果 §6 有声明）
+### Append CSS（每份 design.md 必须 append，手抄不模板化）
 
-§6 Decorative signature 提到的"主题级 component bend"（如 pitch 主题 `[data-variant="dark"] .pitch-card`），单独 append 到 :root 块下方，**手抄不模板化**。
+§8 模板只生成 token + base reset，下面这些层是**主题级布局原语**——每份主题的位置 / 网格 / 装饰都不同，framework 不替你抽。design.md 末尾用 **一个** ` ```css ` fenced block 写完，AI 拼 sample.html 时**一字不差**贴在生成的 `:root` 块下方。
+
+按这个顺序写：
+
+1. **Chrome 8 锚点位置 CSS**（如果想 chrome ring 可见）
+   `.chrome-top-left / -top-right / -bottom-left / -bottom-right` 四条 + `.chrome-rule` 一条。来自 §6 Chrome Ring 决议。framework/deck.html 已经给 `.chrome-rule` 一个 `border: 0; margin: 0; height: 0` 的兜底，想画线就在这里 override 回来
+2. **`.page-shell` 内边距 / overflow**
+   framework/deck.html 已经给了 1920×1080 + 居中 transform，design.md 在这里只补 `padding / position / overflow` 等
+3. **`.page-content` 容器 + grid 模式**（如果 §4 有 Grid）
+   12×N 严格 grid + flow mode 双轨（参考 pitch）。某些主题用 flexbox 单流就够，可省
+4. **Utility classes**（可选）
+   如 `.h1-9` / `.v3-8` 这类 grid-column / row 工具类，仅当主题用 strict grid 才需要
+5. **Component-level overrides**（如果 §6 Decorative signature 有声明）
+   主题级 component bend，如 pitch `[data-variant="dark"] .pitch-card { background: #0d2a25; }`
+6. **Decorative motif inline CSS**（如果 §6 用了 M18/M20 等装饰）
+   如 `.ambient-frame` SVG 容器、`.pill-highlight` background 等
+
+**铁律**：**只**这一段是 design.md 里的 raw CSS。其他章节（§1-§7）都不能写 CSS——值是值，散文是散文。
 
 ---
 
@@ -639,18 +656,45 @@ version: 0.1.0
 
 ## §7 Red Lines
 - **<禁忌>** — [理由]
+
+## §8 Append CSS
+
+```css
+/* 1. Chrome 8 锚点位置（如果 §6 chrome ring 想可见） */
+.chrome-top-left    { /* top / left / font / color */ }
+.chrome-top-right   { /* top / right / font / color */ }
+.chrome-rule        { /* border-top / margin / height */ }
+.chrome-bottom-left { /* bottom / left / font / color */ }
+.chrome-bottom-right{ /* bottom / right / font / color */ }
+
+/* 2. .page-shell 内边距 / overflow */
+.page-shell { /* position / padding / overflow */ }
+
+/* 3. .page-content 容器 + grid 模式（如果 §4 有 Grid） */
+.page-content { /* display: grid; columns/rows/gap */ }
+.page-content[data-layout="flow"] { /* flow override */ }
+
+/* 4. Utility classes（可选 — 仅当用 strict grid） */
+/* .h1-9 { grid-column: 1 / 9; }
+   .v3-8 { grid-row: 3 / 9; } */
+
+/* 5. Component-level overrides（如果 §6 Decorative 有声明） */
+
+/* 6. Decorative motif inline CSS（如果 §6 用了 M18/M20 等装饰） */
+```
 ```
 
 ---
 
 ## Constraints（不可违反）
 
-- **design.md 不放 CSS 代码**——只放值 + prose。CSS 由 §8 程序生成
+- **design.md 只有一处放 CSS** —— §8 Append CSS 段。其他章节（§1-§7）只放值 + prose
 - **token 命名对齐 shadcn**（15 个标准名锁死）
 - **不设 component 二级 alias**（不要 `--card-bg / --card-padding-x`）
 - **每段 Atmosphere 必须有具体值锚定**（不允许 floating prose 像"现代清爽"）
 - **palette 必须列全 variant × token 矩阵**——chrome 模板有 14 token × N variant，缺 1 行 CSS 漏 1 行
 - **chrome runtime 7 token 在 §2 末尾必填**（含 `--canvas-bg / --chrome-*`）
+- **§8 Append CSS 段顺序固定 6 槽**（chrome 锚点 → page-shell → page-content → utility → component overrides → motif），按需填，无内容的留空注释
 
 ## Why
 
