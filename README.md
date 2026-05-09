@@ -41,24 +41,34 @@ Update later: `cd get-slide && git pull && cp -r skills/getslide ~/.claude/skill
 
 (Or symlink instead of cp: `ln -s "$PWD/get-slide/skills/getslide" ~/.claude/skills/getslide` — `git pull` then propagates without re-cp.)
 
-### Option B — Project-local (Codex / Cursor / Gemini / pinned CC version)
+### Option B — Project-local (per agent, or pinned version)
 
-Install into a deck project (useful for non-CC agents, or to pin a getslide version per project):
+Each agent has its own project-local skill discovery path — `cp` the bundle to whichever path matches your agent. You can install to multiple paths if the project will be opened by different agents.
+
+| Agent | Auto-discovers SKILL.md? | Project-local path |
+|---|---|---|
+| **Claude Code** | ✓ via SKILL.md frontmatter | `.claude/skills/getslide/` |
+| **Codex** | ✓ via SKILL.md frontmatter | `.codex/skills/getslide/` |
+| Cursor / Gemini / others | no native skill system | any path + protocol-file reference (see below) |
 
 ```bash
 cd my-deck-project
 git clone https://github.com/KKlauden/get-slide.git ../get-slide
-mkdir -p .claude/skills
-cp -r ../get-slide/skills/getslide .claude/skills/getslide
+
+# Claude Code:
+mkdir -p .claude/skills && cp -r ../get-slide/skills/getslide .claude/skills/getslide
+
+# Codex:
+mkdir -p .codex/skills && cp -r ../get-slide/skills/getslide .codex/skills/getslide
 ```
 
-Then add to your project's agent protocol file (`AGENTS.md` / `GEMINI.md` / `.cursor/rules/`):
+Restart the agent after install — skills are loaded at session start.
+
+**For Cursor / Gemini / other agents without skill auto-discovery**, copy the bundle anywhere (e.g. `./skills/getslide/`) and reference SKILL.md from your protocol file (`AGENTS.md` / `GEMINI.md` / `.cursor/rules/`):
 
 ```
-When asked to build a slide deck, read ./.claude/skills/getslide/SKILL.md and follow it.
+When asked to build a slide deck, read ./skills/getslide/SKILL.md and follow it.
 ```
-
-(Claude Code reads `.claude/skills/` automatically — for CC users, the protocol line is optional.)
 
 ## Build your first deck
 
