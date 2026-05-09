@@ -196,7 +196,7 @@ A 9-page fictional deck in the `archive` theme (industrial system pitch / file-a
 - **notes**: |
     Closing: wrap up with three escalating <strong>orders of magnitude</strong> —
     from LOCAL deployment at 230 stations, to REGIONAL at 14K stations, and our
-    long-range goal — <strong>1.4M planetary grid</strong>.
+    long-term goal — <strong>1.4M planetary grid</strong>.
 
     Each leap between magnitudes is a different technical challenge: LOCAL
     solves "do they exist", REGIONAL solves "are they connected",

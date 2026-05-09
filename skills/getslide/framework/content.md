@@ -135,7 +135,7 @@ The `notes` sub-field on every page carries the presenter verbatim. **All three 
 ### Rule 1: prompts, not a script
 
 ❌ **Wrong** (full script — the presenter would read it aloud):
-> Hello everyone, my name is Zhang San. Today I'd like to introduce FAULTLINE. FAULTLINE is a company that builds geological monitoring; our mission is to provide real-time risk intelligence for global critical infrastructure. We have already deployed over 14,000 sensors across 47 countries...
+> Hello everyone, my name is Alex. Today I'd like to introduce FAULTLINE. FAULTLINE is a company that builds geological monitoring; our mission is to provide real-time risk intelligence for global critical infrastructure. We have already deployed over 14,000 sensors across 47 countries...
 
 ✅ **Right** (key terms + transition sentences — hooks for the presenter):
 > Opening: today's intro is **FAULTLINE** — a **real-time geological risk intelligence network** for global critical infrastructure.
@@ -162,7 +162,7 @@ Too short → the presenter loses the thread; too long → it becomes a script. 
 | In summary | All in all |
 | In view of | Given |
 | Aims to | Wants to |
-| We will, on... | We're going to |
+| Should you require | If you need |
 
 Spoken style also implies: short sentences first (< 25 chars / ≈ 15 words per sentence), clear subject-verb-object without circumlocution.
 
