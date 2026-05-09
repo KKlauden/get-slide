@@ -8,28 +8,60 @@ description: Theme design contract — teaches the AI how to author a new design
 
 > One of the framework triplet: **runtime / design / content**. This document is not a specific theme — it is the standard for "how to author a theme."
 >
-> Every new deck drops one `design.md` into its own project folder (it does **not** have to live under `samples/`; the AI puts the folder wherever the user picks), and **strictly follows §1 – §7 of the schema below**. CSS is **not** hand-written inside `design.md` — when assembling the deck HTML, §8 below auto-generates the CSS and substitutes it into the `§ TOKENS` block of `framework/deck.html`.
+> Every new deck drops one `design.md` into its own project folder, **strictly follows §1 – §7 of the schema below**, and starts with a `> Source: ...` line declaring the reference (image / URL / brand spec) the theme was built from.
+>
+> CSS is not hand-written inside `design.md`. When assembling the deck HTML, §8 substitutes the design.md values into `framework/design-tokens-template.css` and the result is inlined under the `§ TOKENS` block of `framework/deck.html`.
 
 ## What this document does
 
-The design layer is the **theme primitives layer** in the 4-layer architecture. The visual character of a deck — what color, what typeface, what shape, how the decorative system is organized — is settled once and for all by `design.md`.
+The design layer is the **theme primitives layer** in the 4-layer architecture. The visual character of a deck — what color, what typography, what shape, how the decorative system is organized — is settled once and for all by `design.md`.
 
-Every deck's `design.md` (sitting next to `content.md` and `<deck>.html` in the same folder) contains:
-- A short **Atmosphere** essay (so the AI can intuitively know which direction to take when authoring a new slide)
-- **Value tables** (palette / type / shape, pure numbers and strings, no CSS)
-- **Decorative signature** (rules describing the theme-specific visual systems)
-- **Red lines** (theme-specific taboos)
+Every deck's `design.md` (next to `content.md` and `<deck>.html`) contains:
+- A short **Atmosphere** essay (so the AI can intuitively know the direction when authoring a new slide)
+- **Value tables** (palette / type / shape — pure numbers and strings, no CSS)
+- **Decorative signature** (rules describing theme-specific visual systems)
+- **Do's and Don'ts** (positive + negative theme rules)
+- **Known Gaps** (what this design.md does NOT cover)
+
+## Files in this folder
+
+`design.md` works alongside two adjacent files. They are **3 stages of one workflow**, never read in parallel:
+
+| File | Read when | How |
+|---|---|---|
+| **`design.md`** (this file) | Learning the schema for authoring a new theme | Read once to understand §1 – §7 |
+| **`design-blank-template.md`** | Starting a new theme | `cp framework/design-blank-template.md <my-deck>/design.md`, then fill section by section |
+| **`design-tokens-template.css`** | Assembling deck HTML | Substitute the deck's design.md values into `{{...}}` placeholders, inline the rendered CSS as a `<style>` block under the `§ TOKENS` block of `framework/deck.html` |
+
+The split exists so each file has a single content type (prose teaching / cp-ready scaffold / machine-readable CSS template). For an existing theme, you only ever touch the deck's own `design.md` — the framework triplet is reference.
 
 ## How to use
 
 **Authoring a new theme**:
-1. Read §1 – §7 below (the schema tells you what to fill into each section)
-2. Read the "Atmosphere writing guide" at the bottom (learn how to write §1 well)
-3. Copy the "Blank template" at the bottom into `<my-deck>/design.md` (under your new deck folder)
+1. Read §1 – §7 below
+2. Read the "Atmosphere writing guide" in §1
+3. `cp framework/design-blank-template.md <my-deck>/design.md`
 4. Fill section by section
-5. Assemble the deck HTML: `cp framework/deck.html <my-deck>/<my-deck>.html`, then run §8 to substitute design.md values → replace the `§ TOKENS` block of `deck.html`
+5. Assemble the deck HTML: `cp framework/deck.html <my-deck>/<my-deck>.html`, then run §8 to substitute values into `framework/design-tokens-template.css` → replace the `§ TOKENS` block of `deck.html`
 
 **Authoring a new slide**: read this deck's `design.md` §1 Atmosphere first — that decides what the page "looks like" — then pull values from §2 – §6.
+
+## Token reference syntax
+
+In prose throughout `design.md` (and other docs), reference tokens by **dotted namespace**:
+
+| Namespace | Maps to | Example |
+|---|---|---|
+| `{colors.X}` | palette token `--X` | `{colors.primary}` → `var(--primary)` |
+| `{type.size.X}` | size token `--text-X` | `{type.size.4xl}` → `var(--text-4xl)` |
+| `{type.family.X}` | family token `--font-X` | `{type.family.body}` → `var(--font-body)` |
+| `{shape.radius.X}` | radius token `--radius-X` | `{shape.radius.full}` → `var(--radius-full)` |
+| `{shape.space.N}` | spacing token `--space-N` | `{shape.space.4}` → `var(--space-4)` |
+| `{chrome.X}` | chrome runtime token `--chrome-X` | `{chrome.border}` → `var(--chrome-border)` |
+
+**Why** `{...}` instead of `var(--...)` in prose: token paths survive renames via grep; `var(--accent)` decisions live in CSS muscle memory and don't surface in design intent. Prose using token paths makes the design searchable.
+
+In the **§8 CSS template** (`framework/design-tokens-template.css`), the substitution syntax is **double-brace `{{...}}`** (Handlebars-style) — that is the generator's substitution marker. Don't confuse the two: `{}` for prose; `{{}}` for code template substitution.
 
 ---
 
@@ -42,17 +74,21 @@ Every deck's `design.md` (sitting next to `content.md` and `<deck>.html` in the 
 | Paragraph | What to talk about |
 |---|---|
 | 1 | **Overall character** — imagery, metaphor, mood, period feel. Place the reader inside the design's "mood" |
-| 2 | **Role of typography** — what font family was picked and why; how the type works (weight / tracking / letterform width) |
-| 3 | **Color logic** — monochrome / two-color / multi-color? Is the accent restrained or bold? Distribution of light and dark |
+| 2 | **Voice of typography** — what font family was picked and why; how the type works (weight / tracking / letterform width) |
+| 3 | **Color logic** — monochrome / two-color / multi-color? Restrained or bold accent? Distribution of light and dark |
 | 4 | **Decorative style** (optional) — decorative elements, spatial logic, special techniques (grid / shadow / glass / background grid pattern) |
 
 End with **Key Characteristics**: 5-10 bullets distilling the prose's key points, **a quick reference for downstream AI**.
 
-### Three things to avoid when writing
+### Anti-patterns
 
-- **Avoid sprawl** — each paragraph stays on one topic, no cross-mixing
-- **Avoid emptiness** — must give concrete values. Not "slightly blue", but "barely-blue (`#08090a`), the blue is almost imperceptible"
-- **Avoid bullets-as-prose** — bullets are a closing, not an opener. Use sentences first to convey the feel, then summarize with bullets
+❌ **Sprawl** — each paragraph wanders. Each paragraph stays on one topic; no cross-mixing.
+
+❌ **Empty prose** — adjectives without anchors. Not "slightly blue", but **"barely-blue (`#08090a`), the blue is almost imperceptible"**.
+
+❌ **Bullets-as-prose** — bullets ARE the closing summary, not the opener. Sentences first to convey the feel, then bullets to summarize.
+
+❌ **Universal flattery** — "modern / clean / professional / elegant" works for any theme. Zero information.
 
 ### Example (excerpt from linear-app)
 
@@ -60,132 +96,110 @@ End with **Key Characteristics**: 5-10 bullets distilling the prose's key points
 >
 > The typography system is built entirely on Inter Variable with OpenType features `"cv01"` and `"ss03"` enabled globally, giving the typeface a cleaner, more geometric character. Inter is used at a remarkable range of weights — from 300 (light body) through 510 (medium, Linear's signature weight) to 590 (semibold emphasis). The 510 weight is particularly distinctive: it sits between regular and medium, creating a subtle emphasis that doesn't shout.
 
-Why this passage works: **imagery ("starlight") + concrete values (`#08090a`) + design intent ("precision engineering") + implementation detail ("OpenType cv01")** are all in the prose. The reader feels the character *and* gets exact numbers.
-
-### Example (excerpt from apple)
-
-> Apple's website embodies a refined, premium aesthetic that prioritizes content over chrome — a near-pure-white canvas (`rgb(251, 251, 253)`) with deep black text creating maximum contrast and readability. The design philosophy is one of "design is how it works" — invisible craftsmanship where every element serves the content.
-
-Why this passage works: a single slogan ("design is how it works") becomes the spine, and the whole philosophy wraps around it. **No need to pile up adjectives** — picking the right anchor phrase beats stacking ten of them.
-
-### Anti-patterns (don't write like this)
-
-❌ **Bullets-only**:
-> - Dark mode native
-> - Inter font
-> - Indigo accent
-
-The reader has no idea why, when, or how dark.
-
-❌ **Abstract prose**:
-> The theme feels modern and clean, with a sense of professionalism and elegance.
-
-"Modern / clean / professional / elegant" is empty — any theme could claim it. **Zero information.**
+Why this passage works: **imagery ("starlight") + concrete values (`#08090a`) + design intent ("precision engineering") + implementation detail ("OpenType cv01")** all in the prose. The reader feels the character *and* gets exact numbers.
 
 ---
 
 ## §2 Palette values
 
-List tokens in role-grouped sections. One token per line, with each variant's hex plus a one-line use note.
+List tokens in role-grouped sections. Every color gets a **descriptive nickname** alongside its token, with all variant hex values listed.
 
 ### Visual-color → token mapping SOP (required reading when the user provides a reference image / description)
 
-The visual colors in the reference image cannot be mapped 1:1 to `--background` — **first decide what role each color plays in the visual**, then map it to the corresponding token. Common mistake: writing the "main color" into `--background`, which floods every slide with the main color (it should be `--canvas-bg` outside the chrome, with a neutral page background inside).
+The visual colors in a reference image cannot be mapped 1:1 to `{colors.background}` — **first decide what role each color plays in the visual**, then map it to the corresponding token. Common mistake: writing the "main color" into `{colors.background}` floods every slide with the main color (it should be `{colors.canvas-bg}` outside the chrome, with a neutral page background inside).
 
 Use this decision tree:
 
 | What you see in the reference image | What role it plays | Maps to token |
 |---|---|---|
-| **Largest area, outer frame, canvas base** | Visual environment / wrapper | `--canvas-bg` (chrome runtime token, outer viewport) |
-| **Each slide's base color** (the surface where the chrome's 4-corner text sits) | Page base | `--background` (page bg) |
-| **Card / panel / info-block backgrounds within a slide** | Card layer | `--card` (in-slide cards) |
-| **Secondary panel / inset-region background** | Secondary surface | `--secondary` (rarely used) |
-| **Body copy / hero display text** | Primary text | `--foreground` |
-| **Caption / secondary text / annotation** | Muted text | `--muted-foreground` |
-| **Brand main color / logo color / primary CTA bg** | Brand primary | `--primary` |
-| **Small bright spots: pill / chip / accent dot / emphasis stroke** | Emphasis accent | `--accent` |
-| **Error notice / warning color (≠ accent)** | Status alert | `--destructive` |
-| **Divider / hairline / card outline** | Visual separation | `--border` |
+| **Largest area, outer frame, canvas base** | Visual environment / wrapper | `{colors.canvas-bg}` (chrome runtime, outer viewport) |
+| **Each slide's base color** (where chrome's 4-corner text sits) | Page base | `{colors.background}` (page bg) |
+| **Card / panel / info-block backgrounds** | Card layer | `{colors.card}` (in-slide cards) |
+| **Secondary panel / inset region** | Secondary surface | `{colors.secondary}` (rarely used) |
+| **Body copy / hero display text** | Primary text | `{colors.foreground}` |
+| **Caption / secondary text / annotation** | Muted text | `{colors.muted-foreground}` |
+| **Brand main color / logo / primary CTA bg** | Brand primary | `{colors.primary}` |
+| **Small bright spots: pill / chip / accent dot / emphasis stroke** | Emphasis accent | `{colors.accent}` |
+| **Error notice / warning color (≠ accent)** | Status alert | `{colors.destructive}` |
+| **Divider / hairline / card outline** | Visual separation | `{colors.border}` |
 
-### Example: the correct mapping for the CHASSAN reference image (olive green + cream + lime dot)
+**Hard rule**: the "main color" of a reference image is determined by **area** — the largest area is usually `{colors.canvas-bg}`, NOT `{colors.background}`. Only extremely minimal themes that genuinely flood the entire slide with the main color (e.g. archive's dark variant) should set `{colors.background}` to the main color.
 
-```
-What you see                              Wrong (V2 sub-agent did this)        Correct
-────────────────────────────────────────────────────────────────────────────────────────
-Olive drab (largest outer area)         --background: #7a8a2e ❌              --canvas-bg: #7a8a2e ✓
-                                          (result: green floods the cream)     (green sits as outer chrome viewport)
-Cream (slide base / where chrome sits)    --card: #efe7c8 ❌                    --background: #efe7c8 ✓
-Dark card (small label / pull box)        --card: #1a1f12 ✓                     --card: #1a1f12 ✓
-Bright lime (dot / pill / emphasis blob)  --accent: #cfe14a ✓                   --accent: #cfe14a ✓
-```
+### Example: CHASSAN reference image
 
-**Hard rule**: the "main color" of a reference image is determined by **area** — **the largest area is usually `--canvas-bg`, not `--background`**. Only extremely minimal themes that genuinely flood the entire slide with the main color (e.g. archive's dark variant) should set `--background` to the main color.
-
-### The five required sections
-
-1. **Background Surfaces** — page canvas / panel / card / elevated / overlay
-2. **Text & Content** — primary / secondary (muted-foreground)
-3. **Brand & Accent** — primary / accent / accent-foreground
-4. **Status** — destructive / success / warning (only if used)
-5. **Border** — default border / muted border
-
-### Required format
-
-Token naming **aligns with shadcn** — the 15 standard token names are locked:
+Olive drab outer frame + cream slide base + lime emphasis dot.
 
 ```
---background  --foreground
---card        --card-foreground
---primary     --primary-foreground
---secondary   --secondary-foreground
---muted       --muted-foreground
---accent      --accent-foreground
+What you see                            Wrong (V2 sub-agent did this)        Correct
+──────────────────────────────────────────────────────────────────────────────────────
+Olive drab (largest outer area)         {colors.background}: #7a8a2e ❌      {colors.canvas-bg}: #7a8a2e ✓
+                                        (green floods the cream)              (green sits as outer chrome viewport)
+Cream (slide base / chrome host)        {colors.card}: #efe7c8 ❌             {colors.background}: #efe7c8 ✓
+Dark card (small label / pull box)      {colors.card}: #1a1f12 ✓              {colors.card}: #1a1f12 ✓
+Bright lime (dot / pill / emphasis)     {colors.accent}: #cfe14a ✓            {colors.accent}: #cfe14a ✓
+```
+
+### The five required sections (with descriptive nickname pattern)
+
+Format every entry as `**Nickname** (`{token}` — `<hex>`): use note`. List each variant's hex on an indented line.
+
+```markdown
+### Surface
+- **Cream** (`{colors.background}` — `#efe7c8`): page canvas (slide base color)
+  - lite:   `#efe7c8`
+  - dark:   `#0a0a0a`
+- **Olive Drab** (`{colors.canvas-bg}` — `#7a8a2e`): outer chrome viewport
+- **Pearl** (`{colors.card}` — `#fafafc`): content container
+
+### Text & Content
+- **Ink** (`{colors.foreground}` — `#1d1d1f`): primary text
+- **Stone** (`{colors.muted-foreground}` — `#7a7a7a`): caption / secondary text
+
+### Brand & Accent
+- **Action Blue** (`{colors.primary}` — `#0066cc`): brand identity
+- **Lime** (`{colors.accent}` — `#cfe14a`): emphasis dot / pill / accent stroke
+
+### Status
+- **Alert** (`{colors.destructive}` — `#d33`): warning / error
+
+### Hairlines & Borders
+- **Hairline** (`{colors.border}` — `#e0e0e0`): visual separation
+```
+
+The 5 sections are **Surface / Text & Content / Brand & Accent / Status / Hairlines & Borders**. Token names align with shadcn (15 standard names locked):
+
+```
+--background  --foreground       --card      --card-foreground
+--primary     --primary-foreground   --secondary --secondary-foreground
+--muted       --muted-foreground   --accent    --accent-foreground
 --destructive --destructive-foreground
 --border
 ```
 
-Every token must list **the value for every variant**. Example:
-
-```markdown
-### Background Surfaces
-
-- `--background` — page canvas (slide base color)
-  - lite:   `#f0f0f0`
-  - dark:   `#0a0a0a`
-  - forest: `#0d2a25`
-- `--card` — content container
-  - lite:   `#f0f0f0`              (transparent over background)
-  - dark:   `rgba(0, 0, 0, 0.30)`  (semi-transparent black, layers another shade onto a dark base)
-  - forest: `rgba(0, 0, 0, 0.24)`
-```
-
-After all 5 sections × 15 tokens × N variants are filled in, **the chrome runtime's 7 default-value tokens go here too**:
+After all 15 tokens × N variants are filled, **the chrome runtime's 7 tokens go at the end of §2**:
 
 ```markdown
 ### Chrome Runtime (invariant across variants)
-
-- `--canvas-bg`        — `#dcdcdc`            (outer canvas, outside the sidebar)
-- `--chrome-bg`        — `#f0f0f0`            (sidebar / topbar base)
-- `--chrome-fg`        — `var(--foreground)`  (points back to palette)
-- `--chrome-muted-fg`  — `var(--muted-foreground)`
-- `--chrome-border`    — `var(--border)`
-- `--chrome-accent`    — `var(--accent)`
-- `--chrome-accent-fg` — `var(--accent-foreground)`
+- `{colors.canvas-bg}` — `<hex>` (outer canvas, outside the sidebar)
+- `{colors.chrome-bg}` — `<hex>` (sidebar / topbar base)
+- `{colors.chrome-fg}` — `var(--foreground)` (points back to palette)
+- `{colors.chrome-muted-fg}` — `var(--muted-foreground)`
+- `{colors.chrome-border}` — `var(--border)`
+- `{colors.chrome-accent}` — `var(--accent)`
+- `{colors.chrome-accent-fg}` — `var(--accent-foreground)`
 ```
 
 ### Required to follow
 
-- All 15 tokens × all variants must be listed; if one is missing, the §8 generator loses a row of CSS
+- All 15 tokens × all variants must be listed; missing one means the §8 generator loses a row of CSS
 - CSS functions (`rgba` / `color-mix`) are valid values
-- Notes (parenthetical explanations) go after the value
+- Notes (parenthetical explanations) go after the value, not before
 
 ---
 
 ## §3 Typography values
 
-### Required
-
-#### Font Family
+### Font Family
 
 ```markdown
 - **Primary** (display + body usually share one family): `Cabinet Grotesk`, `Geist`, `Inter`, `-apple-system`, `BlinkMacSystemFont`, `"Segoe UI"`, `"PingFang SC"`, `"Hiragino Sans GB"`, `"Microsoft YaHei"`, sans-serif
@@ -195,86 +209,71 @@ After all 5 sections × 15 tokens × N variants are filled in, **the chrome runt
 
 The CJK fallback chain **must** include at least one of `"PingFang SC"` / `"Hiragino Sans GB"` / `"Microsoft YaHei"`.
 
-#### Size scale + use case
+### Type Scale
 
-```markdown
-- `--text-xs`    16px  — caption / label / micro UI
-- `--text-sm`    18px  — body small
-- `--text-md`    22px  — body
-- `--text-lg`    32px  — h3 / card title
-- `--text-xl`    44px  — h2
-- `--text-2xl`   76px  — display small
-- `--text-3xl`   88px  — display
-- `--text-4xl`  120px  — hero / cover only
-```
+A unified ladder with 8 steps. Each row gives a **role name** (used in prose), a **token** (the technical handle), and 5 number columns. The values below are typical for a 1920×1080 slide canvas — each design.md may reset specific rows, but the ladder shape (8 sizes, 4xl largest) is fixed.
 
-Each step **must include a use case** — tells downstream AI which step belongs on which page.
+| Token | Role Name | Size | Weight | Leading | Tracking | Use Case |
+|---|---|---|---|---|---|---|
+| `{type.size.4xl}` | **Hero Display** | 120px | 700 | 1.05 | -0.02em | hero / cover only |
+| `{type.size.3xl}` | **Display** | 88px | 600 | 1.05 | -0.02em | section opener |
+| `{type.size.2xl}` | **Display Small** | 76px | 600 | 1.10 | -0.02em | medium display |
+| `{type.size.xl}` | **H2 / Display LG** | 44px | 600 | 1.15 | -0.015em | h2 heads |
+| `{type.size.lg}` | **H3 / Card Title** | 32px | 600 | 1.15 | -0.015em | h3 / card title |
+| `{type.size.md}` | **Body** | 22px | 400 | 1.55 | 0 | body paragraph |
+| `{type.size.sm}` | **Body Small / Caption** | 18px | 400 | 1.4 | 0 | body small |
+| `{type.size.xs}` | **Fine Print / Label** | 16px | 500 | 1.4 | 0.05em | label / micro UI |
 
-#### Weight scale
+In prose throughout the deck and other docs: **reference role names** (`use Body for paragraph copy; Hero Display for cover`). Role names are how humans / AIs talk about hierarchy; the token is just the technical handle.
 
-```markdown
-- `--weight-normal`     400  — body default
-- `--weight-medium`     500  — UI label / nav
-- `--weight-semibold`   600  — title / strong emphasis
-- `--weight-bold`       700  — display only
-```
-
-#### Leading + tracking scale
-
-```markdown
-**Leading** (line-height)
-- `--leading-tight`   1.05  — display large type
-- `--leading-snug`    1.15  — h2-h3
-- `--leading-normal`  1.4   — UI text
-- `--leading-body`    1.55  — body paragraph
-
-**Tracking** (letter-spacing)
-- `--tracking-tight`  -0.02em  — auto-tighten at large sizes
-- `--tracking-snug`   -0.015em — slight tighten at mid sizes
-- `--tracking-normal`  0       — default
-- `--tracking-wide`    0.22em  — eyebrow / kicker
-```
+Each step **must include a use case** in your design.md — tells downstream AI which step belongs on which page.
 
 ### Principles — write 3-5
 
-Talk about **how this scale is used**, not what the values are. For example:
+Talk about **how the scale is used**, not what the values are. Examples:
 
-```markdown
-- **compress at scale** — the larger the type, the tighter the tracking (-0.02em @ 120px, 0 @ 22px). Display uses tight letter-spacing to amplify the "engineering" feel
-- **single weight system** — most UI uses medium (500); emphasis uses semibold (600). Bold (700) is hero-only, to avoid "weight noise"
-- **leading inversely follows size** — display 1.05 (tight) → body 1.55 (open). Large type is already emphatic, so line-height tightens; small type needs air
-```
+- **Compress at scale** — the larger the type, the tighter the tracking (`-0.02em` @ 120px, 0 @ 22px). Display uses tight letter-spacing to amplify the "engineering" feel
+- **Single weight system** — most UI uses medium (500); emphasis uses semibold (600). Bold (700) is hero-only, to avoid "weight noise"
+- **Leading inversely follows size** — display 1.05 (tight) → body 1.55 (open). Large type is already emphatic, so line-height tightens; small type needs air
+
+### Note on Font Substitutes
+
+Proprietary or non-system primary families need fallback advice for environments without the license / custom font. State which open-source family approximates yours and what tweaks recreate the feel.
+
+Examples:
+
+- **Cabinet Grotesk → Inter**: Inter at weight 600 with `font-feature-settings: "ss03"` approximates Cabinet Grotesk's geometric character. Tighten tracking by `-0.01em` on display sizes (Cabinet runs slightly tighter than Inter's default).
+- **SF Pro → Inter**: Use `system-ui, -apple-system, BlinkMacSystemFont` first — on macOS / iOS this resolves to real SF Pro. For non-Apple platforms fall through to Inter; nudge `letter-spacing` down by `-0.01em` on display sizes; tighten body leading from `1.47` to `1.44`.
+- **Geist → Inter**: nearly identical metrics; no tracking adjustment needed. Drop weight 510 if Inter Variable isn't loaded — fall back to weight 500.
+
+If the primary IS already system / open-source (`system-ui`, Inter, etc.), this section can simply state "no substitution needed."
 
 ---
 
-## §4 Shape values (radius + spacing)
+## §4 Shape values
 
-### Radius scale
+### Spacing System
 
-```markdown
-- `--radius-sm`     16px   — tag / pill / small element
-- `--radius`        20px   — default (card / panel)
-- `--radius-full`   999px  — full pill
+A 4px base scale. Used for inter-element gaps, padding, and margins.
+
+```
+{shape.space.1}    4px
+{shape.space.2}    8px
+{shape.space.3}   12px
+{shape.space.4}   16px
+{shape.space.6}   24px
+{shape.space.8}   32px
+{shape.space.12}  48px
+{shape.space.16}  64px
+{shape.space.24}  96px
+{shape.space.32} 128px
 ```
 
-### Space scale
+Section gutters typically multiples of 24px or 48px. For the 1920×1080 canvas, edge margins land at 96px (`{shape.space.24}`).
 
-4-base scale:
+### Grid & Container
 
-```markdown
-- `--space-1`     4px
-- `--space-2`     8px
-- `--space-3`    12px
-- `--space-4`    16px
-- `--space-6`    24px
-- `--space-8`    32px
-- `--space-12`   48px
-- `--space-16`   64px
-- `--space-24`   96px
-- `--space-32`  128px
-```
-
-### Grid (if the theme has a structural grid)
+If the theme uses a structural grid (some don't — flow-only themes can skip), declare:
 
 ```markdown
 - columns: 12
@@ -286,26 +285,41 @@ Talk about **how this scale is used**, not what the values are. For example:
 - row gap: 24px
 
 **Track names** (used by `page-content data-layout="strict"`):
-- `--track-eyebrow`: 1 / 4
-- `--track-title`:   1 / 9
-- `--track-body`:    1 / 9
-- `--track-hero`:    1 / 9
-- `--track-stat`:    7 / -1
-- `--track-aside`:   9 / -1
+- `{shape.grid.track-eyebrow}`: 1 / 4
+- `{shape.grid.track-title}`:   1 / 9
+- `{shape.grid.track-body}`:    1 / 9
+- `{shape.grid.track-hero}`:    1 / 9
+- `{shape.grid.track-stat}`:    7 / -1
+- `{shape.grid.track-aside}`:   9 / -1
 ```
 
-### Shadow
+### Border Radius Scale
 
-```markdown
-- `--shadow-sm`: none           (theme bans shadows → set both to none)
-- `--shadow`:    none
+```
+{shape.radius.sm}      16px   tag / pill / small element
+{shape.radius.default} 20px   default (card / panel)
+{shape.radius.full}   999px   full pill
 ```
 
-or
+### Elevation & Depth
 
-```markdown
-- `--shadow-sm`: 0 1px 2px rgba(0, 0, 0, 0.06)
-- `--shadow`:    0 4px 12px rgba(0, 0, 0, 0.10)
+| Layer | Treatment | Use |
+|---|---|---|
+| **Flat** | no shadow, no border | Default for most slide content |
+| **Hairline** | 1px `{colors.border}` | Card outlines, dividers |
+| **Soft shadow** | `{shape.shadow.sm}` | Subtle lift if needed |
+| **Lifted shadow** | `{shape.shadow.default}` | Stronger card / hero lift |
+
+Most slide themes use **Flat or Hairline only**. Shadows are optional — themes that ban shadows should set both shadow tokens to `none`:
+
+```
+{shape.shadow.sm}      none      (theme bans shadows)
+{shape.shadow.default} none
+
+  or
+
+{shape.shadow.sm}      0 1px 2px rgba(0, 0, 0, 0.06)
+{shape.shadow.default} 0 4px 12px rgba(0, 0, 0, 0.10)
 ```
 
 ---
@@ -332,15 +346,15 @@ or
 - market sub-page P8: dark + bg-mode="market" (gradient overlay)
 - closing P9: lite (return to calm)
 
-**Invariant across variants**: chrome runtime is always light-chrome (`--chrome-bg: #f0f0f0`) —
+**Invariant across variants**: chrome runtime is always light-chrome (`{chrome.bg}` = `#f0f0f0`) —
 even when slides go dark, the sidebar stays light. Reason: editor-style consistency.
 ```
 
 ### Multi-variant design principles
 
-- **Every palette token must be filled for every variant** — `[data-variant="dark"] { ... }` must override all 15 tokens, not just `--background`
-- **Typography / shape / grid stay invariant across variants** — only the palette swaps; type sizes / radii / spacing / grid never change
-- **Variants are not color themes** — they are **mood roles**. Each variant has its own "use case", not just a "day / night" split
+- **Every palette token must be filled for every variant** — `[data-variant="dark"] { ... }` overrides all 15 tokens, not just `{colors.background}`
+- **Typography / shape / grid stay invariant** — only the palette swaps; type sizes / radii / spacing / grid never change
+- **Variants are not color themes** — they are **mood roles**. Each variant has its own use case, not just a "day / night" split
 
 ---
 
@@ -367,372 +381,129 @@ Theme-specific visual language — **chrome ring / decorative layers / emphasis 
   - `chrome-bottom-left` — footer / brand secondary
   - `chrome-bottom-right` — page number / brand letter
   - `chrome-rule` — hairline `<hr>` at 96px from the top
-- Visual: 1px hairline, color `var(--chrome-border)`, auto-follows variants
+- Visual: 1px hairline, color `{colors.chrome-border}`, auto-follows variants
 
 ### M18 Ambient Frames
 
 - Rounded-rect SVG, background decoration
 - Used only on cover and closing pages
 - Size: 1208×920 + 1572×120 stacked
-- Color: `var(--foreground)` at 8% opacity — blends in without stealing focus
+- Color: `{colors.foreground}` at 8% opacity — blends in without stealing focus
 - HTML template: `<div class="ambient-frames" data-variant="...">…</div>`
 
 ### M20 Pill Highlight
 
-- Emphasis system: pitch refuses `--accent` for tinting; emphasis lives on a pill background
-- Geometry: `padding: 4px 12px`, `border-radius: --radius-full`
+- Emphasis system: pitch refuses `{colors.accent}` for tinting; emphasis lives on a pill background
+- Geometry: `padding: 4px 12px`, `border-radius: {shape.radius.full}`
 - Usage: numbers / keywords get pill-wrapped; titles do not
-- Across variants: `background: var(--secondary)`, auto-adapts
+- Across variants: `background: {colors.secondary}`, auto-adapts
 ```
 
 ---
 
-## §7 Red Lines (taboos)
+## §7 Do's and Don'ts
 
-Theme-specific taboos — doing them breaks the character. Spell out the **reason** for each.
+Theme-specific rules — **positive guidance + taboos**. Spell out the **reason** for each.
 
-### Example
+### Do's (positive guidance)
 
-```markdown
+- **Use weight 600 for emphasis** — instead of italic (often banned), upgrade weight or pill-wrap the keyword
+- **Use the chrome runtime's 8 anchors for all metadata** — page number / brand / copyright go in chrome, not in slide content
+- **Use `{shape.space.X}` tokens for all gaps** — never inline pixel values like `padding: 18px`
+- **Use `{colors.muted-foreground}` for any caption-tier text** — keep the foreground / muted-foreground rhythm consistent
+- **Use a hairline border for "card hover" lift** — when the theme bans shadow, a 1px `{colors.border}` provides visual separation without breaking flatness
+
+### Don'ts (red lines)
+
 - **No italic** — Cabinet Grotesk has no italic glyphs, so a system fallback would break typeface consistency
-- **No chromatic accent** — `--accent` is locked to `--foreground`; emphasis comes from pill highlight, not color
-- **No shadow** — `--shadow: none`, flat aesthetic; if the theme wants "card hover" lift, use a border, not a shadow
+- **No chromatic accent** — `{colors.accent}` is locked to `{colors.foreground}`; emphasis comes from pill highlight, not color
+- **No shadow** — `{shape.shadow.default}: none`, flat aesthetic; if you want lift, use a hairline border
 - **No rounded > 24px** — radius beyond 24px enters "soft" territory, but pitch follows grotesk principles — hardness is the aesthetic
-```
+- **No inline pixel values** — every spacing, size, color must reference a token; no `padding: 23px` or `color: #1d1d1f`
 
-Why write taboos: **a future AI tempted to "add some italic emphasis" gets blocked by §7** — main slide visuals stay consistent.
+**Why pair Do's with Don'ts**: a future AI tempted to "add some italic emphasis" gets blocked by the Don't, and the matching Do tells it what to do instead. Removes the "I can't do X, so I do nothing" trap.
 
 ---
 
-## §8 CSS generation procedure (provided by framework, not duplicated per design.md)
+## §8 CSS generation procedure
 
-When assembling `sample.html`, plug the design.md §2 – §5 values into the template below to generate the inline `<style>` block of `:root` + variants.
+### Source
 
-### Template
+The token block template lives at **`framework/design-tokens-template.css`** — a single canonical CSS template with `{{...}}` placeholders. design.md does not duplicate it.
 
-```css
-/* ============ Tokens (auto-generated from design.md) ============ */
-:root {
-  /* ─────────── tokens shared across variants ─────────── */
-  --canvas-bg: {{chrome.canvas-bg}};
-  --chrome-bg: {{chrome.chrome-bg}};
-
-  /* ─────────── typography (scale) ─────────── */
-  --font-display: {{type.family.display}};
-  --font-body:    {{type.family.body}};
-  --font-mono:    {{type.family.mono}};
-
-  --text-xs:   {{type.size.xs}};
-  --text-sm:   {{type.size.sm}};
-  --text-md:   {{type.size.md}};
-  --text-lg:   {{type.size.lg}};
-  --text-xl:   {{type.size.xl}};
-  --text-2xl:  {{type.size.2xl}};
-  --text-3xl:  {{type.size.3xl}};
-  --text-4xl:  {{type.size.4xl}};
-
-  --weight-normal:    {{type.weight.normal}};
-  --weight-medium:    {{type.weight.medium}};
-  --weight-semibold:  {{type.weight.semibold}};
-  --weight-bold:      {{type.weight.bold}};
-
-  --leading-tight:   {{type.leading.tight}};
-  --leading-snug:    {{type.leading.snug}};
-  --leading-normal:  {{type.leading.normal}};
-  --leading-body:    {{type.leading.body}};
-
-  --tracking-tight:   {{type.tracking.tight}};
-  --tracking-snug:    {{type.tracking.snug}};
-  --tracking-normal:  {{type.tracking.normal}};
-  --tracking-wide:    {{type.tracking.wide}};
-
-  /* ─────────── shape (scale) ─────────── */
-  --radius-sm:   {{shape.radius.sm}};
-  --radius:      {{shape.radius.default}};
-  --radius-full: {{shape.radius.full}};
-
-  --space-1:    {{shape.space.1}};
-  --space-2:    {{shape.space.2}};
-  --space-3:    {{shape.space.3}};
-  --space-4:    {{shape.space.4}};
-  --space-6:    {{shape.space.6}};
-  --space-8:    {{shape.space.8}};
-  --space-12:   {{shape.space.12}};
-  --space-16:   {{shape.space.16}};
-  --space-24:   {{shape.space.24}};
-  --space-32:   {{shape.space.32}};
-
-  /* ─────────── grid (if the theme has one) ─────────── */
-  --grid-columns:        {{shape.grid.columns}};
-  --grid-rows:           {{shape.grid.rows}};
-  --grid-gutter:         {{shape.grid.gutter}};
-  --grid-row-gap:        {{shape.grid.row-gap}};
-  --grid-margin-x:       {{shape.grid.margin-x}};
-  --grid-margin-top:     {{shape.grid.margin-top}};
-  --grid-margin-bottom:  {{shape.grid.margin-bottom}};
-  /* + track-* as needed */
-
-  /* ─────────── elevation ─────────── */
-  --shadow-sm: {{shape.shadow.sm}};
-  --shadow:    {{shape.shadow.default}};
-
-  /* ─────────── default variant tokens (= the first variant's values) ─────────── */
-  --background:             {{palette.background.<default-variant>}};
-  --foreground:             {{palette.foreground.<default-variant>}};
-  --muted:                  {{palette.muted.<default-variant>}};
-  --muted-foreground:       {{palette.muted-foreground.<default-variant>}};
-  --border:                 {{palette.border.<default-variant>}};
-  --card:                   {{palette.card.<default-variant>}};
-  --card-foreground:        {{palette.card-foreground.<default-variant>}};
-  --primary:                {{palette.primary.<default-variant>}};
-  --primary-foreground:     {{palette.primary-foreground.<default-variant>}};
-  --secondary:              {{palette.secondary.<default-variant>}};
-  --secondary-foreground:   {{palette.secondary-foreground.<default-variant>}};
-  --accent:                 {{palette.accent.<default-variant>}};
-  --accent-foreground:      {{palette.accent-foreground.<default-variant>}};
-  --destructive:            {{palette.destructive.<default-variant>}};
-  --destructive-foreground: {{palette.destructive-foreground.<default-variant>}};
-
-  /* ─────────── chrome runtime ─────────── */
-  --chrome-fg:        {{chrome.fg}};
-  --chrome-muted-fg:  {{chrome.muted-fg}};
-  --chrome-border:    {{chrome.border}};
-  --chrome-accent:    {{chrome.accent}};
-  --chrome-accent-fg: {{chrome.accent-fg}};
-}
-
-/* ─────────── explicit variant overrides ─────────── */
-{{#each variants}}
-[data-variant="{{name}}"] {
-  --background:             {{palette.background.{{name}}}};
-  --foreground:             {{palette.foreground.{{name}}}};
-  --muted:                  {{palette.muted.{{name}}}};
-  --muted-foreground:       {{palette.muted-foreground.{{name}}}};
-  --border:                 {{palette.border.{{name}}}};
-  --card:                   {{palette.card.{{name}}}};
-  --card-foreground:        {{palette.card-foreground.{{name}}}};
-  --primary:                {{palette.primary.{{name}}}};
-  --primary-foreground:     {{palette.primary-foreground.{{name}}}};
-  --secondary:              {{palette.secondary.{{name}}}};
-  --secondary-foreground:   {{palette.secondary-foreground.{{name}}}};
-  --accent:                 {{palette.accent.{{name}}}};
-  --accent-foreground:      {{palette.accent-foreground.{{name}}}};
-  --destructive:            {{palette.destructive.{{name}}}};
-  --destructive-foreground: {{palette.destructive-foreground.{{name}}}};
-}
-{{/each}}
-
-/* ─────────── global base ─────────── */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
-body {
-  font-family: var(--font-body);
-  color: var(--foreground);
-  background: var(--canvas-bg);
-  -webkit-font-smoothing: antialiased;
-}
-```
+When assembling `<deck>.html`:
+1. Read this design.md's §2 – §5 values
+2. Substitute every `{{...}}` placeholder in `framework/design-tokens-template.css` per the rules below
+3. Inline the rendered CSS into the deck HTML, replacing the `§ TOKENS` block of `framework/deck.html`
+4. Append the design.md's §8 Append CSS block (see below) verbatim below the rendered token block
 
 ### Substitution rules
 
-- `{{palette.X.Y}}` → the value of token X in variant Y from §2
-- `{{type.size.X}}` → the X step from §3 size scale
-- `{{type.family.X}}` → the full family string from §3 (with the complete fallback chain)
+- `{{palette.X.Y}}` → §2 token X in variant Y
+- `{{type.size.X}}` → §3 size scale step X
+- `{{type.family.X}}` → §3 family X (full fallback chain)
 - `{{shape.radius.X}}` → §4 radius X
 - `{{shape.space.N}}` → §4 space N
 - `{{shape.grid.X}}` → §4 grid X
 - `{{shape.shadow.X}}` → §4 shadow X
-- `{{chrome.X}}` → X from the §2 Chrome Runtime section
+- `{{chrome.X}}` → §2 Chrome Runtime X
 - `{{#each variants}}...{{/each}}` → repeat the block once per variant
 
-### Append CSS (every design.md must append; written by hand, not templated)
+### Append CSS (every design.md hand-writes this)
 
-The §8 template only generates tokens + a base reset. The layers below are **theme-level layout primitives** — every theme has its own positions / grid / decoration, and the framework can't abstract that for you. Write all of it at the end of `design.md` inside **one** ` ```css ` fenced block, and when assembling `sample.html` paste it **verbatim** below the generated `:root` block.
+The token block is templated. Below it, every design.md adds **theme-specific layout primitives** by hand. Write all of it at the end of `design.md` inside **one** ` ```css ` fenced block; the assembler pastes it **verbatim** below the rendered token block.
 
-Write in this order:
+Write in this order (6 fixed slots):
 
-1. **Chrome's 8-anchor position CSS** (if you want the chrome ring visible)
-   `.chrome-top-left / -top-right / -bottom-left / -bottom-right` (four lines) + `.chrome-rule` (one line). Comes from the §6 Chrome Ring decision. `framework/deck.html` already gives `.chrome-rule` a fallback of `border: 0; margin: 0; height: 0`; if you want the line drawn, override it back here
-2. **`.page-shell` padding / overflow**
-   `framework/deck.html` already provides 1920×1080 + the centering transform; design.md only adds `padding / position / overflow` here
-3. **`.page-content` container + grid mode** (if §4 has a Grid)
-   12×N strict grid + flow mode dual-track (see pitch). Some themes use a single flexbox flow; in that case, skip
-4. **Utility classes** (optional)
-   e.g. `.h1-9` / `.v3-8` grid-column / row utilities — only needed when the theme uses a strict grid
-5. **Component-level overrides** (if §6 Decorative signature declares them)
-   Theme-level component bends, e.g. pitch's `[data-variant="dark"] .pitch-card { background: #0d2a25; }`
-6. **Decorative motif inline CSS** (if §6 uses motifs like M18 / M20)
-   e.g. `.ambient-frame` SVG container, `.pill-highlight` background, etc.
+1. **Chrome 8-anchor position CSS** (if §6 chrome ring should be visible) — `chrome-top-left / -top-right / -bottom-left / -bottom-right` (four lines) + `chrome-rule` (one line). `framework/deck.html` already gives `chrome-rule` a `border: 0; margin: 0; height: 0` fallback; if you want the line drawn, override here
+2. **`page-shell` padding / overflow** — `framework/deck.html` provides 1920×1080 + transform; add `padding / position / overflow` here
+3. **`page-content` container + grid mode** (if §4 has a Grid) — 12×N strict grid + flow mode dual-track (see pitch sample); flexbox-flow themes can skip
+4. **Utility classes** (optional) — e.g. `.h1-9` / `.v3-8` grid-column / row utilities (only if strict grid)
+5. **Component-level overrides** (if §6 declares them) — theme-level component bends, e.g. `[data-variant="dark"] .pitch-card { background: #0d2a25; }`
+6. **Decorative motif inline CSS** (if §6 uses motifs like M18 / M20) — e.g. `.ambient-frame` SVG container, `.pill-highlight` background
 
-**Hard rule**: **only** this block contains raw CSS in `design.md`. The other sections (§1 – §7) cannot contain CSS — values are values, prose is prose.
+**Hard rule**: only this block contains raw CSS in `design.md`. The other sections (§1 – §7) hold values + prose only.
 
 ---
 
-## design.md blank template
+## Known Gaps
 
-For a new theme, copy this skeleton verbatim into `<my-deck>/design.md` and start filling (`<my-deck>` is the folder you picked for this deck):
+Each design.md should declare what it does **NOT** cover. This keeps the AI from inventing or assuming when authoring slides.
 
-````markdown
----
-name: <slug>
-description: "<one-sentence theme positioning>"
-version: 0.1.0
----
+Categories to consider:
+- Components or block patterns not specified (data-table, comparison-cards, etc.)
+- Animation / transition tokens (durations, easings)
+- Dark-mode counterparts for non-default variants
+- Print-specific overrides beyond the chrome runtime's `@media print`
+- Fonts-loaded vs. fallback divergence
+- Reference-image atmospheres that couldn't be turned into tokens (photographic mood, etc.)
 
-# <Theme Name>
+Example for a new theme:
 
-> [a one-line tagline, e.g. "YC / TechCrunch-style pitch deck theme"]
-
-## §1 Atmosphere
-
-[Paragraph 1: overall character — imagery, metaphor, mood, period feel]
-
-[Paragraph 2: role of typography — font family, why, weight usage]
-
-[Paragraph 3: color logic — monochrome / two-color / multi-color? Restrained or bold accent?]
-
-[Paragraph 4 (optional): decorative style — decorative elements, spatial logic, special techniques]
-
-**Key Characteristics**:
-- [5-10 bullets]
-
-## §2 Palette values
-
-### Background Surfaces
-- `--background` — page canvas
-  - <variant1>: `<hex>`
-  - <variant2>: `<hex>`
-- ...
-
-### Text & Content
-- `--foreground` — primary text
-  - ...
-- `--muted-foreground` — secondary text
-  - ...
-
-### Brand & Accent
-- `--primary` — ...
-- `--accent` — ...
-
-### Status
-- `--destructive` — ...
-
-### Border
-- `--border` — ...
-
-### Chrome Runtime (invariant across variants)
-- `--canvas-bg` — `<hex>`
-- `--chrome-bg` — `<hex>`
-- `--chrome-fg` — `var(--foreground)`
-- `--chrome-muted-fg` — `var(--muted-foreground)`
-- `--chrome-border` — `var(--border)`
-- `--chrome-accent` — `var(--accent)`
-- `--chrome-accent-fg` — `var(--accent-foreground)`
-
-## §3 Typography values
-
-### Font Family
-- **Primary**: `<family>`, [fallback chain including CJK fonts]
-- **Mono**: `<family>`, [fallback chain]
-
-### Size Scale
-- `--text-xs`   `<value>`  — [use case]
-- `--text-sm`   `<value>`  — [use case]
-- `--text-md`   `<value>`  — [use case]
-- `--text-lg`   `<value>`  — [use case]
-- `--text-xl`   `<value>`  — [use case]
-- `--text-2xl`  `<value>`  — [use case]
-- `--text-3xl`  `<value>`  — [use case]
-- `--text-4xl`  `<value>`  — [use case]
-
-### Weight Scale
-- `--weight-normal`    `<n>`
-- `--weight-medium`    `<n>`
-- `--weight-semibold`  `<n>`
-- `--weight-bold`      `<n>`
-
-### Leading + Tracking
-- Leading: tight / snug / normal / body — `<v>` / ...
-- Tracking: tight / snug / normal / wide — `<v>` / ...
-
-### Principles
-- [3-5 use principles]
-
-## §4 Shape values
-
-### Radius
-- `--radius-sm`     `<v>`
-- `--radius`        `<v>`
-- `--radius-full`   `<v>`
-
-### Space
-- `--space-1`..`--space-32` — `<v>`...
-
-### Grid (if the theme has one)
-- columns / rows / margins / gutters / track-*
-
-### Shadow
-- `--shadow-sm` / `--shadow` — `<v>`
-
-## §5 Variants
-- **<variant1>** — [when to use]
-- **<variant2>** — [when to use]
-- **<variantN>** — [when to use]
-
-## §6 Decorative signature
-
-### <Name 1>
-- What / geometry / usage / HTML template (if any)
-
-### <Name N>
-- ...
-
-## §7 Red Lines
-- **<taboo>** — [reason]
-
-## §8 Append CSS
-
-```css
-/* 1. Chrome 8-anchor positions (if §6 chrome ring should be visible) */
-.chrome-top-left    { /* top / left / font / color */ }
-.chrome-top-right   { /* top / right / font / color */ }
-.chrome-rule        { /* border-top / margin / height */ }
-.chrome-bottom-left { /* bottom / left / font / color */ }
-.chrome-bottom-right{ /* bottom / right / font / color */ }
-
-/* 2. .page-shell padding / overflow */
-.page-shell { /* position / padding / overflow */ }
-
-/* 3. .page-content container + grid mode (if §4 has a Grid) */
-.page-content { /* display: grid; columns/rows/gap */ }
-.page-content[data-layout="flow"] { /* flow override */ }
-
-/* 4. Utility classes (optional — only if using strict grid) */
-/* .h1-9 { grid-column: 1 / 9; }
-   .v3-8 { grid-row: 3 / 9; } */
-
-/* 5. Component-level overrides (if §6 Decorative declares them) */
-
-/* 6. Decorative motif inline CSS (if §6 uses motifs like M18 / M20) */
+```markdown
+- **Data-table component shape**: not specified — slide authors write ad-hoc HTML
+- **Animation tokens**: not specified — the deck is static
+- **Mobile / portrait orientation**: not supported (1920×1080 only)
+- **Print-specific theme overrides**: only the chrome runtime handles `@media print`; theme-level color/contrast not defined
+- **Photographic atmosphere on cover**: encoded in the imagery itself, not a CSS gradient — no token covers it
 ```
-````
 
 ---
 
 ## Constraints (do not violate)
 
-- **`design.md` has only one place for CSS** — the §8 Append CSS block. All other sections (§1 – §7) hold values + prose only
-- **Token naming aligns with shadcn** (the 15 standard names are locked)
-- **No component-level secondary aliases** (don't introduce `--card-bg / --card-padding-x`)
-- **Every Atmosphere paragraph must be anchored to concrete values** (no floating prose like "modern and clean")
-- **Palette must list the full variant × token matrix** — the chrome template has 14 tokens × N variants; missing one row loses one row of CSS
-- **The 7 chrome runtime tokens must be filled at the end of §2** (including `--canvas-bg / --chrome-*`)
-- **§8 Append CSS has 6 fixed slots in fixed order** (chrome anchors → page-shell → page-content → utility → component overrides → motif); fill what's needed, leave the rest as empty comments
+- **`design.md` has only one place for CSS** — the §8 Append CSS block
+- **Token naming aligns with shadcn** (15 standard names locked)
+- **Every Atmosphere paragraph must be anchored to concrete values** (no floating prose)
+- **Palette must list the full variant × token matrix** — missing one row loses one row of CSS
+- **§8 Append CSS has 6 fixed slots in fixed order**
 
 ## Why
 
-- **Prose + tables** lets the AI both intuitively imitate the theme when authoring a new slide (read §1 Atmosphere) and pull values precisely (read §2 – §4)
+- **Prose + tables** lets the AI both intuitively imitate the theme (read §1) and pull values precisely (read §2 – §4)
 - **CSS lives outside design.md** to prevent "value updated but CSS forgot" drift; §8 is the single transformation path
 - **Atmosphere requires 4 paragraphs** so the AI can't half-ass it — the felt sense must be drawn out in full
-- **Decorative signature gets its own section** — visual systems that used to scatter across motif/redlines are now systematized
-- **The blank template** gives every new theme a consistent starting point, avoiding the "starting from scratch" format drift each time
+- **Token reference syntax `{...}`** makes design intent searchable across docs (rename via grep)
+- **Do's alongside Don'ts** removes the "I can't do X, so I do nothing" trap
+- **Known Gaps** prevents AI from inventing what isn't documented
+- **Descriptive nicknames** (`Olive Drab` / `Action Blue`) give humans + AIs a vocabulary; bare `{colors.canvas-bg}` doesn't survive 5 themes

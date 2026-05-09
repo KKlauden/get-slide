@@ -1,0 +1,135 @@
+/* ============================================================================
+ * Theme tokens template — getslide framework v2.1
+ *
+ * THIS IS A TEMPLATE, not a runnable stylesheet. Placeholders use Handlebars
+ * syntax `{{value}}`. The browser never loads this file directly.
+ *
+ * When assembling a deck:
+ *   1. Read the deck's design.md §2 – §5 values
+ *   2. Substitute every `{{...}}` placeholder per the rules in design.md §8
+ *   3. Inline the rendered output as a <style> block under the `§ TOKENS`
+ *      block of `framework/deck.html`
+ *   4. Append the design.md's `§8 Append CSS` block verbatim below it
+ *
+ * The output you generate is real CSS.
+ * ========================================================================== */
+
+:root {
+  /* ─────────── tokens shared across variants ─────────── */
+  --canvas-bg: {{chrome.canvas-bg}};
+  --chrome-bg: {{chrome.chrome-bg}};
+
+  /* ─────────── typography (scale) ─────────── */
+  --font-display: {{type.family.display}};
+  --font-body:    {{type.family.body}};
+  --font-mono:    {{type.family.mono}};
+
+  --text-xs:   {{type.size.xs}};
+  --text-sm:   {{type.size.sm}};
+  --text-md:   {{type.size.md}};
+  --text-lg:   {{type.size.lg}};
+  --text-xl:   {{type.size.xl}};
+  --text-2xl:  {{type.size.2xl}};
+  --text-3xl:  {{type.size.3xl}};
+  --text-4xl:  {{type.size.4xl}};
+
+  --weight-normal:    {{type.weight.normal}};
+  --weight-medium:    {{type.weight.medium}};
+  --weight-semibold:  {{type.weight.semibold}};
+  --weight-bold:      {{type.weight.bold}};
+
+  --leading-tight:   {{type.leading.tight}};
+  --leading-snug:    {{type.leading.snug}};
+  --leading-normal:  {{type.leading.normal}};
+  --leading-body:    {{type.leading.body}};
+
+  --tracking-tight:   {{type.tracking.tight}};
+  --tracking-snug:    {{type.tracking.snug}};
+  --tracking-normal:  {{type.tracking.normal}};
+  --tracking-wide:    {{type.tracking.wide}};
+
+  /* ─────────── shape (scale) ─────────── */
+  --radius-sm:   {{shape.radius.sm}};
+  --radius:      {{shape.radius.default}};
+  --radius-full: {{shape.radius.full}};
+
+  --space-1:    {{shape.space.1}};
+  --space-2:    {{shape.space.2}};
+  --space-3:    {{shape.space.3}};
+  --space-4:    {{shape.space.4}};
+  --space-6:    {{shape.space.6}};
+  --space-8:    {{shape.space.8}};
+  --space-12:   {{shape.space.12}};
+  --space-16:   {{shape.space.16}};
+  --space-24:   {{shape.space.24}};
+  --space-32:   {{shape.space.32}};
+
+  /* ─────────── grid (if the theme has one) ─────────── */
+  --grid-columns:        {{shape.grid.columns}};
+  --grid-rows:           {{shape.grid.rows}};
+  --grid-gutter:         {{shape.grid.gutter}};
+  --grid-row-gap:        {{shape.grid.row-gap}};
+  --grid-margin-x:       {{shape.grid.margin-x}};
+  --grid-margin-top:     {{shape.grid.margin-top}};
+  --grid-margin-bottom:  {{shape.grid.margin-bottom}};
+  /* + track-* as needed */
+
+  /* ─────────── elevation ─────────── */
+  --shadow-sm: {{shape.shadow.sm}};
+  --shadow:    {{shape.shadow.default}};
+
+  /* ─────────── default variant tokens (= the first variant's values) ─────────── */
+  --background:             {{palette.background.<default-variant>}};
+  --foreground:             {{palette.foreground.<default-variant>}};
+  --muted:                  {{palette.muted.<default-variant>}};
+  --muted-foreground:       {{palette.muted-foreground.<default-variant>}};
+  --border:                 {{palette.border.<default-variant>}};
+  --card:                   {{palette.card.<default-variant>}};
+  --card-foreground:        {{palette.card-foreground.<default-variant>}};
+  --primary:                {{palette.primary.<default-variant>}};
+  --primary-foreground:     {{palette.primary-foreground.<default-variant>}};
+  --secondary:              {{palette.secondary.<default-variant>}};
+  --secondary-foreground:   {{palette.secondary-foreground.<default-variant>}};
+  --accent:                 {{palette.accent.<default-variant>}};
+  --accent-foreground:      {{palette.accent-foreground.<default-variant>}};
+  --destructive:            {{palette.destructive.<default-variant>}};
+  --destructive-foreground: {{palette.destructive-foreground.<default-variant>}};
+
+  /* ─────────── chrome runtime ─────────── */
+  --chrome-fg:        {{chrome.fg}};
+  --chrome-muted-fg:  {{chrome.muted-fg}};
+  --chrome-border:    {{chrome.border}};
+  --chrome-accent:    {{chrome.accent}};
+  --chrome-accent-fg: {{chrome.accent-fg}};
+}
+
+/* ─────────── explicit variant overrides ─────────── */
+{{#each variants}}
+[data-variant="{{name}}"] {
+  --background:             {{palette.background.{{name}}}};
+  --foreground:             {{palette.foreground.{{name}}}};
+  --muted:                  {{palette.muted.{{name}}}};
+  --muted-foreground:       {{palette.muted-foreground.{{name}}}};
+  --border:                 {{palette.border.{{name}}}};
+  --card:                   {{palette.card.{{name}}}};
+  --card-foreground:        {{palette.card-foreground.{{name}}}};
+  --primary:                {{palette.primary.{{name}}}};
+  --primary-foreground:     {{palette.primary-foreground.{{name}}}};
+  --secondary:              {{palette.secondary.{{name}}}};
+  --secondary-foreground:   {{palette.secondary-foreground.{{name}}}};
+  --accent:                 {{palette.accent.{{name}}}};
+  --accent-foreground:      {{palette.accent-foreground.{{name}}}};
+  --destructive:            {{palette.destructive.{{name}}}};
+  --destructive-foreground: {{palette.destructive-foreground.{{name}}}};
+}
+{{/each}}
+
+/* ─────────── global base ─────────── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font-body);
+  color: var(--foreground);
+  background: var(--canvas-bg);
+  -webkit-font-smoothing: antialiased;
+}

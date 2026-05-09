@@ -19,7 +19,7 @@ Goal: every sub-agent uses these canonical EN forms so terminology stays consist
 - CSS token names: `--background` / `--foreground` / `--accent` / `--canvas-bg` etc.
 - HTML class / data-attribute names: `.page-shell` / `[data-variant="dark"]` / `chrome-rule`.
 - File paths and identifiers: `framework/deck.html` / `samples/archive/` / `bar-chart.md`.
-- Section anchors: `§ 1 Atmosphere` / `§ 2 Palette`. Use ` § ` (with space — the source uses `§1` no-space, switch to `§ 1` for English readability — actually source style varies, **keep §N no-space to match source**).
+- Section anchors: `§N` (no space). The source uses `§1 / §2` no-space; matched the framework `framework/deck.html`'s `§ TOKENS` label which keeps a space (it's a label, not a numerical reference). Inline section refs in prose: `§1`, `§2`, `§3 – §7`, etc. — never `§ 1`.
 - Algorithm variables: `bright_bars` / `cutover` / `drawing_height` / `marker_pos_pct`.
 - YAML frontmatter keys: `name` / `kind` / `role` / `version` (the values in `description:` are translated).
 - shadcn / Tailwind / Inter / Cabinet Grotesk / Geist / etc — proper nouns.
@@ -44,7 +44,7 @@ Goal: every sub-agent uses these canonical EN forms so terminology stays consist
 | 装饰图层 | decorative layer / motif | §6 component |
 | 强调系统 | emphasis system | how the theme highlights things (pill / accent / bold etc) |
 | 网格底纹 | background grid pattern | decorative grid behind content |
-| 字的角色 | role of typography | §1 Atmosphere section 2 |
+| 字的角色 | voice of typography | §1 Atmosphere paragraph 2 (renamed in v2.1; was "role of typography") |
 | 色的逻辑 | color logic | §1 Atmosphere section 3 |
 | 装饰风格 | decorative style | §1 Atmosphere section 4 |
 | chrome runtime | chrome runtime | already EN — keep |
@@ -70,10 +70,12 @@ Goal: every sub-agent uses these canonical EN forms so terminology stays consist
 | 必带 | Must include | inline |
 | 必读 | Required reading | inline |
 | 必填 | Required field / Must fill | |
-| 反例 | Anti-patterns | header (NOT "counter-example", which is too math-y) |
+| 反例 | Anti-patterns | header (NOT "counter-example", which is too math-y). In v2.1 the "三戒" + "反例" merged under a single Anti-patterns sub-section in §1 |
 | 范例 / 范文 | Example | header — pick *Example* not *Exemplar* |
-| 写作三戒 | Three things to avoid when writing | header |
-| 戒散布 / 戒空洞 / 戒列表替散文 | Avoid scattering / Avoid emptiness / Avoid bullets-as-prose | bullet headers |
+| 戒散布 | **Sprawl** | as the bold header of an anti-pattern bullet (`❌ **Sprawl** — each paragraph wanders`). NOT "Avoid scattering" |
+| 戒空洞 | **Empty prose** | bold anti-pattern header (`❌ **Empty prose** — adjectives without anchors`) |
+| 戒列表替散文 | **Bullets-as-prose** | bold anti-pattern header (`❌ **Bullets-as-prose** — bullets ARE the closing summary, not the opener`) |
+| 套话 / 空话 | **Universal flattery** | NEW v2.1 anti-pattern (`❌ **Universal flattery** — "modern / clean / professional / elegant" works for any theme`) |
 | 何时用 | When to use | header |
 | 何时不用 | When not to use | header |
 | 适用场景 | Applies to | header |
@@ -96,7 +98,7 @@ Goal: every sub-agent uses these canonical EN forms so terminology stays consist
 | 锐角 | sharp / sharp-cornered | "锐角风" → "sharp aesthetic" |
 | 圆润 | rounded / soft | "圆润主题" → "rounded theme" |
 | 米卡 / 米奶油 / 米白底 | cream / cream-white | |
-| 橄榄军绿 | olive green | |
+| 橄榄军绿 | olive drab | English design vocabulary for military olive — NOT "olive military green" |
 | 黄绿 / 亮黄绿 | lime / lime green | |
 | 灰蒙蒙 | washed-out / dull | as in "整页灰蒙蒙" |
 | 重量 | visual weight | |
@@ -161,7 +163,7 @@ Goal: every sub-agent uses these canonical EN forms so terminology stays consist
 |---|---|
 | **凭感觉知道该怎么走** | "feels how to go" is wrong. Translate as "intuitively know which direction to take" or "knows the direction by feel" |
 | **画面感** | not "picture sense". Use "visual atmosphere" or "imagery" |
-| **温度** (of a design) | not literally "temperature". Use "warmth" / "tone" / "mood" depending on context |
+| **温度** (of a design) | NOT "warmth" — that implies warm tones, mistranslating cool themes (V1 review caught this). Use **"mood"** as default; "tone" / "feel" for variation. "Temperature" is acceptable when the source is genuinely about thermal metaphor |
 | **气质** | not "temperament". Use "character" or "feel" |
 | **felt sense** | source already uses EN — keep |
 | **正确 / 错误 / 不对** in tables | "Correct" / "Wrong" / "Incorrect" — caps optional, match source |
@@ -184,6 +186,113 @@ Goal: every sub-agent uses these canonical EN forms so terminology stays consist
 | 一节一节填值 | Fill section by section |
 | 一字不差 | verbatim / character-for-character |
 | 拼 deck HTML 时 | when assembling the deck HTML |
+
+## v2.1 schema vocabulary (post-design.md rewrite)
+
+After the design.md rewrite, the schema introduced new section names, sub-section names, and conventions. **Sub-agents translating samples to the new schema must use these canonical EN forms**, even when the source Chinese uses an older form.
+
+### Canonical schema section names (in `design.md`)
+
+| §N | Canonical EN | Was (pre-v2.1) |
+|---|---|---|
+| §1 | Atmosphere | (unchanged) |
+| §2 | Palette values | (unchanged) |
+| §3 | Typography values | (unchanged) |
+| §4 | Shape values | (unchanged) |
+| §5 | Variants | (unchanged) |
+| §6 | Decorative signature | (unchanged) |
+| §7 | **Do's and Don'ts** | was "Red Lines" — Don'ts sub-section still holds the original red-line content |
+| §8 | CSS generation procedure | (unchanged) |
+| (no §) | **Known Gaps** | NEW — what this design.md does NOT cover |
+| (no §) | Constraints | (unchanged, trimmed) |
+| (no §) | Why | (unchanged) |
+
+### §2 Palette sub-section names (5 + 1 chrome)
+
+**Surface / Text & Content / Brand & Accent / Status / Hairlines & Borders**, followed by **Chrome Runtime (invariant across variants)**.
+
+(Was: "Background Surfaces" → "Surface"; "Border" → "Hairlines & Borders".)
+
+### §3 Typography sub-section names
+
+- Font Family
+- Type Scale (a **single unified table** replacing the old separate Size / Weight / Leading / Tracking blocks)
+- Principles
+- **Note on Font Substitutes** (NEW)
+
+### §3 Type Scale role names (canonical, used in prose)
+
+| Token | Role Name |
+|---|---|
+| `{type.size.4xl}` | Hero Display |
+| `{type.size.3xl}` | Display |
+| `{type.size.2xl}` | Display Small |
+| `{type.size.xl}` | H2 / Display LG |
+| `{type.size.lg}` | H3 / Card Title |
+| `{type.size.md}` | Body |
+| `{type.size.sm}` | Body Small / Caption |
+| `{type.size.xs}` | Fine Print / Label |
+
+In prose: "use Hero Display for cover headlines" — never "use --text-4xl for cover".
+
+### §4 Shape sub-section names
+
+- Spacing System (4px base)
+- Grid & Container
+- Border Radius Scale
+- Elevation & Depth
+
+(Was: Radius / Space / Grid / Shadow as separate sub-sections — reorganized in v2.1.)
+
+### §7 Do's and Don'ts pattern
+
+Replace any "Red Lines" section header with "Do's and Don'ts". Original Red Lines content goes under `### Don'ts (red lines)`. Each Don't gets a paired Do under `### Do's (positive guidance)`.
+
+Pattern:
+```markdown
+## §7 Do's and Don'ts
+
+### Do's (positive guidance)
+- **Use weight 600 for emphasis** — instead of italic (banned), upgrade weight ...
+
+### Don'ts (red lines)
+- **No italic** — Cabinet Grotesk has no italic glyphs ...
+```
+
+### Token reference syntax — two distinct conventions
+
+| Syntax | Where | Example |
+|---|---|---|
+| `{colors.X}` (single brace) | **Prose** in design.md, samples, content.md, chart pattern docs | `{colors.primary}` / `{type.size.4xl}` / `{shape.radius.full}` |
+| `{{colors.X}}` (double brace) | **Only** inside `framework/design-tokens-template.css` as Handlebars substitution markers | `{{palette.background.lite}}` / `{{type.size.xs}}` |
+
+Namespaces: `colors / type / shape / chrome`. Sub-agents: never invent a path not in this schema.
+
+### Descriptive nickname pattern (in §2)
+
+Every color in §2 uses:
+
+```markdown
+- **<Nickname>** (`{colors.background}` — `#efe7c8`): use note
+  - <variant1>: `<hex>`
+```
+
+The nickname is an English descriptive name. **Pick from established design vocabulary** (Cream / Olive Drab / Action Blue / Pearl / Ink / Stone / Lime / Hairline / Parchment / Sky etc.) when the actual color matches; invent only when no obvious term fits. Old format (`--background — page canvas`) without a nickname is **outdated** in v2.1.
+
+### Source provenance line
+
+Every design.md must start with a `> Source: ...` line under the title blockquote, declaring the reference image / URL / brand spec the theme was built from.
+
+### New file references
+
+| File | Purpose |
+|---|---|
+| `framework/design-tokens-template.css` | Canonical CSS token block template (Handlebars `{{...}}`); §8 substitutes values into this |
+| `framework/design-blank-template.md` | Blank skeleton for new themes; `cp` to start |
+
+Translate path-mentions verbatim — these are file references, not prose.
+
+---
 
 ## Sample reference: how to translate a paragraph
 
