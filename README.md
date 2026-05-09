@@ -76,7 +76,42 @@ mkdir -p .claude/skills && cp -r ../get-slide/skills/get-slide .claude/skills/ge
 mkdir -p .codex/skills && cp -r ../get-slide/skills/get-slide .codex/skills/get-slide
 ```
 
-Restart the agent after install — skills are loaded at session start. For agents without native skill discovery (Cursor / Gemini / etc.), copy the bundle anywhere and reference `SKILL.md` from your protocol file.
+Restart the agent after install — skills are loaded at session start.
+
+For agents without native skill discovery (Cursor / Gemini / etc.), copy the bundle anywhere (e.g. `./skills/get-slide/`) and reference `SKILL.md` from your protocol file (`AGENTS.md` / `GEMINI.md` / `.cursor/rules/`):
+
+```
+When asked to build a slide deck, read ./skills/get-slide/SKILL.md and follow it.
+```
+
+## Build your first deck
+
+Make a folder for your decks and run your AI agent from there — otherwise the AI will create deck folders wherever you happened to `cd`:
+
+```bash
+mkdir -p ~/decks && cd ~/decks
+```
+
+Then ask:
+
+> Build me a deck about &lt;topic&gt;.
+
+The skill auto-triggers, walks you through iterative Pre-flight (audience / decision context / outline / style / starting point), then writes `<my-deck>/design.md` + `content.md` + `<my-deck>.html`.
+
+## Using a deck
+
+Open `<my-deck>/<my-deck>.html` in any browser. Self-contained — no server, no build, no external CDN.
+
+| Keys | Effect |
+|---|---|
+| ← → ↑ ↓ PgUp PgDn Space | page navigation |
+| `1`–`9` | jump directly to page N |
+| `F` | fullscreen / presenter mode |
+| `S` | presenter window (NEXT slide / SCRIPT / TIMER cards) |
+| `O` | overview grid |
+| `Esc` | close overlay |
+| `Cmd / Ctrl + P` | print to PDF — one slide per page |
+| `?preview=N` URL parameter | single-page chrome-less mode (used by presenter iframe) |
 
 Decks are **frozen snapshots** — re-running the skill won't update existing decks; only newly-generated ones pick up framework changes.
 
