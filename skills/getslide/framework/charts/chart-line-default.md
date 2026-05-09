@@ -1,127 +1,126 @@
 ---
 name: chart-line-default
-deps: []
-tokens:
-  - --foreground
-  - --muted-foreground
-  - --background
-  - --border
-categories:
-  - charts
-  - charts-line
-kind: reference
-source: "@shadcn/chart-line-default — adapted: React+Recharts → SVG-only (v2 self-contained 约束)"
+kind: pattern-contract
+purpose: "Line chart：1-2 series + dot + area-fill + annotation pill。SVG 几何契约 + 数据→坐标算法，不是视觉模板。"
+source: "@shadcn/chart-line-default 适配 SVG-only（v2 self-contained 约束）"
 ---
 
-# Chart Line Default
+# Chart Line Default Pattern
 
-> **定位**：v2 chart 转写规范的样板（reference），不是 slot-fillable 砖块。写新 chart 时翻这份当模板，**直接 inline 到 deck sample HTML 里**，不抽组件——除非某 chart 跨 ≥2 deck 反复用，再提取。
+> **这是 SVG 几何 + 算法契约，不是视觉模板。** AI 翻这份学：viewBox / 坐标系 / 数据点位置算法。颜色 / 字 / 网格风格 / annotation pill 形状 **必须**按当前 deck 的 design.md 自己写——直接抄 `var(--foreground) fill-opacity 0.08` 这种数字会带来主题脱节。
 
-`@shadcn/chart-line-default` 的 v2 适配版。shadcn 原版基于 Recharts (React 库) 不能 self-contained，本实现保留**命名 + 类别 + 数据语义**，实现层换成纯 SVG。
+## 适用场景
 
-折线图 — 输出 1664×400 viewBox 的纯 SVG，由 `chart-card` block 包装。包含网格线 / x-y 轴 label / primary + secondary 折线 / 面积填充 / 数据点 / 注释 pill。
+**时间 / 顺序序列**（Q1-Q8 月度趋势 / 周度数据 / 实验进展）的 line chart。1-2 series，1 个关键 inflection point 注释。
 
-## Template
+**不**适用：
+- bar 数据（每条独立值）→ `bar-chart.md`
+- 单一进度值 → `chart-gauge.md`
+- 散点 / 雷达 / 饼图 → 自己写 SVG，参考此份算法和 token 用法
 
-```html
-<svg viewBox="0 0 1664 400" preserveAspectRatio="xMidYMid meet" aria-label="{标题}">
-  <!-- horizontal grid · hairline 1px dashed -->
-  <g stroke="var(--border)" stroke-dasharray="3 5">
-    <line x1="60" y1="24"  x2="1640" y2="24"  />
-    <line x1="60" y1="106" x2="1640" y2="106" />
-    <line x1="60" y1="188" x2="1640" y2="188" />
-    <line x1="60" y1="270" x2="1640" y2="270" />
-    <line x1="60" y1="352" x2="1640" y2="352" />
-  </g>
+## 必填结构（SVG 内部）
 
-  <!-- y-axis labels -->
-  <g fill="var(--muted-foreground)" font-size="14" text-anchor="end">
-    <text x="48" y="28">100</text>
-    <text x="48" y="110">75</text>
-    <text x="48" y="192">50</text>
-    <text x="48" y="274">25</text>
-    <text x="48" y="356">0</text>
-  </g>
-
-  <!-- x-axis labels -->
-  <g fill="var(--muted-foreground)" font-size="14" text-anchor="middle">
-    <text x="60"   y="380">Q1</text>
-    <text x="286"  y="380">Q2</text>
-    <text x="511"  y="380">Q3</text>
-    <text x="737"  y="380">Q4</text>
-    <text x="963"  y="380">Q5</text>
-    <text x="1189" y="380">Q6</text>
-    <text x="1414" y="380">Q7</text>
-    <text x="1640" y="380">Q8</text>
-  </g>
-
-  <!-- area fill under primary · fg @ 0.08 -->
-  <path d="M 60 326 L 286 306 L 511 280 L 737 247 L 963 201 L 1189 149 L 1414 90 L 1640 40 L 1640 352 L 60 352 Z"
-        fill="var(--foreground)" fill-opacity="0.08" />
-
-  <!-- secondary line · muted 2px -->
-  <path d="M 60 286 L 286 280 L 511 270 L 737 260 L 963 247 L 1189 234 L 1414 221 L 1640 204"
-        stroke="var(--muted-foreground)" stroke-width="2" fill="none" />
-
-  <!-- primary line · fg 2px -->
-  <path d="M 60 326 L 286 306 L 511 280 L 737 247 L 963 201 L 1189 149 L 1414 90 L 1640 40"
-        stroke="var(--foreground)" stroke-width="2" fill="none" />
-
-  <!-- data points · fg 5px circles, slide-bg ring -->
-  <g fill="var(--foreground)" stroke="var(--background)" stroke-width="2">
-    <circle cx="60"   cy="326" r="5" />
-    <circle cx="286"  cy="306" r="5" />
-    <circle cx="511"  cy="280" r="5" />
-    <circle cx="737"  cy="247" r="5" />
-    <circle cx="963"  cy="201" r="5" />
-    <circle cx="1189" cy="149" r="5" />
-    <circle cx="1414" cy="90"  r="5" />
-    <circle cx="1640" cy="40"  r="5" />
-  </g>
-
-  <!-- annotation pill at inflection point -->
-  <g>
-    <line x1="1414" y1="90" x2="1414" y2="56"
-          stroke="var(--border)" stroke-dasharray="2 3" />
-    <rect x="1349" y="20" width="130" height="32" rx="16"
-          fill="var(--foreground)" fill-opacity="0.14"
-          stroke="var(--border)" />
-    <text x="1414" y="41" fill="var(--foreground)"
-          font-size="14" text-anchor="middle">↗ 7× baseline</text>
-  </g>
-</svg>
+```text
+<svg viewBox="0 0 W H">
+  ├── grid（水平 dashed N 条横线）
+  ├── y 轴 label（左侧，0 / 25 / 50 / 75 / 100 等）
+  ├── x 轴 label（底部，时间 / 顺序点）
+  ├── area-fill path（primary 之下，半透明面积）   ← 可选
+  ├── secondary line path（如有 2nd series，先画）
+  ├── primary line path
+  ├── data points（圆点 + 背景色 ring，画在 line 之上）
+  └── annotation pill（可选，1 个 inflection point）
+       ├── 引导虚线（pill ↔ data point）
+       ├── pill 背景 + 描边
+       └── pill 文字
 ```
 
-## Style
+## SVG 几何契约（推荐 1664 × 400 viewBox）
 
-无独立 CSS — SVG 内联 `var()` 引用 token，渲染由 chart-card / page-shell variant 决定。
+```text
+viewBox       = "0 0 1664 400"        ← chart-card 容器约束（archive / pitch 实测）
+                                          可改 1280×320 / 2000×500 等，按页内空间
 
-## Constraints
+x_axis_left   = 60                    ← 给 y label 留位
+x_axis_right  = 1640                  ← 右 padding
+plot_width    = 1640 - 60 = 1580
 
-- viewBox 必须 1664×400（chart-card 容器尺寸约束）
-- 8 个数据点 × 2 系列（primary + secondary）
-- 数据值范围 0-100（y 轴档位 0/25/50/75/100）
-- 注释 pill 单个（多个会让眼睛分心）
-- 颜色全用 `var(--xxx)` —— variant 切换时图表自动适配
+y_axis_top    = 24                    ← 给 annotation pill 留位
+y_axis_bottom = 352                   ← 给 x label 留位
+plot_height   = 352 - 24 = 328
+```
 
-## v2 chart 转写规范（用这份当模板）
+## 数据 → 坐标算法
 
-写新 chart（bar / pie / area / radar 等）时照下面规则：
+```text
+N points (每 series)              ← 推荐 8 点（pitch P7 实测：单页可读上限）
 
-1. **viewBox 固定 1664×400**——`chart-card` 容器约束
-2. **`preserveAspectRatio="xMidYMid meet"`** + `aria-label="{标题}"`
-3. **颜色全部 `var(--xxx)`**：`--foreground`（primary）/ `--muted-foreground`（secondary）/ `--border`（grid/dash）/ `--background`（data point ring）；不写死颜色
-4. **网格线**：水平 dashed `stroke-dasharray="3 5"` + `var(--border)`
-5. **轴 label**：`font-size="14"` + `var(--muted-foreground)`；y `text-anchor="end"`，x `text-anchor="middle"`
-6. **数据点**（line/area）：`circle r="5"` + `fill="var(--foreground)"` + `stroke="var(--background)" stroke-width="2"`（背景色 ring 防底色冲突）
-7. **面积填充**：`fill="var(--foreground)" fill-opacity="0.08"`
-8. **注释 pill**（可选，单个）：`rect rx="16"` + `fill="var(--foreground)" fill-opacity="0.14"` + 引导虚线
-9. **不内嵌 padding/border/legend**——这些归 chart-card 包装
-10. **数据 hard-code 在 SVG 里**：v2 没有 build 工具，坐标手算（或 Python 一次性生成后贴）
+对每个 data_point i (0-indexed):
+  x = x_axis_left + i × (plot_width / (N - 1))
+  y = y_axis_bottom - (data_value / max_value) × plot_height
+
+  if value < 0 (allow_negative):
+      mid_y      = (y_axis_top + y_axis_bottom) / 2
+      half_h     = plot_height / 2
+      y          = mid_y - (data_value / max_abs_value) × half_h
+
+grid 横线（推荐 5 条等距）：
+  y = y_axis_top + i × plot_height / 4    (i = 0..4)
+                                          → 24, 106, 188, 270, 352
+```
+
+**例（v3 缪子如果用 line chart）**：
+- max = 1000，6 points（注：line chart 8 点最佳，6 点稍稀）
+- (10km / 1000) → x=60,    y=24
+- (8km  / 560)  → x=376,   y=168
+- (0km  / 55)   → x=1640,  y=334
+
+## 必须按 design.md 决定的视觉
+
+| 决策 | 查 design.md |
+|---|---|
+| primary line **颜色** | §2 Palette `var(--accent)` / `var(--foreground)` |
+| primary line **粗细** | 2-3px（archive 锐角风 2px；圆润主题 3-4px） |
+| secondary line **颜色** | `var(--muted-foreground)` |
+| **area-fill** | `fill="var(--accent)" fill-opacity="?"`（**透明度按主题，不要写死** 0.08——archive 暗底要 0.14，CHASSAN 暖底可能要 0.05-0.08） |
+| data point **半径** | 4-7px（按 line 粗细调） |
+| data point **ring** | `stroke="var(--background)" stroke-width="2"`（防底色冲突） |
+| **grid 线** | dashed `stroke-dasharray="3 5"` + `var(--border)`（archive 风密；CHASSAN 风可省略 grid 只留 hairline baseline） |
+| **轴 label 字** | §3 Typography 系统标签字 |
+| **轴 label 大小** | 14-16px |
+| **annotation pill 形状** | rect rx 跟 §4 Shape `--radius-full` 或 `--radius` 一致 |
+| **annotation pill 文字** | 一句不超过 6 词；按主题调性，serif italic / sans uppercase / mono 各异 |
+
+## 反例
+
+❌ **写死颜色**
+```svg
+<path stroke="#000" />              <!-- 写死 hex -->
+<rect fill="#f3f3f3" />             <!-- 写死 grey -->
+```
+
+❌ **照抄 `fill-opacity="0.08"` 不思考主题** —— 0.08 在 archive 暗底太弱，CHASSAN 米底可能要 0.05-0.10，按主题调
+
+❌ **8 点之外硬塞** —— 6/10/12 点都行（按数据决定），但**不要**把 12 点挤进 1664 viewBox（拥挤），考虑加宽 viewBox
+
+❌ **多个 annotation pill** —— 1 个就够，多个互相竞争注意力
+
+❌ **省略 data points** —— 只画 line 不画 dot 是 minimal trend chart 风（适合极简主题，但要主题契合）；多数 deck 需要 dot 让数据可读
 
 ## Why
 
-- chart 数据 hard-code 在 SVG 里 — 没有 build 工具时这是唯一可行做法
-- 只输出 SVG（无 padding/border/legend），让 chart-card block 包装；解耦"数据"和"容器视觉"
-- 8 数据点 / 2 系列是 pitch deck 的"单页可读图表"上限（更多点画面拥挤）
-- 此文件作为 v2 chart 的转写规范样板：每写一种新 chart，都照上面 10 条规则——保证不同 chart 在同一 deck 视觉一致
+- 8 数据点 / 2 series 是 deck 单页 chart 上限——更多点画面拥挤
+- v2 没 build 工具，数据手算坐标贴 SVG——文档保证算法对一次
+- chart 视觉跟主题走：archive 风 vs CHASSAN 风的 line chart 长相完全不同，文档不预设默认值
+
+## v2 写新 chart（非 line）的转写规范
+
+写新 chart（pie / area / radar / scatter 等）时照下面通用规则：
+
+1. **viewBox 选 1664×400 或同长宽比** —— 跟 line chart 容器一致
+2. **`preserveAspectRatio="xMidYMid meet"`** + `aria-label="{标题}"`
+3. **颜色全用 `var(--xxx)`**：primary `var(--accent)` / secondary `var(--muted-foreground)` / grid `var(--border)` / data point ring `var(--background)`；**不写死颜色**
+4. **轴 label**：`font-size="14-16"` + `var(--muted-foreground)`；y `text-anchor="end"`，x `text-anchor="middle"`
+5. **数据点**（line / area）：`circle r="5"` + `fill="var(--accent)"` + `stroke="var(--background)" stroke-width="2"`
+6. **不内嵌 padding / border / legend** —— 这些归外层 chart-card / page-shell 包装
+7. **数据 hard-code 在 SVG 里** —— v2 没 build 工具，坐标手算（或 Python 一次性生成后贴）

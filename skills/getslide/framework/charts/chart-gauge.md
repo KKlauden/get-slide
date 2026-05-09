@@ -1,92 +1,82 @@
 ---
 name: chart-gauge
-deps: ["bar-chart"]
-tokens:
-  - --foreground
-source: "原创（从 archive P6 coverage-gauge 抽取并 token 化清理——剥离 mono caps + 白色硬编码）"
-related: ["bar-chart (composed inside)"]
+kind: pattern-contract
+purpose: "线性 gauge：N 个离散 bar 进度 + label 区间 + 三角 marker。结构 + 几何契约，不是 CSS 模板。"
 ---
 
-# Chart Gauge
+# Chart Gauge Pattern
 
-线性进度量表：`0%` / `中` / `100%` 三 label + 离散 bars 进度条 + 三角 marker 指示当前值。常用于 "X% coverage" / "X% completion" 数据点。
+> **这是结构 + 几何契约，不是 CSS 模板。** AI 翻这份学：gauge 由什么部件组成 / marker 几何怎么对齐。视觉细节（颜色 / marker 形状 / label 字 / 圆角）**必须**按当前 deck 的 design.md token 自己写。
 
-**风格中立**：bars 颜色、marker 颜色、label 字体都用 token，跟随主题。
+## 适用场景
 
-## Template
+**单一进度值**可视化（"X% coverage" / "X% completion" / "X% adoption"）。靠 N 个离散 bar 颗粒 + marker 三角指当前位置。
 
-```html
-<div class="chart-gauge" style="--marker-pos: 73%">
-  <div class="gauge-labels">
-    <span>0%</span>
-    <span>50%</span>
-    <span>100%</span>
-  </div>
-  <div class="gauge-track">
-    <div class="bar-chart" style="--bar-w: 2px">
-      <div class="bar"></div>          <!-- 亮 bars × N（marker 之前） -->
-      <div class="bar dim"></div>      <!-- 暗 bars × M（marker 之后） -->
-    </div>
-    <div class="gauge-marker"></div>
-  </div>
-</div>
+**不**适用：
+- 真实数据 chart（每条 bar 反映独立值）→ 用 `bar-chart.md`
+- 圆形 / 半圆 gauge → SVG arc，自己写
+
+## 必填结构
+
+```text
+<container.chart-gauge>
+  ├── label 区间（顶或左右标 0% / 中 / 100%）
+  ├── <gauge 主体>
+  │    ├── N 个离散 bar（默认 50，可 25-100）
+  │    │    ├── 亮 bars × M     ← 当前进度之前
+  │    │    └── 暗 bars × (N-M) ← 当前进度之后
+  │    └── marker（三角 / 圆点 / 竖线 等，指 marker_pos%）
+  └── 当前数值大字（可选，钉在 marker_x 之上）
 ```
 
-亮/暗 bar 数量根据 marker 位置手动分配（如 73% 对应 50 条里 37 亮 + 13 暗）。
+## 几何对齐铁律
 
-## Style
+```text
+total_bars       = 50（推荐；≥ 25 才有颗粒感，≤ 100 才不糊）
+marker_pos_pct   = data_value / max_value × 100         例：73 / 100 = 73%
 
-```css
-.chart-gauge {
-  width: 100%;
-}
-.chart-gauge .gauge-labels {
-  display: flex;
-  justify-content: space-between;          /* 0% 顶左、50% 居中、100% 顶右 */
-  margin-bottom: 16px;
-  /* 字体 / case / tracking 由主题 spec 决定，block 不预设 */
-}
-.chart-gauge .gauge-track {
-  position: relative;
-  height: var(--gauge-h, 64px);
-}
-.chart-gauge .gauge-track .bar-chart {
-  height: 100%;
-}
-.chart-gauge .gauge-marker {
-  position: absolute;
-  left: var(--marker-pos, 50%);
-  bottom: -16px;                            /* 在 bars 下方，三角朝上指 */
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-bottom: 10px solid var(--bar-color, var(--foreground));
-}
+bright_bars      = round(total_bars × marker_pos_pct / 100)   例：73% × 50 = 36.5 → 37
+dim_bars         = total_bars - bright_bars                   例：50 - 37 = 13
+
+marker_x_offset  = marker_pos_pct % of track_width
 ```
 
-## Slots / Vars
+**视觉对齐铁律**：marker 三角必须落在「亮/暗 cutover」位置 ± 1 个 bar 宽度内。如果 bright_bars 算出 37 但 marker 视觉落在 33%，算错或 css 漂移。
 
-| 名字 | 类型 | 默认 | 说明 |
-|---|---|---|---|
-| `chart-gauge`    | class   | — | 外容器 |
-| `gauge-labels`   | class   | — | 顶部 0%/中/100% 三 span（typography 由主题决定）|
-| `gauge-track`    | class   | — | bars + marker 复合区，relative 定位 |
-| `gauge-marker`   | class   | — | 三角形 SVG-less marker（CSS triangle）|
-| `--marker-pos`   | CSS var | `50%`  | marker 横向位置（左 % 或 px）|
-| `--gauge-h`      | CSS var | `64px` | track 高度 |
-| `--bar-color`    | CSS var | `var(--foreground)` | bars + marker 颜色 |
+## 尺寸算法
 
-## Constraints
+```text
+gauge_track_height  = 48-72px（按页内空间）
+gap                 = 1-2px
+bar_width           = (track_width - (total_bars - 1) × gap) / total_bars
+                      ≈ 1-3px（足够多 bar 时颗粒感强）
+```
 
-- **gauge 内部组合 bar-chart**——bars 数量、亮暗分布由 HTML 控制；marker `--marker-pos` 必须跟亮/暗 cutover 视觉对齐（数学上 marker_pos% × N_total ≈ N_bright）
-- bars 必须 ≥ 20 条（< 20 视觉颗粒太粗，看不出 gauge 效果）
-- gauge-labels 的 typography（mono / sans / case / tracking）由主题 spec 在更具体 selector 里锁定，**不**在 block 层硬编码
-- 跑在深色背景上（如 archive P6 coverage-panel）：外层容器在自己的 selector 里 override `--foreground: #ffffff`，bars + marker 自动跟着翻白
+## 必须按 design.md 决定的视觉
+
+| 决策 | 查 design.md |
+|---|---|
+| 亮 bar **颜色** | §2 Palette `var(--accent)` / `var(--primary)` / `var(--foreground)` |
+| 暗 bar **颜色** | `var(--muted)` 或亮 bar 同色 + `opacity: 0.3` |
+| marker **颜色** | 跟亮 bar 同 token（视觉锚一致） |
+| marker **形状** | 三角（默认 CSS triangle）/ 圆点 / 竖线 / 锚点 ——按主题装饰系统选 |
+| label **字** | §3 Typography（archive 风 = mono uppercase；CHASSAN 风 = serif italic + sans 混排） |
+| label **排布** | flex `space-between`（左 0% / 中 / 右 100%），或竖排在 gauge 右侧 |
+| bar **圆角** | §4 Shape `--radius-sm` 或 0（archive 锐角 = 0；圆润主题 1-2px） |
+| **数值大字（如有）** | §3 Typography hero size，钉在 marker_x 位置上方 |
+
+## 反例
+
+❌ marker 位置跟 bright/dim cutover **数学不对齐** —— gauge 失去意义
+
+❌ bars 数量 < 20 —— 颗粒太粗，看不出 gauge 感
+
+❌ 用 1 个连续渐变 bar 代替 N 离散 bar —— 那是 progress bar，不是 gauge
+
+❌ 抄 archive coverage-panel 的 mono uppercase + 白字 + 黑底配色 —— 那是 archive deck-specific 决策
 
 ## Why
 
-- 把 archive 原 `archive-coverage-gauge` 里的 mono caps、`#ffffff` 硬编码、`14px tile bars` 等风格化部分**剥到主题 spec**；block 只保留几何骨架（labels space-between / track relative / marker triangle / bar-chart 嵌入）
-- bars 没自己实现，**复用 bar-chart**——避免重复 flex 布局逻辑、未来 bar-chart 升级 gauge 自动跟进
-- marker 用 CSS triangle 而不是 SVG——节省 inline SVG 噪音，颜色靠 `border-bottom-color` 跟主题 var
+- gauge 视觉效力来自"颗粒数"——观众能数出 73 vs 75 的区别
+- marker = 数据真实位置；bars 颗粒 ≠ marker（颗粒是离散近似），所以两者必须**视觉上对齐**
+- N=50 是 archive sample 实测的甜点数（颗粒清晰 + bar 不会太细）；可调

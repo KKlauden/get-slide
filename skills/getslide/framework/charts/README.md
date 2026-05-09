@@ -1,32 +1,42 @@
 # framework/charts/
 
-**Chart SVG 转写参考**——不是必须用的 component 库。
+**Chart pattern 契约层**——3 份 chart pattern：bar / gauge / line。
 
-## 为什么留下这 3 份
+## 这是什么
 
-`components/` 和 `blocks/` 全删了——card / button / hero / feature-grid 这种基础 UI 现代 LLM 自己写没问题。但 **chart SVG 是数据可视化**，有数学几何（弧度 / 比例 / marker 位置 / tabular nums 对齐），AI 凭空写容易翻车。
+不是「component 库」也不是「CSS 模板」——是 **结构 + 算法契约**：
 
-这 3 份当**参考 pattern**留着，AI 写 chart 时翻它们做 reference，不是强制使用：
+- **结构**：chart 由什么部件组成（bars 区 / 数值 label / 横轴 label / baseline / caption 等）
+- **算法**：数据 → 像素的精确换算（按 max 等比 / bar 高度兜底 / marker 几何对齐）
+- **必须按 design.md 决定的视觉清单**（圆角 / 颜色 / 字 / 宽度——查 design.md token，不在文档里抄默认值）
 
-- **`chart-line-default.md`** — 多 series line chart 转写规范（来自 `@shadcn/chart-line-default`）。包含 dot / area-fill / annotation-pill / 注释箭头等 motif。是写 line chart 时的样板
-- **`bar-chart.md`** — 垂直 bars + height-only fill。常见用法：metric panel 横向比较、stage progression 4 列纵向 fill
-- **`chart-gauge.md`** — 50 bar gauge + percent marker + 0/50/100% labels。常见用法：覆盖率 / 进度 / 完成度
+## 为什么留下
 
-## 要不要在 deck 里直接用
+components / blocks 库（card / button / hero / numeral 等）已经全删——基础 UI 现代 LLM 自己写没问题。但 **chart 不一样**：
 
-看情况：
+- chart 是**数据可视化**——比例错了就是 bug（V3 测试时 AI 算高度差 0.1px 也行，但要点是必须按数据等比，不能凭感觉）
+- chart 几何（SVG viewBox / data → 坐标公式 / gauge marker 对齐）AI 容易翻车
+- chart 容易**被旧 paradigm 污染**（V3 测试发现 AI 翻 archive paradigm 的 bar-chart.md，下意识把 archive 的 6px 圆角 / mono labels 带到 CHASSAN 风 deck）
 
-- **直接 inline 进 deck.html** — 复杂主题（archive coverage panel、pitch P7 chart narrative）需要 chart 时这样做。把 chart .md 里的 SVG 模板 + CSS 整段贴到 deck 的 § COMPONENT CSS / inline 里，按 design.md 主题色 override
-- **学完自己写** — 简单 sparkline / 单一数据条不需要这些
+所以这 3 份 pattern 重写为「**只讲结构和算法，不讲视觉**」——AI 翻完学到怎么算 / 用什么部件，**视觉决策必须按当前 deck 的 design.md 自己写**。
 
-## 写新 chart 的流程
+## 3 份 pattern
 
-如果 deck 需要 chart，且这 3 份都不 fit：
+| 文件 | 用什么 | 不用什么 |
+|---|---|---|
+| `bar-chart.md` | 真实数据可视化（每条 bar 高度反映独立值） | progress / fill 进度图（用 gauge）/ rhythm 装饰条（自己写） |
+| `chart-gauge.md` | 单一进度值（"X% coverage"）+ N 个离散 bar 颗粒 + marker | 真实数据 chart（用 bar-chart）/ 圆形 / 半圆 gauge（自己写 SVG arc） |
+| `chart-line-default.md` | 时间 / 顺序序列（1-2 series + dot + area-fill + annotation） | bar 数据（bar-chart）/ 散点 / 雷达 / 饼图（自己写） |
 
-1. 用 `npx shadcn@latest view @shadcn/chart-<X>-<variant>` 拿源（React + Tailwind）
-2. 转写为 HTML + inline SVG + CSS（CSS 只用 `var(--xxx)`，吃 design.md token）
-3. 直接 inline 到 deck.html，**不**抽到 `framework/charts/` ——某 chart 跨 ≥2 deck 反复用再抽
+## 怎么用
+
+1. **读 pattern**：理解结构 / 算法 / 必填元素清单
+2. **算数据**：按 pattern 给的算法把 data → height / 坐标
+3. **写 HTML + CSS**：HTML 结构跟 pattern 一致；CSS **按 design.md 自己写**——查 §2 Palette / §3 Typography / §4 Shape token，不要照抄 archive / pitch 任何 chart CSS
+4. **验证**：bar 高度比例 = 数据比例？marker 跟 cutover 对齐？colors 跟整 deck 视觉一致？
 
 ## 不在这里的东西
 
-UI component（card / button / numeral / hero / feature-grid 等）——AI 自己写。
+- **基础 UI**（card / button / hero / numeral / pill / cards-row 等）—— AI 自己写
+- **chart 的 CSS / SVG 视觉模板** —— 它们带主题污染（V3 测试痛点），AI 必须按 design.md 重新写视觉
+- **新 chart 类型**（pie / radar / scatter 等）—— 参考 chart-line-default 末尾「v2 写新 chart 的转写规范」自己写
