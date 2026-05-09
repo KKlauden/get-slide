@@ -211,7 +211,7 @@ The `block:` sub-field describes **the page's "content shape"** — gives the AI
 | Cover | `cover (large hero + ambient motif + chrome)` |
 | Closing | `closing (recap 3 sentences + contact)` |
 
-**Chart sub-field**: when using a chart, consult one of the 3 SVG patterns in `framework/charts/`. Other UI is written by the AI; consult `samples/<theme>/<theme>.html` to see how each theme implements similar shapes.
+**Chart sub-field**: when using a chart, consult one of the 3 SVG patterns in `references/charts/` (read on demand only when the page actually contains a chart). Other UI is written by the AI; consult `samples/<theme>/<theme>.html` to see how each theme implements similar shapes.
 
 ---
 

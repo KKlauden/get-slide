@@ -10,7 +10,9 @@ description: Theme design contract — teaches the AI how to author a new design
 >
 > Every new deck drops one `design.md` into its own project folder, **strictly follows §1 – §7 of the schema below**, and starts with a `> Source: ...` line declaring the reference (image / URL / brand spec) the theme was built from.
 >
-> CSS is not hand-written inside `design.md`. When assembling the deck HTML, §8 substitutes the design.md values into `framework/design-tokens-template.css` and the result is inlined under the `§ TOKENS` block of `framework/deck.html`.
+> **§1–§7 contain no hand-written CSS** — those sections are pure prose + value tables. When assembling the deck HTML, §8 substitutes the §1–§7 values into `framework/design-tokens-template.css` and inlines the result under the `§ TOKENS` block of `framework/deck.html`.
+>
+> **§8 Append CSS is hand-written** in every `design.md`, but only for theme-level layout primitives — chrome 8-anchor positions, page-shell padding, decorative motifs, abs-layout primitives. It must **not** redefine tokens (those come from the template) and **not** carry over per-page selectors copied verbatim from a sample (those are content-shape-specific and don't transfer). See §8 for exact scope.
 
 ## What this document does
 
@@ -247,6 +249,49 @@ Examples:
 - **Geist → Inter**: nearly identical metrics; no tracking adjustment needed. Drop weight 510 if Inter Variable isn't loaded — fall back to weight 500.
 
 If the primary IS already system / open-source (`system-ui`, Inter, etc.), this section can simply state "no substitution needed."
+
+### CJK considerations
+
+The Type Scale and Principles above assume **Latin-dominant copy**. When a deck is predominantly Chinese / Japanese / Korean, apply the corrections below — these are not optional polish, they are corrections for real metric differences between Latin and CJK glyphs.
+
+**1. Line-length capacity is ~2× different**
+
+CJK characters are ~1em wide each; Latin words average ~0.5em per character. Estimation rule:
+
+- CJK chars per line ≈ `container_width / font_size`
+- Latin chars per line ≈ `container_width / (font_size × 0.5)`
+
+Worked example, 1920px container @ 88px hero:
+- CJK ≈ 21 chars per line
+- Latin ≈ 40 chars per line (~7–8 short words)
+
+**Hero hard cap**: at hero font sizes (≥ 88px), keep CJK to ≤ ~21 chars per line on a 1920px container. Longer titles must be **deliberately broken into 2 lines** at a sensible phrase boundary — don't rely on auto-wrap; the break point is a design decision. A 28-char Chinese title left to auto-wrap will land at an ugly mid-phrase boundary.
+
+**2. Leading needs +0.05–0.10 over Latin defaults**
+
+CJK glyphs are full-bodied squares with no ascender / descender — `line-height` that breathes for Latin reads cramped for CJK. Adjustments:
+
+- Hero Display / Display (`{type.size.4xl}`–`{type.size.3xl}`): Latin 1.05 → CJK 1.10–1.15
+- Card title (`{type.size.lg}`): Latin 1.15 → CJK 1.20–1.25
+- Body (`{type.size.md}`): Latin 1.55 → CJK 1.65–1.75
+
+**3. Font weight visual equivalence is offset by ~100**
+
+Most CJK system fonts (PingFang SC / Microsoft YaHei / Hiragino Sans GB) render heavier per weight class than Latin sans (Cabinet Grotesk / Inter / Geist). To match visual density:
+
+- Latin 700 ↔ CJK 600
+- Latin 600 ↔ CJK 500
+- Latin 500 ↔ CJK 400
+
+Practical rule: write a **single** `font-weight` per role using the Latin target — in a bilingual stack, the CJK fallback's heavier rendering naturally compensates, so one weight reads correctly across both scripts. Override per-element only if the mismatch is obvious in browser verification.
+
+**4. Latin / numerics inside CJK keep Latin font + tabular-nums**
+
+Mixed strings (`PSG-Audio 24px`, `9–12 月`, `2026 Q3`, `−0.02em`) should render Latin / digit characters in the Latin family (with tabular-nums for technical reading) and CJK characters in the CJK family. The default font-family stack — **Latin family first, CJK fallback last** — does this automatically.
+
+**Do NOT** prepend a CJK family to the stack to "make Chinese look better." That routes every digit through CJK metrics, loses tabular-nums and Latin kerning, and the deck reads like a 2008 office document.
+
+**Quick check, run at every hero / display size**: derive the CJK char-cap (`container_width / font_size`) and verify the copy fits. If it doesn't, either drop a font-size step or split into 2 lines deliberately at a phrase boundary.
 
 ---
 

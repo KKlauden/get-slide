@@ -1,6 +1,8 @@
-# framework/charts/
+# references/charts/
 
 **Chart Pattern Contract Layer** — 3 chart patterns: bar / gauge / line.
+
+All archive / pitch references in this folder are **negative examples illustrating theme-specificity**, NOT styles to copy.
 
 ## What this is
 

@@ -6,10 +6,10 @@
 
   <!--
   ==============================================================================
-   framework/deck.html — getslide v2 deck template (canonical copy source)
+   framework/deck.html — get-slide v2 deck template (canonical copy source)
   ==============================================================================
 
-  This is the HTML skeleton of the getslide framework. New decks follow this flow:
+  This is the HTML skeleton of the get-slide framework. New decks follow this flow:
 
     1. Create the folder `<my-deck>/` at the location you pick (NOT forced under samples/)
     2. Write `<my-deck>/design.md` per the framework/design.md schema
@@ -54,7 +54,7 @@
    - notes content follows framework/content.md §3 three rules
   -->
 
-  <title>getslide framework</title>
+  <title>get-slide framework</title>
 
   <style>
     /* ===========================================================
@@ -396,6 +396,7 @@
       }
       html, body {
         height: auto; overflow: visible;
+        margin: 0 !important; padding: 0 !important;
         background: var(--background);
       }
       .topbar, .sidebar, .thumb-rail { display: none !important; }
@@ -412,8 +413,14 @@
         left: 0 !important; top: 0 !important;
         transform: none !important;
         width: 1920px !important; height: 1080px !important;
-        border-radius: 0 !important; box-shadow: none !important;
+        border-radius: 0 !important;
         background: var(--background) !important;
+        /* Bleed-out: even if paper > 1920×1080 or the print-margin gutter
+           shows up, this 1000px spread shadow paints the slide's --background
+           outside the box, so no light gutter is visible. The JS above
+           mirrors page-shell's data-variant onto slide-shell, so
+           var(--background) here resolves to the page's actual color. */
+        box-shadow: 0 0 0 1000px var(--background) !important;
         page-break-after: always; break-inside: avoid;
         margin: 0 !important;
       }
@@ -473,7 +480,7 @@
       <div class="hairline-v"></div>
     </div>
     <div class="topbar-center">
-      <span class="title">getslide framework</span>
+      <span class="title">get-slide framework</span>
     </div>
     <div class="topbar-right">
       <button class="icon-btn" id="downloadBtn" title="Export PDF">
@@ -528,7 +535,7 @@
 
           <!-- Page content (block markup) -->
           <div class="placeholder-page">
-            <div class="ph-title">getslide framework</div>
+            <div class="ph-title">get-slide framework</div>
             <p class="ph-lede">
               This is framework/deck.html's self-demo page. For a new deck, delete
               both placeholder slides and generate one
@@ -606,6 +613,43 @@
    =========================================================== */
 (function () {
   const slides      = Array.from(document.querySelectorAll('.slide-shell'));
+  // Mirror data-variant from page-shell up to its parent slide-shell so
+  // var(--background) cascades correctly on slide-shell. Without this,
+  // slide-shell falls back to :root --background (white-ish), and any area
+  // outside page-shell — print-margin gutter, paper > 1920×1080 mismatch —
+  // shows the wrong color. With this, slide-shell + page-shell share the
+  // variant's --background and the print box-shadow bleeds the right color.
+  slides.forEach(s => {
+    const ps = s.querySelector(':scope > .page-shell[data-variant]');
+    if (ps) s.dataset.variant = ps.dataset.variant;
+  });
+
+  // Self-validate: warn in console if the deck still carries framework
+  // placeholders, or if pages are missing required attributes. Catches
+  // half-finished authoring (cp'd deck.html but skipped § SLIDES substitution,
+  // forgot to rename <title>, etc.) without any external tooling — open the
+  // deck, F12 console, see the warnings. Skip in preview mode (iframe).
+  if (!new URLSearchParams(location.search).has('preview')) {
+    const _issues = [];
+    if (document.querySelector('.placeholder-page')) {
+      _issues.push('framework `.placeholder-page` still in the DOM — § SLIDES was not substituted with deck content (deck.html cp\'d but not filled in?)');
+    }
+    if (document.title === 'get-slide framework') {
+      _issues.push('<title> still says "get-slide framework" — replace with the actual deck name');
+    }
+    const _noTitle = slides.filter(s => {
+      const p = s.querySelector(':scope > .page-shell');
+      return p && !p.hasAttribute('data-title');
+    }).length;
+    if (_noTitle) _issues.push(_noTitle + ' page-shell(s) missing data-title — overview grid + presenter NEXT card will fall back to "Slide N"');
+    const _noNotes = slides.filter(s => !s.querySelector(':scope > .page-shell > .notes')).length;
+    if (_noNotes) _issues.push(_noNotes + ' page-shell(s) missing <div class="notes"> — presenter SCRIPT card will be empty for those pages');
+    if (_issues.length) {
+      console.warn('%c[get-slide] deck self-check found ' + _issues.length + ' issue(s):', 'color:#c33;font-weight:bold');
+      _issues.forEach((m, i) => console.warn('  ' + (i + 1) + '. ' + m));
+    }
+  }
+
   const total       = slides.length;
   const canvas      = document.getElementById('canvas');
   const thumbRail   = document.getElementById('thumbRail');
@@ -840,7 +884,7 @@
     const { deckUrl, total, current, notes, titles } = ctx;
     return [
       '<!doctype html><html lang="en"><head>',
-      '<meta charset="utf-8"><title>Presenter · getslide</title>',
+      '<meta charset="utf-8"><title>Presenter · get-slide</title>',
       '<style>',
       '* { box-sizing: border-box; margin: 0; padding: 0; }',
       'body { height: 100vh; overflow: hidden; background: #0d0e10; color: #e8e9ec;',

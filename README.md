@@ -1,4 +1,8 @@
-# getslide
+<p align="center">
+  <img src="./assets/get-slide-header.png" alt="get-slide" width="100%" />
+</p>
+
+# get-slide
 
 > A 4-layer framework for AI to author HTML slide decks — single-file, 1920×1080, self-contained, with a built-in chrome runtime (presenter mode / overview / hash deep-link / preview / print).
 
@@ -8,16 +12,12 @@ Split a PPT-style deck into **4 layers**:
 
 | Layer | What it is | Files |
 |---|---|---|
-| framework | chrome runtime + design.md / content.md schema contracts | `skills/getslide/framework/` |
+| framework | chrome runtime + design.md / content.md schema contracts | `skills/get-slide/framework/` |
 | design | theme contract (atmosphere / palette / typography / shape / variants) | per-deck `<my-deck>/design.md` |
 | content | deck outline (per-page content + chrome + notes) | per-deck `<my-deck>/content.md` |
 | product | single-file `deck.html` artifact | per-deck `<my-deck>/<my-deck>.html` |
 
-> Alongside the framework, `skills/getslide/samples/<theme>/` ships maintained reference themes (pitch / archive) — read them as DNA / case studies, NOT as templates to fill.
-
-> v2.1 (2026-05-09) cut the `components/` and `blocks/` directories — basic UI (card / button / hero / numeral / pill etc.) is written directly by modern LLMs. Chart SVGs carry mathematical geometry, so 3 chart patterns stay in `framework/charts/` as reference.
-
-When authoring a new deck, the AI runs **Pre-flight 3 questions** (audience / style / starting point) first, then walks the 6-step Bootstrap: write `design.md` → write `content.md` → `cp framework/deck.html` → substitute `§ TOKENS` / `§ SLIDES` → visual self-check → browser verification.
+The AI workflow (iterative Pre-flight → streaming execution with checkpoints) lives in [`SKILL.md`](./skills/get-slide/SKILL.md) — auto-triggered when you ask the agent to build a deck.
 
 ## Install
 
@@ -30,16 +30,14 @@ Install once, works in every project:
 ```bash
 git clone https://github.com/KKlauden/get-slide.git
 mkdir -p ~/.claude/skills
-cp -r get-slide/skills/getslide ~/.claude/skills/getslide
+cp -r get-slide/skills/get-slide ~/.claude/skills/get-slide
 ```
 
 Restart Claude Code; the skill auto-discovers via SKILL.md frontmatter.
 
-> Note: the GitHub repo is `get-slide` (kebab-case URL), but the skill bundle inside is `getslide` (no hyphen, matching SKILL.md `name:`). The cp target must be `~/.claude/skills/getslide` — Claude Code matches the directory name to the SKILL frontmatter.
+Update later: `cd get-slide && git pull && cp -r skills/get-slide ~/.claude/skills/`.
 
-Update later: `cd get-slide && git pull && cp -r skills/getslide ~/.claude/skills/`.
-
-(Or symlink instead of cp: `ln -s "$PWD/get-slide/skills/getslide" ~/.claude/skills/getslide` — `git pull` then propagates without re-cp.)
+(Or symlink instead of cp: `ln -s "$PWD/get-slide/skills/get-slide" ~/.claude/skills/get-slide` — `git pull` then propagates without re-cp.)
 
 ### Option B — Project-local (per agent, or pinned version)
 
@@ -47,8 +45,8 @@ Each agent has its own project-local skill discovery path — `cp` the bundle to
 
 | Agent | Auto-discovers SKILL.md? | Project-local path |
 |---|---|---|
-| **Claude Code** | ✓ via SKILL.md frontmatter | `.claude/skills/getslide/` |
-| **Codex** | ✓ via SKILL.md frontmatter | `.codex/skills/getslide/` |
+| **Claude Code** | ✓ via SKILL.md frontmatter | `.claude/skills/get-slide/` |
+| **Codex** | ✓ via SKILL.md frontmatter | `.codex/skills/get-slide/` |
 | Cursor / Gemini / others | no native skill system | any path + protocol-file reference (see below) |
 
 ```bash
@@ -56,78 +54,28 @@ cd my-deck-project
 git clone https://github.com/KKlauden/get-slide.git ../get-slide
 
 # Claude Code:
-mkdir -p .claude/skills && cp -r ../get-slide/skills/getslide .claude/skills/getslide
+mkdir -p .claude/skills && cp -r ../get-slide/skills/get-slide .claude/skills/get-slide
 
 # Codex:
-mkdir -p .codex/skills && cp -r ../get-slide/skills/getslide .codex/skills/getslide
+mkdir -p .codex/skills && cp -r ../get-slide/skills/get-slide .codex/skills/get-slide
 ```
 
-Restart the agent after install — skills are loaded at session start.
+Restart the agent after install — skills are loaded at session start. For agents without native skill discovery (Cursor / Gemini / etc.), copy the bundle anywhere and reference `SKILL.md` from your protocol file.
 
-**For Cursor / Gemini / other agents without skill auto-discovery**, copy the bundle anywhere (e.g. `./skills/getslide/`) and reference SKILL.md from your protocol file (`AGENTS.md` / `GEMINI.md` / `.cursor/rules/`):
-
-```
-When asked to build a slide deck, read ./skills/getslide/SKILL.md and follow it.
-```
-
-## Build your first deck
-
-After installing, make a folder for your decks and run your AI agent from there — otherwise the AI will create deck folders wherever you happen to `cd`:
-
-```bash
-mkdir -p ~/decks && cd ~/decks
-```
-
-Open Claude Code (or another agent set up via Option B) and say:
-
-> Build me a deck about &lt;topic&gt;.
-
-The skill auto-triggers and walks you through **Pre-flight 3 questions** (audience / style / starting point), then generates `<my-deck>/` containing `design.md`, `content.md`, and `<my-deck>.html`.
-
-## Using a deck
-
-Open `<my-deck>/<my-deck>.html` in any browser. Self-contained — no server, no build, no external CDN.
-
-Keyboard shortcuts (handled by the chrome runtime):
-
-| Keys | Effect |
-|---|---|
-| ← → ↑ ↓ PgUp PgDn Space | page navigation |
-| `1`–`9` | jump directly to page N |
-| `F` | fullscreen / presenter mode |
-| `S` | presenter window (NEXT slide / SCRIPT / TIMER cards) |
-| `O` | overview grid |
-| `Esc` | close overlay |
-| `Cmd/Ctrl + P` | print to PDF — one slide per page |
-| `?preview=N` URL parameter | single-page chrome-less mode (used by presenter iframe) |
-
-Decks are **self-contained snapshots**. Updating the skill (`git pull` + re-cp) does NOT affect already-generated decks — they keep the chrome runtime they were built with. Only newly-generated decks pick up framework updates.
+Decks are **frozen snapshots** — re-running the skill won't update existing decks; only newly-generated ones pick up framework changes.
 
 ## Repo structure
 
 ```
 get-slide/
-├── README.md                  ← you are reading this (GitHub landing)
-├── LICENSE                    ← MIT
-└── skills/getslide/           ← skill bundle (the distribution unit)
-    ├── SKILL.md               ← skill canonical entry (Claude Code auto-discovers)
-    ├── framework/
-    │   ├── deck.html          ← canonical chrome runtime HTML skeleton
-    │   ├── design.md          ← theme design contract schema
-    │   ├── content.md         ← content structure contract schema
-    │   └── charts/            ← 3 chart SVG patterns (line / bar / gauge) — referenced when writing charts
-    └── samples/
-        ├── pitch/             ← YC / TechCrunch-style 9-page sample
-        └── archive/           ← industrial-archive-style FAULTLINE 9-page sample
+├── README.md
+├── LICENSE
+└── skills/get-slide/      ← skill bundle (the distribution unit — cp this)
+    ├── SKILL.md           ← skill canonical entry
+    ├── framework/         ← chrome runtime + schema contracts
+    ├── references/        ← on-demand pattern docs (charts/)
+    └── samples/           ← reference case studies (pitch, archive)
 ```
-
-## Status
-
-- ✅ chrome runtime (topbar / sidebar / paging / presenter / overview / hash / preview / print)
-- ✅ framework triplet (deck.html / design.md / content.md schemas)
-- ✅ pitch + archive — two complete samples
-- ✅ Pre-flight 3 questions gate (top of SKILL.md)
-- ⏳ Submit to Anthropic plugin marketplace (plugin conversion TODO)
 
 ## Design principles
 
