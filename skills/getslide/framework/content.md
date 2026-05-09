@@ -1,230 +1,230 @@
 ---
 name: content
 role: framework-skeleton
-description: 内容结构契约——教 AI 怎么写新的 content 文档（per-deck 一份）
+description: Content structure contract — teaches the AI how to author a new content.md (one per deck)
 ---
 
-# Content — 内容结构契约
+# Content — Content Structure Contract
 
-> framework 三件套之一：**runtime / design / content**。这份不是某份 deck 的内容，是"怎么写 deck 大纲"的标准。
+> One of the framework triplet: **runtime / design / content**. This is not a deck's content — it is the standard for "how to author a deck outline."
 >
-> 每份新 deck 在自己的项目文件夹下放一份 `content.md`（**不**强制 samples/ 下；AI 在用户选的位置建文件夹）。本文 §1 schema、§3 notes 三规、§4 data-title 是**强制**；§2 节奏 / §6 模板是**指南**。
+> Every new deck drops a `content.md` into its own project folder (it does **not** have to live under `samples/`; the AI puts the folder wherever the user picks). §1 schema, §3 three rules for notes, and §4 data-title are **required**; §2 rhythm and §6 templates are **guidance**.
 
-## 这份文档做什么
+## What this document does
 
-内容层是 deck 大纲层——一份 deck 有哪几页、各页用什么排布形状、各页填什么文字、演讲者怎么讲。它**不**决定主题视觉（那是 design.md 的事），**不**决定基础 UI 怎么写（那是 AI 直接写 HTML+CSS 吃 design.md token 的事，参考 sample 学 abs paradigm）。
+The content layer is the deck-outline layer — what pages a deck has, what layout shape each page uses, what text each page carries, how the presenter speaks. It does **NOT** decide theme visuals (that's design.md), and does **NOT** decide how basic UI is written (that's the AI writing HTML+CSS directly against design.md tokens, with samples as paradigm reference).
 
-每份 deck 的 `content.md` 是**给 AI 填 framework/deck.html 的指令清单**：
-- frontmatter：deck 元数据 + 主题指针
-- 每页一个 H2 段：`block` / `content` / `styling` / `notes` 四子段
+Every deck's `content.md` is **an instruction manifest the AI uses to fill `framework/deck.html`**:
+- frontmatter: deck metadata + theme pointer
+- per-page H2 block: 4 sub-fields (`block` / `content` / `styling` / `notes`)
 
 ---
 
-## §1 Schema（强制）
+## §1 Schema (required)
 
 ### Frontmatter
 
 ```yaml
 ---
-title:    <deck title>             # 必填
-author:   <name>                   # 必填
-date:     YYYY-MM-DD               # 必填，写绝对日期不写"今天"
-theme:    ./design.md              # 必填，指向同文件夹的 design.md
-brand:    "<品牌名>"               # 选填，chrome 锚点用
-brand-letter: "<单字母>"           # 选填，logo-mark 用（如 "P"）
-copyright: "<版权字符串>"          # 选填，可含 <br>
+title:    <deck title>             # required
+author:   <name>                   # required
+date:     YYYY-MM-DD               # required, absolute date — never "today"
+theme:    ./design.md              # required, points at the same-folder design.md
+brand:    "<brand name>"           # optional, used by chrome anchors
+brand-letter: "<single letter>"    # optional, used for logo-mark (e.g. "P")
+copyright: "<copyright string>"    # optional, may contain <br>
 ---
 ```
 
-### Per-page H2 + 4 子段
+### Per-page H2 + 4 sub-fields
 
-每页一个 `## P<N> — <Title>` 标题，下面带 4 子段（**bullet 格式，自由形态**）：
+Every page is a `## P<N> — <Title>` heading followed by 4 sub-fields (**bullet format, free-form**):
 
 ```markdown
 ## P1 — Cover
 
-- **block**: <block 名>(可链 + chrome 锚点) [+ <子 block>]
-- **variant**: <variant 名>           # 对应 design.md §5 variant
-- **grid 模式**: strict | flow        # strict = 用 12×8 网格，flow = 自由 abs 钉位
+- **block**: <block name>(can chain + chrome anchor) [+ <sub-block>]
+- **variant**: <variant name>         # corresponds to design.md §5 variant
+- **grid mode**: strict | flow        # strict = use the 12×8 grid; flow = free abs pinning
 - **content**:
-  - title: `<文本>`
-  - lede:  `<文本>`
-  - <其他字段，按 block 需求>
-- **placement**:                      # 仅 strict 模式 / 复杂 abs 时填
-  - <element>: `.h1-9 .v6-7` 或 `top:-300; right:-237; ...`
+  - title: `<text>`
+  - lede:  `<text>`
+  - <other fields, per the block's needs>
+- **placement**:                      # only for strict mode / complex abs
+  - <element>: `.h1-9 .v6-7` or `top:-300; right:-237; ...`
 - **chrome**:
-  - top-left:     `<填充内容 / SVG / 多行 <br>>`
+  - top-left:     `<filled content / SVG / multiline <br>>`
   - top-right:    `<...>`
   - bottom-left:  `<...>`
   - bottom-right: `<...>`
-- **chrome-rule**: default | top | off    # 顶部 hairline 位置，不写 = default
+- **chrome-rule**: default | top | off    # top hairline position; omit = default
 - **notes**: |
-    [演讲者逐字稿，150-300 字，遵循 §3 三规]
+    [presenter verbatim, 150–300 chars (CN) / 150–200 words (EN), follows §3 three rules]
 ```
 
-### 子段含义
+### Sub-field semantics
 
-| 子段 | 必填 | 说明 |
+| Sub-field | Required | Notes |
 |---|---|---|
-| `block` | ✅ | 主 block 名（参考 §5 索引）+ 可选附属 block 链接（"+ ambient-frames"）|
-| `variant` | ✅ | 对应 design.md §5 声明的 variant 之一 |
-| `grid 模式` | ✅ | strict（12×8 grid 命中 track）/ flow（自由 abs / 普通文档流）|
-| `content` | ✅ | 该页 block 需要的文本/数据点；字段名跟 block .md 的 slot 对应 |
-| `placement` | ⚪ | strict 模式下用 grid track 简记法（`.h1-9 .v6-7`），flow 模式下用 abs px 写法 |
-| `chrome` | ✅ | 8 锚点中实际填充的（不填的写"空"或省略行）|
-| `chrome-rule` | ⚪ | default / top / off 三选一，不写 = default |
-| `styling` | ⚪ | token 覆盖（`font-size: 64px` 等）；用 design.md token 不写 hex |
-| `notes` | ✅ | 演讲者逐字稿，150-300 字 |
+| `block` | ✅ | Primary block name (per §5 index) + optional appended-block chain ("+ ambient-frames") |
+| `variant` | ✅ | One of the variants declared in design.md §5 |
+| `grid mode` | ✅ | strict (12×8 grid hitting tracks) / flow (free abs / regular flow) |
+| `content` | ✅ | Text / data points needed by the block; field names match the block's slots |
+| `placement` | ⚪ | strict mode: grid-track shorthand (`.h1-9 .v6-7`); flow mode: abs px notation |
+| `chrome` | ✅ | The 8 anchors actually filled (write "empty" or omit the line if not used) |
+| `chrome-rule` | ⚪ | one of default / top / off; omit = default |
+| `styling` | ⚪ | Token overrides (`font-size: 64px` etc.); use design.md tokens, not hex |
+| `notes` | ✅ | Presenter verbatim, 150–300 chars (CN) / 150–200 words (EN) |
 
-### 字段值约定
+### Field-value conventions
 
-- **文本字段一律 backtick 包裹**：`` ` `` `<br>` 算文本一部分
-- **路径 / 简记法用代码 fmt**：``\`top: 280, left, width 700\``
-- **grid track 简记法**：`.h<a>-<b> .v<c>-<d>`（h = horizontal track，v = vertical）
-- **abs 钉位**：用 px 整数，多个属性用 `;` 隔开
+- **All text fields are wrapped in backticks**: `` ` `` `<br>` is part of the text
+- **Paths / shorthand use code formatting**: ``\`top: 280, left, width 700\``
+- **Grid-track shorthand**: `.h<a>-<b> .v<c>-<d>` (h = horizontal track, v = vertical)
+- **Abs pinning**: integer px; multiple properties separated by `;`
 
 ---
 
-## §2 页数 / 叙事节奏（指南）
+## §2 Page count / narrative rhythm (guidance)
 
-### 9 页 pitch deck（标准）
+### 9-page pitch deck (standard)
 
 ```
-1. Cover     —— 主题钩子 + 一行 lede
-2. Contents  —— 目录（3-5 项）
-3. About     —— 是谁 / 在做什么
-4. Problem   —— 问题陈述 + 数据点
-5. Solution  —— 方案概览
-6. Solution sub —— 方案细节 / 数据
-7. Performance —— 关键指标
-8. Market    —— 市场 / 全球数据（可叠 dark 渐变）
-9. Closing   —— 收尾呼吁
+1. Cover     —— topic hook + one-line lede
+2. Contents  —— TOC (3–5 items)
+3. About     —— who you are / what you do
+4. Problem   —— problem statement + data points
+5. Solution  —— solution overview
+6. Solution sub —— solution details / data
+7. Performance —— key metrics
+8. Market    —— market / global data (can stack with dark gradient)
+9. Closing   —— closing call to action
 ```
 
-### 5 页快讲
+### 5-page short
 
 ```
 1. Cover
 2. Problem
-3. Solution（含数据）
+3. Solution (with data)
 4. Validation / Stats
 5. CTA / Closing
 ```
 
-### 3 页 mini
+### 3-page mini
 
 ```
 1. Cover
-2. Hero point（含数据）
+2. Hero point (with data)
 3. Closing
 ```
 
-### Variant 节奏建议
+### Variant rhythm guidance
 
-- **冲击点用 dark / accent variant**——cover、closing、关键数据页
-- **常规 body 用 default variant**（lite / 浅色）
-- **过渡 / 情绪页用第三 variant**（如 forest）
-- 变体不要过密——9 页里 dark 不超过 3 页，否则失冲击
+- **Use dark / accent variants for impact moments** — cover, closing, key data pages
+- **Use the default variant for regular body** (lite / light)
+- **Use a third variant for transitions / mood pages** (e.g. forest)
+- Don't over-rotate — within 9 pages, no more than 3 dark pages, otherwise impact dilutes
 
 ---
 
-## §3 Notes 写作三规（强制）
+## §3 Three rules for writing notes (required)
 
-每页 `notes` 子段写演讲者逐字稿。**三规缺一不可**。
+The `notes` sub-field on every page carries the presenter verbatim. **All three rules are non-negotiable.**
 
-### 规则一：不是讲稿，是提示信号
+### Rule 1: prompts, not a script
 
-❌ **错**（写成完整讲稿，演讲者会念）：
-> 大家好，我叫张三，今天给大家介绍 FAULTLINE。FAULTLINE 是一家做地质监测的公司，我们的使命是为全球关键基础设施提供实时风险情报。我们已经在 47 个国家部署了超过 14,000 台传感器……
+❌ **Wrong** (full script — the presenter would read it aloud):
+> Hello everyone, my name is Zhang San. Today I'd like to introduce FAULTLINE. FAULTLINE is a company that builds geological monitoring; our mission is to provide real-time risk intelligence for global critical infrastructure. We have already deployed over 14,000 sensors across 47 countries...
 
-✅ **对**（关键词 + 过渡句，给演讲者钩子）：
-> 开场白：今天介绍 **FAULTLINE**——全球关键基础设施的**实时地质风险情报网络**。
+✅ **Right** (key terms + transition sentences — hooks for the presenter):
+> Opening: today's intro is **FAULTLINE** — a **real-time geological risk intelligence network** for global critical infrastructure.
 >
-> 先做个类比：所有大型工程都有传感器，但读数是**孤岛式**的——大坝、桥梁、地铁各自为政，没人做横向关联。
+> First, an analogy: every large engineering project has sensors, but the readings are **siloed** — dams, bridges, subways are independent silos with no horizontal correlation.
 >
-> 接下来用三个数据点说明**规模**，然后看产品落地，最后用全球部署收尾。
+> Next, three data points to show **scale**, then a product walkthrough, and we close with global deployment.
 
-**核心特征**：
-- 关键名词 + 数字 **加粗** 当眼神落点
-- 过渡句独立成段（"接下来…"、"先说…"）
-- 不写完整句子的中间填充——演讲者自己接
+**Core characteristics**:
+- **Bold** key nouns + numbers as eye-anchors for the presenter
+- Transition sentences as standalone paragraphs ("Next..." / "First...")
+- Don't write full sentences with filler — let the presenter complete the thought
 
-### 规则二：每页 150-300 字（2-3 分钟节奏）
+### Rule 2: 150–300 chars (CN) / 150–200 words (EN) per page (≈ 2–3 minute pace)
 
-太短演讲者抓不住要点；太长成讲稿。中文 200 字、英文 150 词上下最舒服。
+Too short → the presenter loses the thread; too long → it becomes a script. Around 200 CN chars or 150 EN words is the sweet spot.
 
-### 规则三：用口语，不用书面语
+### Rule 3: spoken style, not written style
 
-| ❌ 书面 | ✅ 口语 |
+| ❌ Written | ✅ Spoken |
 |---|---|
-| 因此 | 所以 |
-| 该方案 | 这个方案 |
-| 综上所述 | 总的来说 |
-| 鉴于 | 考虑到 |
-| 旨在 | 想 |
-| 我们将于…… | 我们打算 / 我们要 |
+| Therefore | So |
+| The aforementioned solution | This solution |
+| In summary | All in all |
+| In view of | Given |
+| Aims to | Wants to |
+| We will, on... | We're going to |
 
-口语也意味着：短句优先（< 25 字一句），主谓宾清楚不绕。
+Spoken style also implies: short sentences first (< 25 chars / ≈ 15 words per sentence), clear subject-verb-object without circumlocution.
 
-### 范本
+### Sample
 
 ```yaml
 notes: |
-  收尾页：用三个递进的**数量级**收束——LOCAL 230 台、REGIONAL 14K 台、PLANETARY **1.4M 行星网格**。
+  Closing page: wrap up with three escalating **orders of magnitude** — LOCAL 230 units, REGIONAL 14K units, PLANETARY **1.4M planetary grid**.
 
-  每个数量级背后是不同的技术挑战：LOCAL 解决"有没有"，REGIONAL 解决"互联互通"，PLANETARY 解决"全球统一观测"。
+  Each order represents a different technical challenge: LOCAL solves "do they exist", REGIONAL solves "are they connected", PLANETARY solves "global unified observation".
 
-  我们今天处于 REGIONAL 的中段。对 FAULTLINE 在做的事感兴趣的话，下来聊。**谢谢。**
+  We sit at the middle of REGIONAL today. If FAULTLINE's work resonates, let's chat after. **Thank you.**
 ```
 
 ---
 
-## §4 data-title 强制
+## §4 data-title is required
 
-每个 page-shell 必须有 `data-title="..."`——O 键 overview 网格 + S 键 presenter NEXT 卡片靠这个。
+Every page-shell must carry `data-title="..."` — the O-key overview grid and the S-key presenter NEXT card depend on it.
 
-content.md H2 标题（`## P1 — Cover`）的 "— " 之后部分**就是** `data-title` 的值。AI 拼 sample 时直接抄。
+The text after "— " in a content.md H2 (`## P1 — Cover`) **is** the value of `data-title`. The AI copies it verbatim when assembling the deck.
 
-例：
+Examples:
 - `## P1 — Cover` → `data-title="Cover"`
 - `## P3 — About FAULTLINE` → `data-title="About FAULTLINE"`
 - `## P6 — Sensor Performance` → `data-title="Sensor Performance"`
 
-**不要**写 emoji、过长（>30 字符）、含特殊字符的 title——overview 卡片宽度有限。
+**Don't** use emoji, overly long titles (>30 characters), or special characters — the overview card has limited width.
 
 ---
 
-## §5 `block:` 子段写什么
+## §5 What to write in the `block:` sub-field
 
-v2.1 已**砍掉** `components/` + `blocks/` 库——基础 UI（card / button / hero / numeral / pill / cards-row / feature-grid 等）由 AI 直接写 HTML+CSS（吃 design.md token）。
+v2.1 has **cut** the `components/` and `blocks/` library — basic UI (card / button / hero / numeral / pill / cards-row / feature-grid, etc.) is now written directly by the AI in HTML+CSS (consuming design.md tokens).
 
-`block:` 子段写**这一页的「内容形状描述」**——给 AI 看出这页要排什么样，不绑定具体 class 名：
+The `block:` sub-field describes **the page's "content shape"** — gives the AI a sense of what shape the page should hold; it does NOT bind to a specific class name:
 
-| 内容形状 | block: 子段写法举例 |
+| Content shape | Example `block:` syntax |
 |---|---|
-| 大字 hero + lede | `hero (centered title + lede)` 或 `hero-bottom-anchored (88px title)` |
-| 多列对比 | `2-up compare (left frame A vs right frame B)` 或 `4-up zig-zag compare` |
-| 编号 list | `numbered-list (3 rows: prefix / label / desc, hairline 分隔)` |
-| 大数字 stat | `mega-stat (200px num + caption)` 或 `3-up stat-cards` |
-| Quote 页 | `pull-quote-only (centered serif italic, 大字)` |
-| Chart | `chart-line (timeline + 2 series)` 或 `chart-gauge (73% with marker)` |
-| Cover | `cover (大字 hero + ambient motif + chrome)` |
-| Closing | `closing (recap 三句 + contact)` |
+| Large hero + lede | `hero (centered title + lede)` or `hero-bottom-anchored (88px title)` |
+| Multi-column compare | `2-up compare (left frame A vs right frame B)` or `4-up zig-zag compare` |
+| Numbered list | `numbered-list (3 rows: prefix / label / desc, hairline divider)` |
+| Mega stat | `mega-stat (200px num + caption)` or `3-up stat-cards` |
+| Quote page | `pull-quote-only (centered serif italic, large)` |
+| Chart | `chart-line (timeline + 2 series)` or `chart-gauge (73% with marker)` |
+| Cover | `cover (large hero + ambient motif + chrome)` |
+| Closing | `closing (recap 3 sentences + contact)` |
 
-**chart 子段**：如果用 chart，参考 `framework/charts/` 里 3 份 SVG pattern。其他 UI AI 自己写，参考 `samples/<theme>/<theme>.html` 看主题怎么实现。
+**Chart sub-field**: when using a chart, consult one of the 3 SVG patterns in `framework/charts/`. Other UI is written by the AI; consult `samples/<theme>/<theme>.html` to see how each theme implements similar shapes.
 
 ---
 
-## §6 常用页模板（指南）
+## §6 Common page templates (guidance)
 
 ### Cover
 ```markdown
 - **block**: hero-block + ambient-frames
-- **variant**: <封面 variant>
-- **grid 模式**: strict
+- **variant**: <cover variant>
+- **grid mode**: strict
 - **content**:
-  - title: `<两行 hook>`
-  - lede:  `<一行 tagline>`
+  - title: `<two-line hook>`
+  - lede:  `<one-line tagline>`
 - **placement**:
   - hero-block: `.h1-9 .v6-7`
 - **chrome**:
@@ -232,38 +232,38 @@ v2.1 已**砍掉** `components/` + `blocks/` 库——基础 UI（card / button 
   - top-right: `<copyright>`
   - bottom-right: `01`
 - **notes**: |
-  [开场白 — 介绍主题 + 听众期待]
+  [Opening — introduce the theme + audience expectation]
 ```
 
 ### Contents / TOC
 ```markdown
-- **block**: <toc / cards-row / 自定义>
+- **block**: <toc / cards-row / custom>
 - **variant**: lite
 - **content**:
-  - 3-5 项目录条目，每项 num + label
-- **chrome**: 同其他页结构
-- **notes**: [一句过渡："今天会讲三件事……"]
+  - 3–5 TOC entries, each with num + label
+- **chrome**: same as other pages
+- **notes**: [a single transition sentence: "Today covers three things..."]
 ```
 
 ### Stat / Hero number
 ```markdown
 - **block**: stat-split / numeral
-- **variant**: <强调 variant，dark/accent>
+- **variant**: <accent variant, dark/accent>
 - **content**:
   - number: `92%`
   - label: `<one-line context>`
-- **notes**: [数字背后的一句叙事]
+- **notes**: [a sentence of narrative behind the number]
 ```
 
 ### Chart narrative
 ```markdown
-- **block**: chart-card + <chart-line-default 等>
+- **block**: chart-card + <chart-line-default etc.>
 - **variant**: lite or accent
 - **content**:
   - title: `<chart title>`
   - data: [12, 18, 27, 38, 51, 64, 76, 86]
   - annotation: `↗ 7× baseline`
-- **notes**: [chart 看点 + 解读]
+- **notes**: [chart highlights + interpretation]
 ```
 
 ### Closing / CTA
@@ -271,16 +271,16 @@ v2.1 已**砍掉** `components/` + `blocks/` 库——基础 UI（card / button 
 - **block**: hero-block + contact-list (optional)
 - **variant**: lite or accent
 - **content**:
-  - title: `<收尾钩子>`
-  - body:  `<下一步行动>`
-- **notes**: [收尾词 — "谢谢" / "下来聊" / 问答邀请]
+  - title: `<closing hook>`
+  - body:  `<next steps>`
+- **notes**: [closing words — "Thanks" / "Let's chat after" / Q&A invitation]
 ```
 
 ---
 
-## §7 content.md 空白模板
+## §7 content.md blank template
 
-新 deck 直接 cp 这份骨架到 `<my-deck>/content.md` 开始填（`<my-deck>` 是你为这份 deck 选的文件夹）：
+For a new deck, copy this skeleton verbatim into `<my-deck>/content.md` and start filling (`<my-deck>` is the folder you picked for this deck):
 
 ```markdown
 ---
@@ -288,24 +288,24 @@ title:        <deck title>
 author:       <name>
 date:         YYYY-MM-DD
 theme:        ./design.md
-brand:        "<品牌>"
+brand:        "<brand>"
 brand-letter: "<X>"
 copyright:    "<copyright string>"
 ---
 
 # <Deck Name>
 
-[一段叙事 — 这份 deck 是什么、对谁讲、变体节奏]
+[A narrative paragraph — what this deck is, who it's for, the variant rhythm]
 
-**Variant 节奏**（N 页）：v1 → v2 → v3 → ...
-**叙事线**: cover → ... → closing
+**Variant rhythm** (N pages): v1 → v2 → v3 → ...
+**Storyline**: cover → ... → closing
 
 ---
 
 ## P1 — Cover
 - **block**: hero-block + ambient-frames
 - **variant**: <v>
-- **grid 模式**: strict
+- **grid mode**: strict
 - **content**:
   - title: `<...>`
   - lede:  `<...>`
@@ -316,7 +316,7 @@ copyright:    "<copyright string>"
   - top-right: `<...>`
   - bottom-right: `01`
 - **notes**: |
-    [开场白 150-300 字]
+    [Opening — 150–300 chars / 150–200 words]
 
 ## P2 — <Title>
 ...
@@ -327,19 +327,19 @@ copyright:    "<copyright string>"
 
 ---
 
-## Constraints（不可违反）
+## Constraints (do not violate)
 
-- **每页必有 4 子段**：block / variant / content / chrome（chrome 子项可写"空"，但 8 锚点必须显式声明每个的状态）
-- **每页必有 notes**——不写默认空字符串，但 H2 段必须有 `notes:` 子段（即使空也得有，提醒后期补）
-- **theme 指向 ./design.md**——不写绝对路径不写其他主题文件
-- **block 字段不能为空**——每页必须有主 block 名
-- **token 覆盖在 styling 子段写**——不在 content 子段混入 CSS
-- **H2 标题 = data-title**——拼 sample 时 1:1 抄到 page-shell
+- **Every page has 4 sub-fields**: block / variant / content / chrome (chrome's items may be "empty", but each of the 8 anchors must be explicitly declared)
+- **Every page has notes** — if not written, default to an empty string, but the H2 block must contain a `notes:` sub-field (even empty — it's a reminder to fill in later)
+- **`theme:` points at `./design.md`** — never an absolute path, never a different theme file
+- **`block:` cannot be empty** — every page needs a primary block name
+- **Token overrides go in the `styling:` sub-field** — don't mix CSS into the `content` sub-field
+- **H2 title = data-title** — copy 1:1 into the page-shell when assembling
 
 ## Why
 
-- **每页 4 子段**逼 AI 把"用什么砖、装什么内容、放哪里、怎么讲"一次性想清楚——避免半成品页
-- **notes 强制**让演讲者模式 (S 键) 一开始就有数据；没逐字稿可以留空但**段必须存在**
-- **H2 = data-title**保证 overview 网格、presenter 卡片字段全 9 页有内容
-- **frontmatter theme 指针**让一份 content.md 可换皮——`theme: ./design.md` 改路径就能跑另一套主题
-- **页数节奏 / variant 节奏**给的是建议不是死规——每个 deck 自己叙事，本文档负责 **AI 不会写出 0 页 cover 或 12 页全 dark** 这种破节奏
+- **4 sub-fields per page** force the AI to settle "what brick / what content / where / how to talk about it" up front — preventing half-baked pages
+- **Notes are required** so presenter mode (S key) has data on day one; pages without verbatim may leave notes empty, but **the field must exist**
+- **H2 = data-title** ensures the overview grid and presenter cards have content for all 9 pages
+- **Frontmatter `theme:` pointer** lets one content.md re-skin — change the path and a different theme drives the deck
+- **Page-count rhythm / variant rhythm** are guidance, not law — every deck owns its own narrative; this doc only ensures the AI doesn't produce a 0-cover deck or a 12-page all-dark mess

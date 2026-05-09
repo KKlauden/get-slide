@@ -1,34 +1,34 @@
 # getslide
 
-> AI 写 HTML slide deck 的 4 层框架——一份单文件、1920×1080、self-contained，自带 chrome runtime（演讲者模式 / overview / hash 深链 / preview / print）。
+> A 4-layer framework for AI to author HTML slide decks — single-file, 1920×1080, self-contained, with a built-in chrome runtime (presenter mode / overview / hash deep-link / preview / print).
 
-## 是什么
+## What it is
 
-把 PPT 风格的 deck 拆成 **4 层**：
+Split a PPT-style deck into **4 layers**:
 
-| 层 | 是什么 | 文件 |
+| Layer | What it is | Files |
 |---|---|---|
-| framework | chrome runtime + design.md / content.md schema 契约 | `skills/getslide/framework/` |
-| sample | 当 case study 读的参考主题（pitch / archive） | `skills/getslide/samples/<theme>/` |
-| design | 主题契约（atmosphere / palette / typography / shape / variants） | per-deck `<my-deck>/design.md` |
-| content | deck 大纲（每页内容 + chrome + notes） | per-deck `<my-deck>/content.md` |
-| product | 单文件 deck.html 产物 | per-deck `<my-deck>/<my-deck>.html` |
+| framework | chrome runtime + design.md / content.md schema contracts | `skills/getslide/framework/` |
+| sample | case-study reference themes (pitch / archive) — read as DNA, NOT as templates to fill | `skills/getslide/samples/<theme>/` |
+| design | theme contract (atmosphere / palette / typography / shape / variants) | per-deck `<my-deck>/design.md` |
+| content | deck outline (per-page content + chrome + notes) | per-deck `<my-deck>/content.md` |
+| product | single-file `deck.html` artifact | per-deck `<my-deck>/<my-deck>.html` |
 
-> v2.1（2026-05-09）砍掉 `components/` + `blocks/` 目录——基础 UI（card / button / hero / numeral / pill 等）由现代 LLM 直接写。chart SVG 因为有数学几何，3 份 pattern 留在 `framework/charts/` 当参考。
+> v2.1 (2026-05-09) cut the `components/` and `blocks/` directories — basic UI (card / button / hero / numeral / pill etc.) is written directly by modern LLMs. Chart SVGs carry mathematical geometry, so 3 chart patterns stay in `framework/charts/` as reference.
 
-写新 deck 时，AI 先跑 **Pre-flight 3 问**（受众 / 风格 / 起点），再走 6 步 Bootstrap：写 design.md → 写 content.md → cp framework/deck.html → 替换 § TOKENS / § SLIDES → 视觉自检 → 浏览器验证。
+When authoring a new deck, the AI runs **Pre-flight 3 questions** (audience / style / starting point) first, then walks the 6-step Bootstrap: write `design.md` → write `content.md` → `cp framework/deck.html` → substitute `§ TOKENS` / `§ SLIDES` → visual self-check → browser verification.
 
-## 安装到不同 AI agent
+## Install for different AI agents
 
-### Claude Code（推荐）
+### Claude Code (recommended)
 
 ```bash
 git clone https://github.com/<owner>/getslide.git
 cp -r getslide/skills/getslide ~/.claude/skills/getslide
-# 重启 Claude Code，输入 "做一份关于 X 的 deck" 自动触发 skill
+# Restart Claude Code; type "make me a deck about X" to auto-trigger the skill
 ```
 
-或符号链接：
+Or symlink:
 
 ```bash
 ln -s "$PWD/getslide/skills/getslide" ~/.claude/skills/getslide
@@ -36,10 +36,10 @@ ln -s "$PWD/getslide/skills/getslide" ~/.claude/skills/getslide
 
 ### Codex CLI / Gemini CLI / Cursor
 
-这些 agent 没有「skill auto-discovery」概念，但都会 session 启动读 `AGENTS.md` / `GEMINI.md` / `.cursor/rules/`。在你 project 根目录的对应文件里加：
+These agents don't have a "skill auto-discovery" concept, but they all read `AGENTS.md` / `GEMINI.md` / `.cursor/rules/` at session start. Add the following to your project root file:
 
 ```markdown
-# AGENTS.md（在你 project 根）
+# AGENTS.md (in your project root)
 
 When the user asks to build a slide deck, follow the getslide skill:
 - Skill canonical: <absolute path>/getslide/skills/getslide/SKILL.md
@@ -48,63 +48,63 @@ When the user asks to build a slide deck, follow the getslide skill:
 - Hard rules: read this repo's [AGENTS.md](<path>/getslide/AGENTS.md)
 ```
 
-或者直接在你 project 拷一份 skill bundle：
+Or copy the skill bundle directly into your project:
 
 ```bash
 cp -r <path>/getslide/skills/getslide ./skills/getslide
-# 让 agent 在 cwd 就找到 skill 内容
+# Lets the agent find skill content from the cwd
 ```
 
-### 一键 scaffolder（待做）
+### One-line scaffolder (TODO)
 
-未来：
+Future:
 
 ```bash
 npx getslide init my-deck-project
 ```
 
-会自动 scaffold 项目结构 + 安装 skill bundle + 配好 AGENTS.md / CLAUDE.md。
+will scaffold the project structure + install the skill bundle + wire up `AGENTS.md` / `CLAUDE.md`.
 
-## Repo 结构
+## Repo structure
 
 ```
 getslide/
-├── AGENTS.md                  ← 项目 hard rules + skill 路由（短）
-├── CLAUDE.md                  ← stub「See AGENTS.md」
-├── README.md                  ← 你正在读这份
+├── AGENTS.md                  ← project hard rules + skill routing (short)
+├── CLAUDE.md                  ← stub "See AGENTS.md"
+├── README.md                  ← you are reading this
 ├── old/                       ← v1 archive
 └── skills/getslide/           ← skill bundle
-    ├── SKILL.md               ← skill canonical 入口（Claude Code 自动发现）
-    ├── PLAN.md                ← 架构决策 / 路线
+    ├── SKILL.md               ← skill canonical entry (Claude Code auto-discovers)
+    ├── PLAN.md                ← architecture decisions / roadmap
     ├── framework/
-    │   ├── deck.html          ← chrome runtime canonical HTML 骨架
-    │   ├── design.md          ← 主题设计契约 schema
-    │   └── content.md         ← 内容结构契约 schema
-    │   └── charts/            ← 3 份 chart SVG pattern（line / bar / gauge）—— AI 写 chart 时参考
+    │   ├── deck.html          ← canonical chrome runtime HTML skeleton
+    │   ├── design.md          ← theme design contract schema
+    │   ├── content.md         ← content structure contract schema
+    │   └── charts/            ← 3 chart SVG patterns (line / bar / gauge) — referenced when writing charts
     └── samples/
-        ├── pitch/             ← YC / TechCrunch 风 9 页 sample
-        └── archive/           ← 工业档案风 FAULTLINE 9 页 sample
+        ├── pitch/             ← YC / TechCrunch-style 9-page sample
+        └── archive/           ← industrial-archive-style FAULTLINE 9-page sample
 ```
 
-## 状态
+## Status
 
-- ✅ chrome runtime（topbar / sidebar / 翻页 / 演讲者 / overview / hash / preview / print）
-- ✅ framework/ 三件套（deck.html / design.md / content.md schema）
-- ✅ pitch + archive 两份完整 sample
-- ✅ Pre-flight 3 问 gate（SKILL.md 顶部）
-- ⏳ npx getslide init scaffolder
-- ⏳ 提交 Anthropic plugin marketplace（plugin 转换待做）
+- ✅ chrome runtime (topbar / sidebar / paging / presenter / overview / hash / preview / print)
+- ✅ framework triplet (deck.html / design.md / content.md schemas)
+- ✅ pitch + archive — two complete samples
+- ✅ Pre-flight 3 questions gate (top of SKILL.md)
+- ⏳ `npx getslide init` scaffolder
+- ⏳ Submit to Anthropic plugin marketplace (plugin conversion TODO)
 
-详细路线见 [`skills/getslide/PLAN.md`](./skills/getslide/PLAN.md)。
+Detailed roadmap: [`skills/getslide/PLAN.md`](./skills/getslide/PLAN.md).
 
-## 设计原则
+## Design principles
 
-1. **单文件 deck**——deck 是 archivable 文档，不是动态 app
-2. **token 锁死 shadcn 命名**——避免命名漂移
-3. **chrome runtime 是 canonical**——所有 deck 共享同一份运行时
-4. **design.md 是主题契约**——CSS 由 §8 程序生成，不在 design.md 写 raw CSS（除 §8 Append 段）
-5. **content.md 是内容大纲**——每页 4 子段（block / variant / content / chrome / notes）
+1. **Single-file deck** — a deck is an archivable document, not a dynamic app
+2. **Token names locked to shadcn** — avoids naming drift
+3. **Chrome runtime is canonical** — every deck shares the same runtime
+4. **`design.md` is the theme contract** — CSS is generated by §8; raw CSS does not live in `design.md` (except the §8 Append block)
+5. **`content.md` is the content outline** — every page has 4 sub-blocks (block / variant / content / chrome / notes)
 
 ## License
 
-MIT（待加）。
+MIT (TBD).
