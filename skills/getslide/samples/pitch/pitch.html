@@ -435,6 +435,10 @@
     display: none;
   }
   .slide-shell.active { display: block; }
+  :where(.page-shell) {
+    width: 1920px; height: 1080px;
+    position: relative;
+  }
   .slide-shell > .page-shell {
     transform: scale(var(--fit-scale));
     transform-origin: top left;

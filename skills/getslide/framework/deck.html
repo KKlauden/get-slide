@@ -279,11 +279,21 @@
       display: none;
     }
     .slide-shell.active { display: block; }
+
+    /* page-shell 的 width/height/position 用 :where() specificity-0
+       让任何 .page-shell（不管在哪）都吃——包括 thumb-inner / overview-cell
+       里的 cloneNode 复制。原来用 .slide-shell > .page-shell child selector，
+       JS clone 后 page-shell 不再是 slide-shell 子元素 → 选择器不命中 →
+       page-shell 0×0 → thumb / overview 缩略图全部空白。
+       design.md 的 .page-shell { padding: ... } specificity 0,0,1,0 仍 win
+       cascade（因为只设它没设的 property）。 */
+    :where(.page-shell) {
+      width: 1920px; height: 1080px;
+      position: relative;
+    }
     .slide-shell > .page-shell {
       transform: scale(var(--fit-scale));
       transform-origin: top left;
-      width: 1920px; height: 1080px;
-      position: relative;
     }
 
     /* chrome-rule 默认隐形——浏览器原生 <hr> 自带 inset border + margin，
