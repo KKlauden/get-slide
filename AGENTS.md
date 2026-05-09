@@ -7,7 +7,7 @@ This repo packages the **getslide** skill — a 4-layer framework for building H
 - 一份 deck = **一个** `<deck>.html` 文件。无外部资源，必要时 data-URI
 - 1920×1080 逻辑画布；尺寸用像素，**不准** `rem` / `vw` / `%`
 - 写新 deck 起点恒为 `skills/getslide/framework/deck.html`（chrome runtime canonical），**不**重写 chrome runtime
-- 4 层架构：component（原子）/ block（组合）/ design.md（主题契约）/ deck.html（sample 产物）
+- 3 层架构：framework（chrome runtime + schema 契约）/ design.md（主题契约）/ content.md + deck.html（产物）
 - token 命名对齐 [shadcn](https://ui.shadcn.com/docs/theming)（15 个标准名锁死）；**不**设 component 二级 alias
 - 不引 npm runtime / 不加 build step / 不引外部 CDN；deck 必须能 `file://` 直接打开
 - 每个 `<section class="page-shell">` 必填 `data-title="..."`，内嵌 `<div class="notes">`（演讲者逐字稿）
@@ -41,10 +41,8 @@ getslide/
 └── skills/getslide/           ← skill bundle（cp 到 ~/.claude/skills/getslide）
     ├── SKILL.md               ← canonical skill 入口
     ├── PLAN.md                ← 架构 / 路线
-    ├── framework/             ← deck.html / design.md / content.md 三件套
-    ├── components/            ← 10 个原子
-    ├── blocks/                ← 11 个组合
-    └── samples/               ← pitch / archive 两份样板
+    ├── framework/             ← deck.html / design.md / content.md / charts/
+    └── samples/               ← pitch / archive 两份 case study（不是模板抄）
 ```
 
 Keep this file short——hard rules + 路由 only。Deeper guidance 在 `skills/getslide/SKILL.md` 和 `skills/getslide/PLAN.md`。

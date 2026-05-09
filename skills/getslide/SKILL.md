@@ -1,6 +1,6 @@
 ---
 name: getslide
-description: Use for any task involving a getslide v2 HTML slide deck — building a new deck, swapping themes, adding/editing a slide, authoring a new theme spec, adding new components/blocks/charts, debugging chrome runtime (sidebar/present/scaling/print), or shadcn component import. Triggers on phrases like "make me a deck about X", "build a presentation", "create slides", "switch to <X> theme", "add a new theme", "add a new slide type", "import shadcn component", "fix the chrome", "thumbnails wrong", "present mode broken", "this slide is too crowded".
+description: Use for any task involving a getslide v2 HTML slide deck — building a new deck, swapping themes, adding/editing a slide, authoring a new theme spec, debugging chrome runtime (sidebar/present/scaling/print), or chart pattern reference. Triggers on phrases like "make me a deck about X", "build a presentation", "create slides", "switch to <X> theme", "add a new theme", "add a new slide type", "fix the chrome", "thumbnails wrong", "present mode broken", "this slide is too crowded".
 ---
 
 # getslide v2
@@ -11,17 +11,16 @@ description: Use for any task involving a getslide v2 HTML slide deck — buildi
 
 - **完整架构 / 命名约定 / 设计原则** → 读 `PLAN.md`（必读）
 - **当前可用资源**：
-  - `components/` — 10 个原子（alert / badge / button / card / chart-line-default / contact-list / numeral / pill-highlight / pitch-card / separator）
-    - `chart-line-default` 是 **chart 转写规范样板**（reference），不是 slot-fillable 砖块——写新 chart 时翻它当模板
-  - `blocks/` — 11 个组合（ambient-frames / bar-chart / cards-row / chart-card / chart-gauge / compare-stagger / feature-grid / hero-block / pricing-3up / solution-staggered / stat-split）
-  - `framework/` — **三件套骨架**（runtime + design + content），是 v2 的契约层；写新 deck 必读
+  - `framework/` — **契约层**，是 v2 核心；写新 deck 必读
     - `framework/deck.html` — **可直接拷贝的 HTML 骨架**：完整 chrome 运行时（topbar/sidebar/canvas/翻页/演讲者/overview/preview/print）+ 占位 § TOKENS 块 + 占位 § SLIDES 块。新 deck `cp` 一份后填空即可
-    - `framework/design.md` — 主题设计契约，教 AI 怎么写新 design 文档（atmosphere / palette / typography / shape / variants / decorative / red lines schema + CSS 生成程序）
-    - `framework/content.md` — 内容结构契约，教 AI 怎么写新 content 文档（每页 4 子段 schema + notes 写作三规 + 页数节奏 + 常用页模板）
-  - `samples/<deck>/` — 我们维护的**参考 sample**（pitch / archive），不是 AI 必须放新 deck 的位置；新 deck 在用户选的位置建文件夹即可
-    - `samples/pitch/`（含 lite/dark/forest 三 variant + 9 页完整 sample）—— **TODO**: spec.md 待按 framework/design.md 新格式重写
-    - `samples/archive/`（工业档案风 + FAULTLINE 虚构地质监测 deck，9 页）—— **TODO**: 同上
-- **shadcn 桥** → `npx shadcn@latest view @shadcn/<name>` 拿源码，转写为 `.md`（参考已有 component 的 frontmatter+sections schema）
+    - `framework/design.md` — 主题设计契约，教 AI 怎么写 design.md（atmosphere / palette / typography / shape / variants / decorative / red lines schema + §8 Append CSS）
+    - `framework/content.md` — 内容结构契约，教 AI 怎么写 content.md（每页 4 子段 schema + notes 三规 + 页节奏 + 模板）
+    - `framework/charts/` — chart SVG 转写参考（line / bar / gauge），**不**是 component 库——AI 写 chart 时翻它做参考；普通 UI（card / button / hero / numeral / pill / list）现代 LLM 自己写
+  - `samples/<deck>/` — 我们维护的**参考 sample**（pitch / archive）。**当作 case study 读，不是模板抄**——学其视觉决策、变量节奏、abs 钉位 paradigm，**不**直接 cp 整套 §8 Append CSS
+    - `samples/pitch/`（含 lite/dark/forest 三 variant + 9 页 YC 风 pitch）
+    - `samples/archive/`（黑白工业档案风 + FAULTLINE 虚构地质监测 9 页）
+
+> **重要**：v2 已**砍掉** `components/` + `blocks/` 目录——基础 UI（card / button / hero / numeral / pill / cards-row 等）由现代 LLM 直接写 HTML+CSS 即可，没必要维护 21 份小文档。chart SVG 因为有数学几何（保留 3 份在 `framework/charts/`）。
 
 ## Routing
 
@@ -30,24 +29,21 @@ description: Use for any task involving a getslide v2 HTML slide deck — buildi
 | **看整体架构 / 4 层模型 / token 命名** | `PLAN.md`（必读） |
 | **写新 deck** | 0) 跑 **Pre-flight 3 问**（受众/风格/起点）、用户确认 1) 通读 `framework/{deck.html, design.md, content.md}` 三件套 2) 在用户选的位置建 `<my-deck>/` 文件夹 3) 写 `<my-deck>/design.md` + `<my-deck>/content.md` 4) `cp framework/deck.html → <my-deck>/<my-deck>.html` 5) 替换 § TOKENS（按 design.md §8 程序）+ 替换 § SLIDES（按 content.md 每页填）|
 | **切换 deck 风格**（不动内容）| 改 deck 的 `content.md` 的 `theme:` 指向另一份 design.md；按 framework/design.md §8 程序重生成 § TOKENS 块 |
-| **写新主题** | 严格按 `framework/design.md` §1-§7 schema 写 deck 文件夹下的 `design.md`：Atmosphere 散文 + Palette/Typography/Shape 值 + Variants + Decorative signature + Red lines。**design.md 不放 CSS**——CSS 由 framework/design.md §8 程序生成 |
+| **写新主题** | 严格按 `framework/design.md` §1-§7 schema 写 deck 文件夹下的 `design.md`：Atmosphere 散文 + Palette/Typography/Shape 值 + Variants + Decorative signature + Red lines。**§1-§7 不放 CSS**——CSS 全部进 §8 Append CSS |
 | **写新 deck 大纲** | 严格按 `framework/content.md` §1 schema 写 deck 文件夹下的 `content.md`：每页 H2 + 4 子段（block / variant / content / chrome / notes）。notes 必须遵循 §3 三规 |
-| **写新 component** | `components/<name>.md`：frontmatter（name/deps/tokens/source）+ Template + Style + Slots + Constraints + Variants + Why。CSS 只用 `var(--xxx)`，**直接吃 palette + scale**，不设二级 alias |
-| **写新 block** | `blocks/<name>.md`，同上 schema。block 可越界给 component 加规则（用 `> [data-slot="..."]` 后代选择器） |
-| **写新 chart** | 翻 `components/chart-line-default.md` 末尾"v2 chart 转写规范"10 条；`npx shadcn@latest view @shadcn/chart-<X>-<variant>` 拿源；SVG 直接 inline 到 deck sample HTML 里，**不抽组件**。某 chart 跨 ≥2 deck 反复用再提取 |
+| **写每页 UI（card / hero / list / pill / cards-row 等）** | 直接在 deck.html 写 HTML+CSS，CSS 只用 `var(--xxx)` 吃 design.md token；**不**翻 components/ blocks/（已删）。需要参考某种排布感时翻 `samples/<theme>/<theme>.html` 看实际写法 |
+| **写 chart（line / bar / gauge）** | 翻 `framework/charts/<X>.md` 看 SVG 模板 + CSS pattern；inline 进 deck.html，按 design.md 主题色 override。普通 sparkline 自己写即可 |
 | **改 chrome（topbar/sidebar/翻页/演讲者/overview/preview）** | `framework/deck.html` 是 canonical 源头；改完后**所有已生成的 deck `<deck>.html` 都需重新 cp framework/deck.html 重生成**。颜色用 `--chrome-*` namespace（7 个 token），design.md 给默认值 |
 | **加 notes / 演讲者逐字稿** | 每个 `<section class="page-shell">` 内嵌 `<div class="notes">…</div>`；CSS 自动 hidden，S 键 presenter 窗口读取展示。写作三规：提示信号不写讲稿 / 150-300 字 / 用口语 |
-| **shadcn 抄组件** | `npx shadcn@latest view @shadcn/<name>`，照已有 component 转写规则：React → HTML+`data-slot`，Tailwind utility → CSS（`var(--xxx)`） |
-| **修单页排版/字号/溢出** | 改 content.md 的 styling 段或 sample 里 page 内 inline style |
+| **修单页排版/字号/溢出** | 改 content.md 的 styling 段或 deck 里 page 内 inline style |
 
 ## Hard rules（不可违反）
 
 ### 视觉与命名
 - **CSS 只用 `var(--xxx)`**，绝不写死颜色/数值——一切由 spec 注入
-- **不设 component 二级 alias**（不要 `--card-bg / --card-padding-x` 这层）。Component CSS 直接 `var(--card)` / `var(--space-6)`
+- **不设二级 alias**（不要 `--card-bg / --card-padding-x` 这层）。CSS 直接 `var(--card)` / `var(--space-6)`，吃 palette + scale
 - **Palette 命名对齐 shadcn**：`--background / --foreground / --card / --card-foreground / --primary / --primary-foreground / --secondary / --secondary-foreground / --muted / --muted-foreground / --accent / --accent-foreground / --destructive / --destructive-foreground / --border`
 - **Chrome 用 `--chrome-*` namespace**（独立 7 token：bg / canvas-bg / fg / muted-fg / border / accent / accent-fg），spec 给默认值
-- **每个 component 用 `data-slot="..."` 属性**（保留 shadcn 约定，跨主题选择器命中）
 
 ### slide 结构（chrome runtime 强约束 —— AI 生成新 deck 必须遵守）
 - **slide 容器是 1920×1080 + page-shell**（spec 提供）；`.slide-shell > .page-shell` 是硬约定
@@ -72,7 +68,7 @@ description: Use for any task involving a getslide v2 HTML slide deck — buildi
 
 - 「让 slide 响应式」「加 build step」「引入 npm runtime」——v2 走"单文件 self-contained HTML"
 - 「在 component 里写死颜色」——所有视觉值必须 token 化
-- 「在 spec 里加 component 二级 alias」——v2 已经决议删除（B2 路线）
+- 「在 design.md 里加二级 alias」——v2 已经决议删除（B2 路线）
 - 「改 palette token 命名」——已对齐 shadcn 锁定
 
 ## Pre-flight 3 问（从零做新 deck 必跑）
@@ -98,13 +94,14 @@ description: Use for any task involving a getslide v2 HTML slide deck — buildi
   - **空白起步** — 都不像，从 `framework/design.md` 模板填
 - **关键变量**：氛围词（"现代 / 沉稳 / 工业 / 学术 / 极简 / 杂志感 / cyber"）；颜色锚点；字族偏好
 
-### Q3 起点 → 决定 inline 哪些砖块
-> 默认跟随 Q2：选 pitch → 抄 pitch sample 的 components；选 archive → 抄 archive-* blocks；选空白 → 从 `components/` + `blocks/` 现成原子组合。
-> 仅当用户想 **mix**（如"pitch design 但要 archive 的 mono labels"）才需要单独定 Q3。
+### Q3 起点 → sample 当 case study 还是直接发挥
 
-- **pitch sample 的 components**（选 pitch 默认）：hero-block / pitch-card / ambient-frames / pill-highlight / contact-list / cards-row / solution-staggered / feature-grid / stat-split / compare-stagger / chart-card / pricing-3up
-- **archive sample 的 archive-***（选 archive 默认）：archive-hero / archive-toc / archive-mega-title / archive-page-title / archive-stat-list / archive-numbered-list / archive-stat-cards / archive-coverage-panel / archive-perf-list / archive-stage-grid / archive-mega-stat / archive-impact-rule
-- **现成原子**（任意 deck 可用，参考 `framework/content.md` §5 索引）：alert / badge / button / card / numeral / pill-highlight + 11 个 block
+> 默认跟随 Q2：
+> - Q2 选 pitch → 读 `samples/pitch/{design.md, content.md, pitch.html}` 全套**当 case study**——学其主题契约（字 / 色 / 形 / chrome 风格 / abs paradigm），按用户主题**重新设计每页 layout + 重写 §8 Append CSS**，不照抄整套 archive-*/pitch-* selector
+> - Q2 选 archive → 同上，case study 是 archive
+> - Q2 选「空白」/「参考一张图 / 别的视觉素材」 → Path B（见下文 Bootstrap）
+>
+> **铁律**：sample **不是模板填空**——9 页 abs 坐标 / 30+ archive-* selector 是**为 sample 原文案实测的**，新内容文字长度不一样、节奏不一样，照抄就会撞 chrome / 元素重合 / 视觉灰蒙。AI 必须**按新内容形状**重新设计 layout，sample 提供的是 **DNA**（皮肤气质）不是 **bone**（页结构）
 
 ### 答完之后
 1. **复述用户答案** + 等用户确认：「我理解你想做一份 受众=X / 风格=Y / 起点=Z / N 页的 deck，核心 message 是 [...]」
@@ -121,21 +118,25 @@ description: Use for any task involving a getslide v2 HTML slide deck — buildi
 
 ### 起步路径（Pre-flight Q2 答完后决定）
 
-- **Path A: 基于现成 sample 起步**（Q2 选 **pitch** 或 **archive**）
+> **核心原则**：**风格是皮肤，内容是骨骼血肉。皮肤要从血肉长出来，不是从 sample 抠出来粘贴。**
+> sample 提供 DNA（字 / 色 / 形 / chrome 气质 / 装饰系统），但**每页 layout 必须按新内容形状重新设计**——abs 坐标、卡片宽度、行数都跟原 sample 不一样。
 
-  1. **`cp samples/<theme>/design.md <my-deck>/design.md`** ——一次性拿到主题完整契约（含 §8 Append CSS 的 chrome 锚点位置 / page-shell / grid / utility classes / archive-* abs 钉位等）
-  2. 在 cp 来的 design.md 里**只改**：
-     - §1 Atmosphere（重写氛围散文匹配新主题——4 段 prose 全换）
-     - §2 Palette values（按新色调改 hex / rgba；variant 数量 + 命名一般不变）
-     - §6 Decorative signature（如果换了 motif 叙事；motif **系统**保留，**叙事文案**换）
-  3. **保留**不动：§3 Typography / §4 Shape / §5 Variants / §7 Red Lines / §8 Append CSS（全部 abs 坐标 / class 名 / utility 都跟 sample 共享）
-  4. content.md：可参考 `samples/<theme>/content.md` 的页节奏（如 archive 9 页 cover / contents / about / problem / solution / sub-solution / performance / market / closing），但**每页内容自己写**
-  5. 拼 `<my-deck>.html` 时，§ SLIDES 区可参照 `samples/<theme>/<theme>.html` 看具体 abs 坐标 / archive-* class 怎么用，**内容全新**
+- **Path A: 基于 sample 主题契约 + 自己排版**（Q2 选 **pitch** 或 **archive**）
 
-- **Path B: 完全空白起步**（Q2 选**「都不像」**）
+  1. **读完** `samples/<theme>/{design.md, content.md, <theme>.html}` 全套——重点看 §1 Atmosphere（什么调性）/ §2 Palette / §3 Typography / §6 Decorative signature。**理解主题 DNA**
+  2. 在 `<my-deck>/design.md` 里：
+     - §1-§7 可以**参考** sample 写法，但 **§1 Atmosphere 必须按新主题重写**（4 段 prose 全换）；§2 Palette 按新色调改；§6 Decorative motif 叙事换
+     - §3 Typography / §4 Shape / §5 Variants / §7 Red Lines 一般沿用 sample（除非用户明确要换）
+     - **§8 Append CSS 不照搬**：保留 chrome 锚点位置 / page-shell / grid / utility classes 这类**主题级 paradigm**；**删掉** sample 里所有 page-specific selector（如 `archive-page-title / archive-stat-list / archive-coverage-panel` 等 30+ 个）——它们是为 sample 原文案实测的坐标，不是主题契约
+  3. content.md 按新主题 9 页节奏自己设计（可参考 sample 节奏）
+  4. § SLIDES：每页**按内容形状决定 layout**——基础 UI（card / hero / list / pill）直接写 HTML+CSS，吃 design.md token；abs 坐标按当前页文字长度反推
 
-  1. 按 `framework/design.md` 空白模板从零写 §1-§7 + §8 Append CSS（chrome 锚点 / page-shell / 是否要 grid / utility classes / motif 都自己设计）
-  2. 没有 sample 抄，更费时；考虑组合 `components/` + `blocks/` 11 个现成原子起步
+- **Path B: 完全空白起步**（Q2 选**「空白」** 或 **「参考一张图 / 别的视觉素材」**）
+
+  1. 按 `framework/design.md` 空白模板从零写 §1-§7
+  2. 如果用户给了参考图：先 Read 图，写一段 200-300 字「我从图里看到了什么」visual DNA 笔记（色 / 字 / 形 / motif / chrome / 节奏），**再**开始写 design.md。§1 Atmosphere 必须呼应观察笔记
+  3. §8 Append CSS 自己设计（chrome 8 锚点位置 + page-shell padding + 是否要 grid + 装饰 motif）
+  4. content.md / § SLIDES 同 Path A 第 3-4 步
 
 两条路径都进入下面的「6 步流程」。
 
@@ -150,7 +151,22 @@ description: Use for any task involving a getslide v2 HTML slide deck — buildi
    - **§ SLIDES** 块：按 content.md 每页生成一个 `<div class="slide-shell">`，每个 page-shell 必填 `data-title` + `<div class="notes">`
    - `<title>` 改成 deck 名 / topbar 中 `<span class="title">` 改成 deck 名
    - **§ RUNTIME CSS / § RUNTIME JS 块完全不动**——它们是 canonical，碰一行就坏
-6. 浏览器打开 `<my-deck>.html` 验证：← → 翻页、URL 同步 `#/N`、按 O 看 overview、按 S 弹演讲者窗口、`?preview=N` 单页模式
+
+6. **视觉自检（每页生成完做一次 mental test，发现问题立即改）**：
+
+   - **abs 元素 bbox 不重叠**：每页用 abs 钉位的多个元素，`top + height` 和 `left + width` 反推 bbox，**两两相交直接是 bug**
+   - **不撞 chrome**：内容元素 top ≥ chrome-top 锚点 bottom（一般 ≥ 130-280 看 chrome 字号）；bottom ≥ chrome-bottom 锚点 top（一般底部留 96-160px）；左右留 grid-margin-x（一般 64-96）
+   - **文字 wrap 后空间够**：`<h1 class="hero">` / 长 body 段，按当前内容字数估行数 × 行高（line-height × font-size），加起来不能超过容器 height；hero 大字（≥88px）特别容易溢出
+   - **大字 hero 行间够留白**：`font-size: 88px` 起，`line-height` ≥ 0.95（紧）/ 1.05（松）；多行 hero 之间不能撞
+   - **chrome 文字不挤**：archive 主题 chrome top-right 多行 mono 标签时，注意 right 边距和最长那行宽度；pitch 主题 chrome-top-left 的 logo + brand 不能被 hero 大字盖
+   - **§8 abs 坐标按当前页文字反推**：Path A 不能照抄 sample 的 archive-* 坐标——sample 坐标是为原文案实测的；新文案字数不一样必须重排
+
+7. **浏览器开 `<my-deck>.html` 实测**（mental test 不替代真测）：
+   - ← → 翻页、URL 同步 `#/N`
+   - 按 O 看 overview 网格（每页缩略图能不能看）
+   - 按 S 弹演讲者窗口（NEXT 卡片用 `data-title`，SCRIPT 卡片用 `<div class="notes">`）
+   - `?preview=N` 单页无 chrome 模式
+   - **每页视觉过一遍**：是否有重叠 / 撞 chrome / wrap 难看 / 字号不协调 / 颜色灰蒙；任一项 fail，回 step 6 修
 
 **生成新 deck 的 AI 默认行为**：
 - 不重写 § RUNTIME CSS / § RUNTIME JS 块——它们是 framework/deck.html 的内容，必须原样保留

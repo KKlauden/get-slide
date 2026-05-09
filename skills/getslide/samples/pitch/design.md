@@ -208,13 +208,13 @@ Pitch deck 是 demo day 的「next big thing」气质：紧凑、现代、自信
 - **是什么**：cover / closing 页背景层的圆角矩形 SVG 嵌套，做空间 gestalt
 - **几何**：3-5 层 stroke-only 圆角矩形（无 fill），各层不同尺寸 + 不同 stroke-width，叠加形成"画框感"
 - **用法**：仅 cover (P1) + closing (P9) 用；中间页禁用——会跟 grid 内容冲突
-- **HTML 模板**（block `ambient-frames`）：见 `blocks/ambient-frames.md`
+- **HTML 模板**：见 `samples/pitch/pitch.html` § COMPONENT CSS 段（搜索 `from blocks/ambient-frames.md` comment）
 
 ### M20 Pill Highlight
 - **是什么**：标题里给 1 个关键词加 stroke-only 椭圆胶囊
 - **几何**：`border: 1.5px solid var(--accent)` + `border-radius: 999px` + `padding: 0 0.4em` + `display: inline-block`，行内不换行
 - **用法**：每页**最多 1 个** pill；多 pill 互相竞争，强调失效
-- **HTML 模板**（component `pill-highlight`）：见 `components/pill-highlight.md`
+- **HTML 模板**：见 `samples/pitch/pitch.html` § COMPONENT CSS 段（搜索 `from components/pill-highlight.md` comment）
 
 ### Component-level bend：dark variant + pitch-card
 - **是什么**：`pitch-card` 在 dark variant 下不用默认的 `var(--card)` (rgba 叠黑半透明)，而是用 forest green 实色块 (`#0d2a25`)

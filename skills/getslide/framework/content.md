@@ -12,7 +12,7 @@ description: 内容结构契约——教 AI 怎么写新的 content 文档（per
 
 ## 这份文档做什么
 
-内容层是 4 层架构里的**deck 大纲层**——一份 deck 有哪几页、各页用什么 block、各页填什么文字、演讲者怎么讲。它**不**决定主题视觉（那是 design.md 的事），**不**决定 component 长什么样（那是 components/blocks/.md 的事）。
+内容层是 deck 大纲层——一份 deck 有哪几页、各页用什么排布形状、各页填什么文字、演讲者怎么讲。它**不**决定主题视觉（那是 design.md 的事），**不**决定基础 UI 怎么写（那是 AI 直接写 HTML+CSS 吃 design.md token 的事，参考 sample 学 abs paradigm）。
 
 每份 deck 的 `content.md` 是**给 AI 填 framework/deck.html 的指令清单**：
 - frontmatter：deck 元数据 + 主题指针
@@ -194,34 +194,24 @@ content.md H2 标题（`## P1 — Cover`）的 "— " 之后部分**就是** `da
 
 ---
 
-## §5 当前可用 blocks / components 索引
+## §5 `block:` 子段写什么
 
-写 `block:` 子段时从这里挑。
+v2.1 已**砍掉** `components/` + `blocks/` 库——基础 UI（card / button / hero / numeral / pill / cards-row / feature-grid 等）由 AI 直接写 HTML+CSS（吃 design.md token）。
 
-### Components（原子）
-- `alert` — 提示卡片
-- `badge` — 小标签
-- `button` — 按钮（多 variant）
-- `card` — 容器
-- `chart-line-default` — chart 转写规范样板（reference，写新 chart 时翻它）
-- `contact-list` — 联系/邮件列表
-- `numeral` — 大数字 + label
-- `pill-highlight` — 强调 pill
-- `pitch-card` — 编号卡（num + label + 可选 body）
-- `separator` — 分隔线
+`block:` 子段写**这一页的「内容形状描述」**——给 AI 看出这页要排什么样，不绑定具体 class 名：
 
-### Blocks（组合）
-- `ambient-frames` — 圆角矩形 SVG 装饰图层（cover/closing 用）
-- `bar-chart` — 纯骨架柱状图
-- `cards-row` — 多列卡片行
-- `chart-card` — chart 视觉外壳（card + legend + SVG inline 留位）
-- `chart-gauge` — 线性进度量表（composes bar-chart）
-- `compare-stagger` — 多列对比错落
-- `feature-grid` — feature 网格
-- `hero-block` — 大标题 hero（`.h1-9 .v6-7`）
-- `pricing-3up` — 三档定价
-- `solution-staggered` — 方案错落列表
-- `stat-split` — 大数字分屏
+| 内容形状 | block: 子段写法举例 |
+|---|---|
+| 大字 hero + lede | `hero (centered title + lede)` 或 `hero-bottom-anchored (88px title)` |
+| 多列对比 | `2-up compare (left frame A vs right frame B)` 或 `4-up zig-zag compare` |
+| 编号 list | `numbered-list (3 rows: prefix / label / desc, hairline 分隔)` |
+| 大数字 stat | `mega-stat (200px num + caption)` 或 `3-up stat-cards` |
+| Quote 页 | `pull-quote-only (centered serif italic, 大字)` |
+| Chart | `chart-line (timeline + 2 series)` 或 `chart-gauge (73% with marker)` |
+| Cover | `cover (大字 hero + ambient motif + chrome)` |
+| Closing | `closing (recap 三句 + contact)` |
+
+**chart 子段**：如果用 chart，参考 `framework/charts/` 里 3 份 SVG pattern。其他 UI AI 自己写，参考 `samples/<theme>/<theme>.html` 看主题怎么实现。
 
 ---
 

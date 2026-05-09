@@ -88,6 +88,39 @@ description: 主题设计契约——教 AI 怎么写新的 design 文档（per-
 
 按**角色**分区列 token。每个 token 一行，列出每个 variant 的 hex + 一句话用途。
 
+### 读图 → token 映射 SOP（用户给参考图 / 描述时**必读**）
+
+参考图里的视觉色不能 1:1 套到 `--background` —— **要先判断每个色在视觉里担任什么"角色"**，再映射到对应 token。常见误判：把"主色调"写到 `--background`，结果整页都是主色铺底（应该是 `--canvas-bg` 在 chrome 外层显示 + page 内是中性底色）。
+
+按这个决策树挑：
+
+| 参考图里看到的 | 担任什么角色 | 映射到 token |
+|---|---|---|
+| **整张图最大面积、外层框、画布底** | 视觉环境 / 包裹层 | `--canvas-bg`（chrome runtime token，外层 viewport） |
+| **每页 slide 的底色**（chrome 4 角文字所在的卡） | 页面主底 | `--background`（page bg） |
+| **页内卡片 / panel / 信息块的底色** | 卡片层 | `--card`（页内卡片） |
+| **次级面板 / 内嵌区域底** | 二级表面 | `--secondary`（很少用） |
+| **大段文字色 / hero 大字色** | 主要文字 | `--foreground` |
+| **caption / 次要文字 / 注释** | 弱文字 | `--muted-foreground` |
+| **品牌主色 / logo 色 / 主行动按钮底色** | 主品牌 | `--primary` |
+| **小亮点：pill / chip / accent dot / 强调描边** | 强调点缀 | `--accent` |
+| **错误提示 / 警告色（≠ accent）** | 状态告警 | `--destructive` |
+| **分隔线 / hairline / 卡片描边** | 视觉切分 | `--border` |
+
+### 例：CHASSAN 参考图（橄榄绿 + 米卡 + 黄绿 dot）的正确映射
+
+```
+图里看到                          错误（V2 subagent 犯过）            正确
+──────────────────────────────────────────────────────────────────
+橄榄军绿（外层大面积）             --background: #7a8a2e ❌            --canvas-bg: #7a8a2e ✓
+                                  （结果：整页绿底压住米卡）          （绿色作为 chrome 外层 viewport）
+米奶油（slide 底 / chrome 所在）   --card: #efe7c8 ❌                  --background: #efe7c8 ✓
+深色卡（小标签 / pull box）        --card: #1a1f12 ✓                   --card: #1a1f12 ✓
+亮黄绿（dot / pill / 强调块）       --accent: #cfe14a ✓                 --accent: #cfe14a ✓
+```
+
+**铁律**：参考图的"主色"看面积，**最大面积通常是 `--canvas-bg`，不是 `--background`**。只有"整页全部铺主色"的极端 minimal 主题（如 archive dark variant）才让 `--background` = 主色。
+
 ### 必写五区
 
 1. **Background Surfaces** — page canvas / panel / card / elevated / overlay

@@ -8,12 +8,15 @@
 
 | 层 | 是什么 | 文件 |
 |---|---|---|
-| component | 视觉原子（card / badge / button / numeral / pill-highlight ...） | `skills/getslide/components/*.md` |
-| block | 跨主题的组合（hero-block / feature-grid / chart-card ...） | `skills/getslide/blocks/*.md` |
+| framework | chrome runtime + design.md / content.md schema 契约 | `skills/getslide/framework/` |
+| sample | 当 case study 读的参考主题（pitch / archive） | `skills/getslide/samples/<theme>/` |
 | design | 主题契约（atmosphere / palette / typography / shape / variants） | per-deck `<my-deck>/design.md` |
-| sample | 单文件 deck.html 产物 | per-deck `<my-deck>/<my-deck>.html` |
+| content | deck 大纲（每页内容 + chrome + notes） | per-deck `<my-deck>/content.md` |
+| product | 单文件 deck.html 产物 | per-deck `<my-deck>/<my-deck>.html` |
 
-写新 deck 时，AI 先跑 **Pre-flight 3 问**（受众 / 风格 / component 起点），再走 6 步 Bootstrap：写 design.md → 写 content.md → cp framework/deck.html → 替换 § TOKENS / § SLIDES → 浏览器验证。
+> v2.1（2026-05-09）砍掉 `components/` + `blocks/` 目录——基础 UI（card / button / hero / numeral / pill 等）由现代 LLM 直接写。chart SVG 因为有数学几何，3 份 pattern 留在 `framework/charts/` 当参考。
+
+写新 deck 时，AI 先跑 **Pre-flight 3 问**（受众 / 风格 / 起点），再走 6 步 Bootstrap：写 design.md → 写 content.md → cp framework/deck.html → 替换 § TOKENS / § SLIDES → 视觉自检 → 浏览器验证。
 
 ## 安装到不同 AI agent
 
@@ -77,8 +80,7 @@ getslide/
     │   ├── deck.html          ← chrome runtime canonical HTML 骨架
     │   ├── design.md          ← 主题设计契约 schema
     │   └── content.md         ← 内容结构契约 schema
-    ├── components/            ← 10 个原子（alert / badge / button / card / chart-line-default / contact-list / numeral / pill-highlight / pitch-card / separator）
-    ├── blocks/                ← 11 个组合（ambient-frames / bar-chart / cards-row / chart-card / chart-gauge / compare-stagger / feature-grid / hero-block / pricing-3up / solution-staggered / stat-split）
+    │   └── charts/            ← 3 份 chart SVG pattern（line / bar / gauge）—— AI 写 chart 时参考
     └── samples/
         ├── pitch/             ← YC / TechCrunch 风 9 页 sample
         └── archive/           ← 工业档案风 FAULTLINE 9 页 sample

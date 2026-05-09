@@ -3,6 +3,45 @@
 > 状态：架构定型中。v1 已归档到 `old/`，根目录是空白起步。
 > 本文是 v2 的"宪法"——先想清楚，再动手。
 
+---
+
+## v2.1 架构修订（2026-05-09）
+
+**砍掉 `components/` + `blocks/` 目录**——10 个 component .md + 11 个 block .md 全删。理由：
+
+1. **现代 LLM 写基础 UI 不需要文档**：card / button / numeral / pill / hero / cards-row / feature-grid / stat-split 等基础视觉砖块，AI 直接写 HTML+CSS（吃 design.md token）即可，没必要维护 21 份小文档
+2. **components/blocks 库诱导 AI 套模板**：v2 测试发现 AI 看到 `feature-grid` 就把"5 卡 2x3"当成「这页 layout done」——导致每页都长一个样
+3. **跨主题污染**：`feature-grid / pricing-3up / compare-stagger / solution-staggered / ambient-frames / pitch-card` 全绑死 pitch 主题；archive / 新主题用不上还要解耦
+
+**保留 3 份 chart pattern 到 `framework/charts/`**——chart SVG 有数学几何（弧度 / 比例 / marker 位置 / tabular 对齐），AI 凭空写易翻车，留作参考：
+- `chart-line-default.md` / `bar-chart.md` / `chart-gauge.md`
+
+**架构变成 3 层（不再是 4 层）**：
+
+```
+┌────────────────────────────────────────────────┐
+│ framework/  (契约层)                             │
+│   deck.html / design.md / content.md / charts/  │
+└────────────────────────────────────────────────┘
+                       ↓
+┌────────────────────────────────────────────────┐
+│ samples/<slug>/  (case study 层)                │
+│   design.md / content.md / <slug>.html         │
+│   ← 当 case study 读，不是模板抄                 │
+└────────────────────────────────────────────────┘
+                       ↓
+┌────────────────────────────────────────────────┐
+│ <user-deck>/  (产物层)                          │
+│   design.md / content.md / <deck>.html         │
+│   AI 按 framework + 学 sample DNA 直接写         │
+│   每页 UI 自己写 HTML+CSS，吃 design.md token   │
+└────────────────────────────────────────────────┘
+```
+
+下面 §2-§3 的旧 4 层架构描述保留作为历史决策记录（不删）。新工作请以 SKILL.md / framework/ 现状为准。
+
+---
+
 ## 1. 为什么重启
 
 v1 在做 pitch 主题过程中暴露的问题：
