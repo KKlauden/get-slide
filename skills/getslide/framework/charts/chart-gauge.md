@@ -1,82 +1,82 @@
 ---
 name: chart-gauge
 kind: pattern-contract
-purpose: "线性 gauge：N 个离散 bar 进度 + label 区间 + 三角 marker。结构 + 几何契约，不是 CSS 模板。"
+purpose: "Linear gauge — N discrete bar ticks of progress + label range + triangle marker. Structure + geometry contract, not a CSS template."
 ---
 
 # Chart Gauge Pattern
 
-> **这是结构 + 几何契约，不是 CSS 模板。** AI 翻这份学：gauge 由什么部件组成 / marker 几何怎么对齐。视觉细节（颜色 / marker 形状 / label 字 / 圆角）**必须**按当前 deck 的 design.md token 自己写。
+> **This is a structure + geometry contract, NOT a CSS template.** Read this to learn: what parts a gauge is composed of / how the marker geometry aligns. Visual details (color / marker shape / label type / radius) **must** be written by hand against the current deck's `design.md` tokens.
 
-## 适用场景
+## Applies to
 
-**单一进度值**可视化（"X% coverage" / "X% completion" / "X% adoption"）。靠 N 个离散 bar 颗粒 + marker 三角指当前位置。
+**Single progress value** visualization ("X% coverage" / "X% completion" / "X% adoption"). Uses N discrete bar ticks + a marker triangle to point at the current position.
 
-**不**适用：
-- 真实数据 chart（每条 bar 反映独立值）→ 用 `bar-chart.md`
-- 圆形 / 半圆 gauge → SVG arc，自己写
+**Doesn't apply to**:
+- Real-data charts (each bar reflects an independent value) → use `bar-chart.md`
+- Circular / semicircular gauge → SVG arc, write yourself
 
-## 必填结构
+## Required structure
 
 ```text
 <container.chart-gauge>
-  ├── label 区间（顶或左右标 0% / 中 / 100%）
-  ├── <gauge 主体>
-  │    ├── N 个离散 bar（默认 50，可 25-100）
-  │    │    ├── 亮 bars × M     ← 当前进度之前
-  │    │    └── 暗 bars × (N-M) ← 当前进度之后
-  │    └── marker（三角 / 圆点 / 竖线 等，指 marker_pos%）
-  └── 当前数值大字（可选，钉在 marker_x 之上）
+  ├── label range (top or sides label 0% / mid / 100%)
+  ├── <gauge body>
+  │    ├── N discrete bars (default 50; range 25–100)
+  │    │    ├── bright bars × M     ← before current progress
+  │    │    └── dim bars × (N-M)    ← after current progress
+  │    └── marker (triangle / dot / vertical line, etc., points at marker_pos%)
+  └── current value display (optional, pinned above marker_x)
 ```
 
-## 几何对齐铁律
+## Geometry alignment hard rule
 
 ```text
-total_bars       = 50（推荐；≥ 25 才有颗粒感，≤ 100 才不糊）
-marker_pos_pct   = data_value / max_value × 100         例：73 / 100 = 73%
+total_bars       = 50 (recommended; ≥ 25 for granularity, ≤ 100 to stay sharp)
+marker_pos_pct   = data_value / max_value × 100         e.g. 73 / 100 = 73%
 
-bright_bars      = round(total_bars × marker_pos_pct / 100)   例：73% × 50 = 36.5 → 37
-dim_bars         = total_bars - bright_bars                   例：50 - 37 = 13
+bright_bars      = round(total_bars × marker_pos_pct / 100)   e.g. 73% × 50 = 36.5 → 37
+dim_bars         = total_bars - bright_bars                   e.g. 50 - 37 = 13
 
 marker_x_offset  = marker_pos_pct % of track_width
 ```
 
-**视觉对齐铁律**：marker 三角必须落在「亮/暗 cutover」位置 ± 1 个 bar 宽度内。如果 bright_bars 算出 37 但 marker 视觉落在 33%，算错或 css 漂移。
+**Visual alignment hard rule**: the marker triangle must land on the bright/dim cutover **within ± 1 bar width**. If `bright_bars` computes to 37 but the marker visually lands at 33%, either the math is wrong or the CSS has drifted.
 
-## 尺寸算法
+## Sizing algorithm
 
 ```text
-gauge_track_height  = 48-72px（按页内空间）
-gap                 = 1-2px
+gauge_track_height  = 48–72px (per available page space)
+gap                 = 1–2px
 bar_width           = (track_width - (total_bars - 1) × gap) / total_bars
-                      ≈ 1-3px（足够多 bar 时颗粒感强）
+                      ≈ 1–3px (tight enough for granular feel)
 ```
 
-## 必须按 design.md 决定的视觉
+## Visuals must be decided per design.md
 
-| 决策 | 查 design.md |
+| Decision | Look up in design.md |
 |---|---|
-| 亮 bar **颜色** | §2 Palette `var(--accent)` / `var(--primary)` / `var(--foreground)` |
-| 暗 bar **颜色** | `var(--muted)` 或亮 bar 同色 + `opacity: 0.3` |
-| marker **颜色** | 跟亮 bar 同 token（视觉锚一致） |
-| marker **形状** | 三角（默认 CSS triangle）/ 圆点 / 竖线 / 锚点 ——按主题装饰系统选 |
-| label **字** | §3 Typography（archive 风 = mono uppercase；CHASSAN 风 = serif italic + sans 混排） |
-| label **排布** | flex `space-between`（左 0% / 中 / 右 100%），或竖排在 gauge 右侧 |
-| bar **圆角** | §4 Shape `--radius-sm` 或 0（archive 锐角 = 0；圆润主题 1-2px） |
-| **数值大字（如有）** | §3 Typography hero size，钉在 marker_x 位置上方 |
+| bright bar **color** | §2 Palette `{colors.accent}` / `{colors.primary}` / `{colors.foreground}` |
+| dim bar **color** | `{colors.muted}` or same hue as bright bars + `opacity: 0.3` |
+| marker **color** | same token as the bright bars (visual anchor consistency) |
+| marker **shape** | triangle (default CSS triangle) / dot / vertical line / pin — pick per theme's decorative system |
+| label **type** | §3 Typography (archive = mono uppercase; CHASSAN = serif italic + sans mix) |
+| label **layout** | flex `space-between` (left 0% / mid / right 100%), or stacked beside the gauge |
+| bar **radius** | §4 Shape `{shape.radius.sm}` or 0 (archive sharp = 0; rounded themes 1–2px) |
+| **value display** (if any) | §3 Typography hero size, pinned above marker_x |
 
-## 反例
+## Anti-patterns
 
-❌ marker 位置跟 bright/dim cutover **数学不对齐** —— gauge 失去意义
+❌ The marker position **mathematically misaligns** with the bright/dim cutover — the gauge loses meaning
 
-❌ bars 数量 < 20 —— 颗粒太粗，看不出 gauge 感
+❌ Bar count < 20 — granularity too coarse, the gauge feel disappears
 
-❌ 用 1 个连续渐变 bar 代替 N 离散 bar —— 那是 progress bar，不是 gauge
+❌ Using a single continuous gradient bar instead of N discrete bars — that's a progress bar, not a gauge
 
-❌ 抄 archive coverage-panel 的 mono uppercase + 白字 + 黑底配色 —— 那是 archive deck-specific 决策
+❌ Copying archive's coverage-panel mono uppercase + white-on-black palette — that's an archive-deck-specific decision
 
 ## Why
 
-- gauge 视觉效力来自"颗粒数"——观众能数出 73 vs 75 的区别
-- marker = 数据真实位置；bars 颗粒 ≠ marker（颗粒是离散近似），所以两者必须**视觉上对齐**
-- N=50 是 archive sample 实测的甜点数（颗粒清晰 + bar 不会太细）；可调
+- A gauge's visual force comes from the **tick count** — the audience can count the difference between 73 and 75
+- Marker = the data's true position; bar ticks ≠ marker (ticks are a discrete approximation), so the two **must** align visually
+- N=50 is the sweet spot measured on the archive sample (clear granularity + bars not too thin); adjustable

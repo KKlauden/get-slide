@@ -1,42 +1,42 @@
 # framework/charts/
 
-**Chart pattern 契约层**——3 份 chart pattern：bar / gauge / line。
+**Chart Pattern Contract Layer** — 3 chart patterns: bar / gauge / line.
 
-## 这是什么
+## What this is
 
-不是「component 库」也不是「CSS 模板」——是 **结构 + 算法契约**：
+Not a "component library" and not "CSS templates" — these are **structure + algorithm contracts**:
 
-- **结构**：chart 由什么部件组成（bars 区 / 数值 label / 横轴 label / baseline / caption 等）
-- **算法**：数据 → 像素的精确换算（按 max 等比 / bar 高度兜底 / marker 几何对齐）
-- **必须按 design.md 决定的视觉清单**（圆角 / 颜色 / 字 / 宽度——查 design.md token，不在文档里抄默认值）
+- **Structure**: what parts a chart is composed of (bars area / value labels / x-axis labels / baseline / caption, etc.)
+- **Algorithm**: precise conversion from data → pixels (proportional scaling on max / bar-height floor / marker geometry alignment)
+- **Visuals decided per design.md** (radius / color / type / width — look up the design.md tokens; default values are NOT copied here)
 
-## 为什么留下
+## Why we kept these
 
-components / blocks 库（card / button / hero / numeral 等）已经全删——基础 UI 现代 LLM 自己写没问题。但 **chart 不一样**：
+The components / blocks libraries (card / button / hero / numeral, etc.) have been fully deleted — basic UI is written directly by modern LLMs without issue. But **charts are different**:
 
-- chart 是**数据可视化**——比例错了就是 bug（V3 测试时 AI 算高度差 0.1px 也行，但要点是必须按数据等比，不能凭感觉）
-- chart 几何（SVG viewBox / data → 坐标公式 / gauge marker 对齐）AI 容易翻车
-- chart 容易**被旧 paradigm 污染**（V3 测试发现 AI 翻 archive paradigm 的 bar-chart.md，下意识把 archive 的 6px 圆角 / mono labels 带到 CHASSAN 风 deck）
+- Charts are **data visualization** — wrong proportions = bug (V3 testing tolerated 0.1px height drift, but proportions must match data, not vibes)
+- Chart geometry (SVG viewBox / data → coordinate formulas / gauge marker alignment) is easy for the AI to get wrong
+- Charts are easily **contaminated by old paradigms** (V3 testing found that when the AI read bar-chart.md sourced from archive's paradigm, it subconsciously brought archive's 6px radius / mono labels into a CHASSAN-style deck)
 
-所以这 3 份 pattern 重写为「**只讲结构和算法，不讲视觉**」——AI 翻完学到怎么算 / 用什么部件，**视觉决策必须按当前 deck 的 design.md 自己写**。
+So these 3 patterns are rewritten as **"structure + algorithm only, no visuals"** — after reading, the AI learns how to compute and what parts to use; **visual decisions must be hand-written against the current deck's design.md**.
 
-## 3 份 pattern
+## The 3 patterns
 
-| 文件 | 用什么 | 不用什么 |
+| File | Use for | Don't use for |
 |---|---|---|
-| `bar-chart.md` | 真实数据可视化（每条 bar 高度反映独立值） | progress / fill 进度图（用 gauge）/ rhythm 装饰条（自己写） |
-| `chart-gauge.md` | 单一进度值（"X% coverage"）+ N 个离散 bar 颗粒 + marker | 真实数据 chart（用 bar-chart）/ 圆形 / 半圆 gauge（自己写 SVG arc） |
-| `chart-line-default.md` | 时间 / 顺序序列（1-2 series + dot + area-fill + annotation） | bar 数据（bar-chart）/ 散点 / 雷达 / 饼图（自己写） |
+| `bar-chart.md` | Real data visualization (each bar's height reflects an independent value) | progress / fill bars (use gauge) / decorative "rhythm" bars (write yourself) |
+| `chart-gauge.md` | Single progress value ("X% coverage") + N discrete bar ticks + marker | Real data charts (use bar-chart) / circular / semicircular gauge (write SVG arc yourself) |
+| `chart-line-default.md` | Time / sequential series (1–2 series + dot + area-fill + annotation) | Bar data (bar-chart) / scatter / radar / pie (write yourself) |
 
-## 怎么用
+## How to use
 
-1. **读 pattern**：理解结构 / 算法 / 必填元素清单
-2. **算数据**：按 pattern 给的算法把 data → height / 坐标
-3. **写 HTML + CSS**：HTML 结构跟 pattern 一致；CSS **按 design.md 自己写**——查 §2 Palette / §3 Typography / §4 Shape token，不要照抄 archive / pitch 任何 chart CSS
-4. **验证**：bar 高度比例 = 数据比例？marker 跟 cutover 对齐？colors 跟整 deck 视觉一致？
+1. **Read the pattern**: understand structure / algorithm / required-element checklist
+2. **Compute the data**: apply the pattern's algorithm to convert data → height / coordinates
+3. **Write HTML + CSS**: HTML structure matches the pattern; CSS is **hand-written from design.md** — look up §2 Palette / §3 Typography / §4 Shape tokens; do NOT copy any chart CSS from archive / pitch
+4. **Verify**: bar-height ratio = data ratio? marker aligns with the cutover? colors are visually consistent with the deck?
 
-## 不在这里的东西
+## Not in this folder
 
-- **基础 UI**（card / button / hero / numeral / pill / cards-row 等）—— AI 自己写
-- **chart 的 CSS / SVG 视觉模板** —— 它们带主题污染（V3 测试痛点），AI 必须按 design.md 重新写视觉
-- **新 chart 类型**（pie / radar / scatter 等）—— 参考 chart-line-default 末尾「v2 写新 chart 的转写规范」自己写
+- **Basic UI** (card / button / hero / numeral / pill / cards-row, etc.) — AI writes these
+- **Chart CSS / SVG visual templates** — they bring theme contamination (V3 pain point); the AI must rewrite visuals per design.md
+- **New chart types** (pie / radar / scatter, etc.) — see the "v2 transcription conventions for new charts" at the end of `chart-line-default.md` and write them yourself
