@@ -1,10 +1,26 @@
-<p align="center">
-  <img src="./assets/get-slide-header.png" alt="get-slide" width="100%" />
-</p>
+<a href="https://github.com/KKlauden/get-slide">
+  <img width="1500" alt="get-slide" src="./assets/get-slide-header.png" />
+</a>
+
+<br/>
+<br/>
+
+<div align="center">
+    <strong>A 4-layer framework for AI to author HTML slide decks — single-file, 1920×1080, self-contained, full chrome runtime (presenter / overview / hash deep-link / preview / print).</strong>
+    <br />
+    <br />
+</div>
+
+<div align="center">
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![Output: single-file HTML](https://img.shields.io/badge/output-single--file%20HTML-blue)
+![Canvas: 1920×1080](https://img.shields.io/badge/canvas-1920%C3%971080-lightgrey)
+![No build](https://img.shields.io/badge/build-none-green)
+
+</div>
 
 # get-slide
-
-> A 4-layer framework for AI to author HTML slide decks — single-file, 1920×1080, self-contained, with a built-in chrome runtime (presenter mode / overview / hash deep-link / preview / print).
 
 ## What it is
 
