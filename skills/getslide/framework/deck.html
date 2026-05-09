@@ -1,67 +1,67 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
   <!--
   ==============================================================================
-   framework/deck.html — getslide v2 deck 模板（canonical 拷贝源）
+   framework/deck.html — getslide v2 deck template (canonical copy source)
   ==============================================================================
 
-  这是 getslide framework 的 HTML 骨架。新 deck 走这个流程：
+  This is the HTML skeleton of the getslide framework. New decks follow this flow:
 
-    1. 在你选的位置建文件夹 `<my-deck>/`（**不**强制放 samples/ 下）
-    2. 按 framework/design.md schema 写 `<my-deck>/design.md`
-    3. 按 framework/content.md schema 写 `<my-deck>/content.md`
+    1. Create the folder `<my-deck>/` at the location you pick (NOT forced under samples/)
+    2. Write `<my-deck>/design.md` per the framework/design.md schema
+    3. Write `<my-deck>/content.md` per the framework/content.md schema
     4. cp framework/deck.html → `<my-deck>/<my-deck>.html`
-    5. 替换 § TOKENS 块（按 framework/design.md §8 程序代入 design.md 值）
-    6. 替换 § SLIDES 块（按 content.md 每页填 1 个 .slide-shell）
-    7. <title> 改成 deck 名字
-    8. 浏览器打开验证
+    5. Substitute the § TOKENS block (apply framework/design.md §8 against design.md values)
+    6. Substitute the § SLIDES block (one .slide-shell per page from content.md)
+    7. Update <title> to the deck name
+    8. Open in a browser to verify
 
-  ── 哪些块可以改 ──
-   ✔  § TOKENS         — 必须按 design.md 替换
-   ✔  § SLIDES         — 必须按 content.md 替换
-   ✔  <title>          — 改成 deck 标题
-   ✔  topbar 上的 deck title (<span class="title">)
-   ✗  § RUNTIME CSS    — canonical，不要改（要改回 framework/deck.html 改完同步所有 deck）
-   ✗  § RUNTIME JS     — canonical，不要改
-   ✗  chrome ring 8 锚点元素类型 + class 名（class 名是 runtime 硬约束）
+  ── What you can edit ──
+   ✔  § TOKENS         — must be substituted per design.md
+   ✔  § SLIDES         — must be substituted per content.md
+   ✔  <title>          — set to the deck title
+   ✔  the topbar deck title (<span class="title">)
+   ✗  § RUNTIME CSS    — canonical, do NOT edit (any change requires re-syncing every generated deck)
+   ✗  § RUNTIME JS     — canonical, do NOT edit
+   ✗  chrome ring 8-anchor element types + class names (class names are runtime hard constraints)
 
-  ── 键盘快捷键（runtime 自带） ──
-   ← → ↑ ↓ PgUp PgDn Space   翻页
-   Home / End                  跳首/末页
-   1-9                         直跳第 N 页（0 跳末页）
-   F                           全屏 / present 模式
-   T                           主题循环（仅当 body 有 data-themes 才生效）
-   O                           Overview 网格
-   S                           Presenter 演讲者窗口（4 张磁吸卡）
-   #/N                         URL hash 深链跳第 N 页
-   ?preview=N                  单页无 chrome 模式（presenter iframe 用）
-   Esc                         关闭 overlay
+  ── Keyboard shortcuts (runtime built-in) ──
+   ← → ↑ ↓ PgUp PgDn Space   page navigation
+   Home / End                  jump to first / last
+   1-9                         jump directly to page N (0 = last)
+   F                           fullscreen / present mode
+   T                           theme cycle (only if body has data-themes)
+   O                           Overview grid
+   S                           Presenter window (4 magnetic cards)
+   #/N                         URL hash deep-link to page N
+   ?preview=N                  single-page chrome-less mode (presenter iframe)
+   Esc                         close overlay
 
-  ── 演讲者模式（S 键）的 4 卡 ──
-   🔵 CURRENT  — 当前页 iframe（preview 模式）
-   🟣 NEXT     — 下一页 iframe
-   🟠 SCRIPT   — <div class="notes"> 内容大字号显示
-   🟢 TIMER    — 已用时长 + 当前页 + prev/next/reset
+  ── Presenter mode (S key) — 4 cards ──
+   🔵 CURRENT  — current page iframe (preview mode)
+   🟣 NEXT     — next page iframe
+   🟠 SCRIPT   — <div class="notes"> content displayed at large size
+   🟢 TIMER    — elapsed time + current page + prev/next/reset
 
-  ── 强约束 ──
-   - 每个 .slide-shell 必须包 1 个 .page-shell
-   - 每个 .page-shell 必须有 data-title="..."（O 键 / NEXT 卡片用）
-   - 每个 .page-shell 应内嵌 <div class="notes">…</div>（S 键 SCRIPT 卡读取）
-   - notes 内容遵循 framework/content.md §3 写作三规
+  ── Hard constraints ──
+   - Each .slide-shell must wrap exactly 1 .page-shell
+   - Each .page-shell must have data-title="..." (used by O key / NEXT card)
+   - Each .page-shell should embed <div class="notes">…</div> (read by S key SCRIPT card)
+   - notes content follows framework/content.md §3 three rules
   -->
 
   <title>getslide framework</title>
 
   <style>
     /* ===========================================================
-       § TOKENS — 按 framework/design.md §8 程序生成（针对此 deck 主题）
+       § TOKENS — generated per framework/design.md §8 (for this deck's theme)
        ===========================================================
-       下面是 fallback 默认值，让 deck.html 能直接 open 看到空骨架。
-       新 deck 须把这一整块替换成由 design.md 值生成的 :root + variant。 */
+       Below are fallback defaults so deck.html can be opened directly to view the empty skeleton.
+       For a new deck, replace this entire block with the :root + variants generated from design.md values. */
     :root {
       /* palette */
       --background: #ffffff;
@@ -96,7 +96,7 @@
     }
 
     /* ===========================================================
-       § RUNTIME CSS — canonical，不改
+       § RUNTIME CSS — canonical, do NOT edit
        =========================================================== */
     :root { --fit-scale: 1; }
 
@@ -136,8 +136,8 @@
     }
     .topbar-center .title .sep { color: var(--chrome-muted-fg); margin: 0 6px; }
 
-    /* button reset — 防止 user agent 默认 text-align: center 通过 inheritance
-       传给 thumb-inner 内 deep-clone 的 page-shell */
+    /* button reset — prevents the user-agent default text-align: center from
+       being inherited into the deep-cloned page-shell inside thumb-inner */
     button { text-align: inherit; }
 
     .icon-btn {
@@ -280,13 +280,14 @@
     }
     .slide-shell.active { display: block; }
 
-    /* page-shell 的 width/height/position 用 :where() specificity-0
-       让任何 .page-shell（不管在哪）都吃——包括 thumb-inner / overview-cell
-       里的 cloneNode 复制。原来用 .slide-shell > .page-shell child selector，
-       JS clone 后 page-shell 不再是 slide-shell 子元素 → 选择器不命中 →
-       page-shell 0×0 → thumb / overview 缩略图全部空白。
-       design.md 的 .page-shell { padding: ... } specificity 0,0,1,0 仍 win
-       cascade（因为只设它没设的 property）。 */
+    /* page-shell width/height/position uses :where() specificity-0 so
+       every .page-shell (regardless of where it lives) picks them up — including
+       cloneNode copies inside thumb-inner / overview-cell. The previous
+       .slide-shell > .page-shell child selector failed after JS clones because
+       page-shell was no longer a child of slide-shell → selector missed →
+       page-shell 0×0 → thumb / overview thumbnails were all blank.
+       design.md's .page-shell { padding: ... } specificity 0,0,1,0 still wins
+       the cascade (it only sets properties this rule doesn't). */
     :where(.page-shell) {
       width: 1920px; height: 1080px;
       position: relative;
@@ -296,14 +297,15 @@
       transform-origin: top left;
     }
 
-    /* chrome-rule 默认隐形——浏览器原生 <hr> 自带 inset border + margin，
-       不 reset 会有一条灰线漏出。:where() 归零 specificity，design.md §8
-       Append CSS 想画分隔线（如 `.chrome-rule { height: 1px; background: var(--border); }`）
-       不论 selector / 顺序都能直接 override。
-       4 个角 div 的定位/字体由 design.md 决定，框架不预设。 */
+    /* chrome-rule is invisible by default — the browser-native <hr> ships with
+       an inset border + margin; without reset a grey line leaks through. :where()
+       zeros specificity, so when design.md §8 Append CSS wants to draw the rule
+       (e.g. `.chrome-rule { height: 1px; background: var(--border); }`) any
+       selector / order can override directly.
+       The 4 corner divs' position / font are decided by design.md; the framework presets nothing. */
     :where(.page-shell > .chrome-rule) { border: 0; margin: 0; height: 0; }
 
-    /* ============ PRESENT MODE (F 键 fullscreen) ============ */
+    /* ============ PRESENT MODE (F key fullscreen) ============ */
     body.present .topbar,
     body.present .sidebar { display: none !important; }
     body.present .canvas { background: #000; }
@@ -315,18 +317,18 @@
     /* sidebar toggle */
     body.no-sidebar .sidebar { display: none; }
 
-    /* ============ PREVIEW MODE (?preview=N URL 参数) ============ */
+    /* ============ PREVIEW MODE (?preview=N URL parameter) ============ */
     body.is-preview .topbar,
     body.is-preview .sidebar { display: none !important; }
     body.is-preview .canvas { background: transparent; padding: 0; }
     body.is-preview .slide-shell { border-radius: 0; box-shadow: none; }
 
-    /* ============ NOTES（演讲者逐字稿，主视图永远隐藏） ============ */
+    /* ============ NOTES (presenter verbatim, always hidden in main view) ============ */
     .slide-shell .notes,
     .thumb-frame .notes,
     .overview-frame .notes { display: none !important; }
 
-    /* ============ OVERVIEW OVERLAY (O 键) ============ */
+    /* ============ OVERVIEW OVERLAY (O key) ============ */
     .overview-overlay {
       position: fixed; inset: 0;
       background: rgba(0, 0, 0, 0.88);
@@ -422,9 +424,9 @@
     }
 
     /* ===========================================================
-       § PLACEHOLDER PAGE — 仅 deck.html 自展示用
-       新 deck 复制后会被 § SLIDES 替换；保留这段让 deck.html
-       open 浏览器时有内容可看。
+       § PLACEHOLDER PAGE — for deck.html self-demo only
+       For a new deck, this gets replaced by § SLIDES; kept here so deck.html
+       has content visible when opened in a browser.
        =========================================================== */
     .placeholder-page {
       padding: 96px;
@@ -452,8 +454,8 @@
   </style>
 </head>
 
-<!-- data-themes / data-theme-base 选填：列出多 CSS 文件让 T 键循环。
-     自包含 deck（CSS 全 inline）不写。 -->
+<!-- data-themes / data-theme-base optional: list multiple CSS files for the T-key cycle.
+     Self-contained decks (CSS all inline) leave this off. -->
 <body
   data-themes=""
   data-theme-base=""
@@ -488,7 +490,7 @@
     <aside class="sidebar">
       <div class="sidebar-head">PAGES <span id="pageCount"></span></div>
       <div class="thumb-rail" id="thumbRail">
-        <!-- thumbnails 由 runtime JS 自动生成 -->
+        <!-- thumbnails are auto-generated by the runtime JS -->
       </div>
     </aside>
 
@@ -496,18 +498,18 @@
 
       <!--
       ============================================================
-       § SLIDES — 此 deck 的页面列表（按 content.md 每页填一个 .slide-shell）
+       § SLIDES — this deck's page list (one .slide-shell per page from content.md)
       ============================================================
 
-       规则：
-       - 每页一个 <div class="slide-shell" data-slide-index="N">
-       - 第一个加 .active class 让首屏可见
-       - <section class="page-shell"> 的 data-variant、data-title 必填
-       - chrome 8 锚点元素类型 + class 名不可改
-       - <div class="notes"> 写演讲者逐字稿（150-300 字，遵循 content.md §3）
+       Rules:
+       - One <div class="slide-shell" data-slide-index="N"> per page
+       - First one gets the .active class so it shows on first paint
+       - <section class="page-shell"> requires data-variant and data-title
+       - chrome 8-anchor element types + class names cannot change
+       - <div class="notes"> holds presenter verbatim (150-300 chars CN / 150-200 words EN, per content.md §3)
 
-       下面的 placeholder slide 是 deck.html 自展示用，新 deck 删掉，
-       按 content.md 每页生成 N 个 .slide-shell 块。
+       The placeholder slide below is for deck.html's self-demo; for a new deck,
+       delete it and generate N .slide-shell blocks per content.md.
       -->
 
       <div class="slide-shell active" data-slide-index="0">
@@ -516,45 +518,45 @@
           data-variant="lite"
           data-title="Welcome"
         >
-          <!-- chrome 8 锚点（class 名是 runtime 硬约束）。
-               框架默认留空，由每份 deck 的 content.md 每页 chrome 子段填。 -->
+          <!-- chrome 8 anchors (class names are runtime hard constraints).
+               Framework leaves them empty by default; each deck's content.md fills the chrome sub-field per page. -->
           <div class="chrome-top-left"></div>
           <div class="chrome-top-right"></div>
           <hr class="chrome-rule" />
           <div class="chrome-bottom-left"></div>
           <div class="chrome-bottom-right"></div>
 
-          <!-- 页面内容（block markup） -->
+          <!-- Page content (block markup) -->
           <div class="placeholder-page">
             <div class="ph-title">getslide framework</div>
             <p class="ph-lede">
-              这是 framework/deck.html 的自展示页。新 deck 删掉这两个
-              占位 slide，按 content.md 列出的每页生成一个
-              <code>&lt;div class="slide-shell"&gt;</code>。
+              This is framework/deck.html's self-demo page. For a new deck, delete
+              both placeholder slides and generate one
+              <code>&lt;div class="slide-shell"&gt;</code> for each page in content.md.
             </p>
             <p class="ph-lede" style="font-size: 18px; line-height: 1.7;">
-              <kbd>↑</kbd> <kbd>↓</kbd> 翻页 ·
-              滚轮翻页 ·
-              <kbd>1</kbd>-<kbd>9</kbd> 跳第 N 页 ·
-              <kbd>0</kbd> 跳末页 ·
-              <kbd>S</kbd> 演讲者 ·
-              <kbd>F</kbd> 全屏 ·
+              <kbd>↑</kbd> <kbd>↓</kbd> page nav ·
+              scroll wheel paging ·
+              <kbd>1</kbd>-<kbd>9</kbd> jump to page N ·
+              <kbd>0</kbd> jump to last ·
+              <kbd>S</kbd> presenter ·
+              <kbd>F</kbd> fullscreen ·
               <kbd>O</kbd> Overview ·
-              <kbd>?preview=0</kbd> 单页 ·
-              <kbd>#/2</kbd> hash 跳页
+              <kbd>?preview=0</kbd> single-page ·
+              <kbd>#/2</kbd> hash jump
             </p>
           </div>
 
-          <!-- 演讲者逐字稿（CSS 自动隐藏，仅 S 键 presenter SCRIPT 卡片显示） -->
+          <!-- Presenter verbatim (CSS auto-hides; only the S-key presenter SCRIPT card shows it) -->
           <div class="notes">
-            示例 notes：每页都该有一段 <strong>150-300 字</strong>的演讲者
-            提示信号。<strong>不是讲稿</strong>——把核心词加粗，过渡句独立成段，
-            用口语而不是书面语。详见 framework/content.md §3 写作三规。
+            Sample notes: every page should carry <strong>150-300 chars (CN) / 150-200 words (EN)</strong>
+            of presenter prompts. <strong>Not a script</strong> — bold the key terms, put transition
+            sentences in their own paragraph, use spoken style not written style. See framework/content.md §3 for the three rules.
           </div>
         </section>
       </div>
 
-      <!-- ↓ 第二个示例页 ↓ 演示 sidebar 缩略图 + O 键 overview 多页效果 -->
+      <!-- ↓ Second sample page ↓ demonstrates the sidebar thumbnails + O-key overview multi-page view -->
       <div class="slide-shell" data-slide-index="1">
         <section
           class="page-shell"
@@ -568,19 +570,19 @@
           <div class="chrome-bottom-right"></div>
 
           <div class="placeholder-page">
-            <div class="ph-title">第二页占位</div>
+            <div class="ph-title">Second page placeholder</div>
             <p class="ph-lede">
-              新 deck 时删掉本页（和上一页），按 content.md 写真正内容。
+              For a new deck, delete this page (and the previous one) and write the actual content from content.md.
             </p>
           </div>
 
           <div class="notes">
-            第二页 notes 占位——也是 150-300 字的提示信号节奏。
+            Second-page notes placeholder — same 150-300 chars / 150-200 words rhythm of prompts.
           </div>
         </section>
       </div>
 
-      <!-- ↑ 模板 slide 结束。新 deck 按 content.md 每页 cp 一份 ↑ -->
+      <!-- ↑ End of template slides. For a new deck, copy one block per content.md page ↑ -->
 
     </main>
   </div>
@@ -588,19 +590,19 @@
 
 <script>
 /* ===========================================================
-   § RUNTIME JS — canonical，不改
+   § RUNTIME JS — canonical, do NOT edit
 
-   功能：
-   - 缩略图生成（preview 模式跳过）
-   - 翻页（键盘 / 滚轮 / 缩略图 / 数字键 / hash / present 模式鼠标）
-   - URL hash #/N 双向同步
-   - ?preview=N 单页无 chrome 模式
-   - F 键全屏 / 演示模式
-   - T 键主题循环（仅当 body 有 data-themes 才生效）
-   - O 键 Overview 网格
-   - S 键 Presenter Mode（独立窗口 + 4 张磁吸卡）
-   - BroadcastChannel 主 ↔ presenter 双向同步
-   - postMessage 单向 preview-goto（presenter → 自家 iframe）
+   Features:
+   - Thumbnail generation (skipped in preview mode)
+   - Paging (keyboard / scroll wheel / thumbnails / number keys / hash / present-mode mouse)
+   - URL hash #/N two-way sync
+   - ?preview=N single-page chrome-less mode
+   - F key fullscreen / present mode
+   - T key theme cycling (only when body has data-themes)
+   - O key Overview grid
+   - S key Presenter Mode (separate window + 4 magnetic cards)
+   - BroadcastChannel main ↔ presenter two-way sync
+   - postMessage one-way preview-goto (presenter → its own iframe)
    =========================================================== */
 (function () {
   const slides      = Array.from(document.querySelectorAll('.slide-shell'));
@@ -837,7 +839,7 @@
   function renderPresenterDoc(ctx) {
     const { deckUrl, total, current, notes, titles } = ctx;
     return [
-      '<!doctype html><html lang="zh-CN"><head>',
+      '<!doctype html><html lang="en"><head>',
       '<meta charset="utf-8"><title>Presenter · getslide</title>',
       '<style>',
       '* { box-sizing: border-box; margin: 0; padding: 0; }',
@@ -966,7 +968,7 @@
       '    document.querySelector("[data-bind=title-cur]").textContent=TITLES[cur]||"";',
       '    document.querySelector("[data-bind=title-next]").textContent=TITLES[Math.min(cur+1,TOTAL-1)]||"";',
       '    var sc=document.querySelector("[data-bind=script]"); var t=NOTES[cur];',
-      '    sc.innerHTML=(t&&t.length)?t:"<span class=script-empty>（这一页没有 notes）</span>";',
+      '    sc.innerHTML=(t&&t.length)?t:"<span class=script-empty>(no notes for this page)</span>";',
       '    document.getElementById("pageInfo").textContent=',
       '      String(cur+1).padStart(2,"0")+" / "+String(TOTAL).padStart(2,"0");',
       '    iframeCur.contentWindow&&iframeCur.contentWindow.postMessage({type:"preview-goto",idx:cur},"*");',

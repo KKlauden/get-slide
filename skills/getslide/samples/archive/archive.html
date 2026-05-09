@@ -6,12 +6,12 @@
     <title>Faultline — Autonomous Geological Intelligence Network</title>
     <style>
       /* ===========================================================
-         § TOKENS — 来自 design.md §8（token 程序输出 + Append CSS）
-         - :root tokens（palette / typography / shape / chrome）
-         - [data-variant="..."] 覆盖（dark / lite）
-         - design.md §8 Append CSS：chrome 8 锚点位置 / chrome-rule
-           三档模式 / page-shell + dark gradient / archive-* abs
-           钉位 selector（P1-P9 整套）
+         § TOKENS — from design.md §8 (token generator output + Append CSS)
+         - :root tokens (palette / typography / shape / chrome)
+         - [data-variant="..."] overrides (dark / lite)
+         - design.md §8 Append CSS: chrome 8-anchor positions / chrome-rule
+           3 modes / page-shell + dark gradient / archive-* abs-pinned
+           selectors (full P1-P9 set)
          =========================================================== */
       :root {
         --canvas-bg: #1a1a1a;
@@ -148,7 +148,7 @@
         overflow: hidden;
       }
 
-      /* dark variant 中间晕染散开渐变（垂直方向，hero band 亮 #2e2e2e） */
+      /* dark variant mid-page wash gradient (vertical; hero band lit at #2e2e2e) */
       .page-shell[data-variant="dark"] {
         background: linear-gradient(
           180deg,
@@ -168,7 +168,7 @@
         height: 100%;
       }
 
-      /* ───── Chrome ring 8 锚点 ───── */
+      /* ───── Chrome ring 8 anchors ───── */
 
       .chrome-top-left,
       .chrome-top-right,
@@ -322,18 +322,18 @@
         color: var(--foreground);
       }
 
-      /* ───── P3 about-page 专属 ───── */
+      /* ───── P3 about-page specific ───── */
 
       .chrome-top-right.archive-page-meta {
         left: 1100px;
         display: flex;
         align-items: center;
-        justify-content: flex-end;             /* 右对齐打包：brand-mark 顶到右边、数字位置固定 */
-        gap: 100px;                             /* gap 加大：label+数字整体往左推 */
+        justify-content: flex-end;             /* right-aligned packing: brand-mark hugs the right; numeral position fixed */
+        gap: 100px;                             /* larger gap: label+numeral pushed left as a unit */
         text-align: left;
       }
       .chrome-top-right.archive-page-meta > span:nth-child(2) {
-        width: 64px;                            /* 数字列固定宽度，保证不同页 02/04/09 都对齐 */
+        width: 64px;                            /* numeral column fixed-width; ensures 02/04/09 align across pages */
         text-align: center;
       }
 
@@ -441,7 +441,7 @@
         z-index: 1;
       }
 
-      /* ───── P4 problem-page 专属 ───── */
+      /* ───── P4 problem-page specific ───── */
 
       .archive-numbered-list {
         position: absolute;
@@ -514,7 +514,7 @@
         color: var(--muted-foreground);
       }
 
-      /* ---- block: bar-chart（参 blocks/bar-chart.md） ---- */
+      /* ---- block: bar-chart (see blocks/bar-chart.md) ---- */
       .bar-chart {
         display: flex;
         align-items: flex-end;
@@ -531,7 +531,7 @@
       }
       /* ---- /block ---- */
 
-      /* P4 metric-panel 内的 bar-chart 顶部留白 */
+      /* top spacing for bar-chart inside P4 metric-panel */
       .archive-metric-panel .bar-chart {
         margin-top: 80px;
       }
@@ -549,7 +549,7 @@
         z-index: 2;
       }
 
-      /* ───── P5 solution-page 专属 ───── */
+      /* ───── P5 solution-page specific ───── */
 
       .archive-layer-list {
         position: absolute;
@@ -585,7 +585,7 @@
         text-align: right;
       }
 
-      /* ───── P6 performance-data 专属（solution sub-page 03.1） ───── */
+      /* ───── P6 performance-data specific (solution sub-page 03.1) ───── */
 
       .archive-stat-cards {
         position: absolute;
@@ -657,7 +657,7 @@
         right: var(--grid-margin-x);
         bottom: var(--grid-margin-bottom);
         background: #0a0a0a;
-        --foreground: #ffffff;                  /* 反衬：内部 var(--foreground) 子元素全部翻白 */
+        --foreground: #ffffff;                  /* inversion: child elements using var(--foreground) flip to white */
         --muted-foreground: rgba(255, 255, 255, 0.6);
         color: var(--foreground);
         padding: 56px;
@@ -692,7 +692,7 @@
         color: #ffffff;
       }
 
-      /* ---- block: chart-gauge（参 blocks/chart-gauge.md） ---- */
+      /* ---- block: chart-gauge (see blocks/chart-gauge.md) ---- */
       .chart-gauge {
         width: 100%;
       }
@@ -721,7 +721,7 @@
       }
       /* ---- /block ---- */
 
-      /* P6 archive coverage-panel 内 chart-gauge 定位 + mono labels（主题层风格预设） */
+      /* chart-gauge position inside P6 archive coverage-panel + mono labels (theme-level preset) */
       .archive-coverage-panel .chart-gauge {
         position: absolute;
         left: 56px;
@@ -736,7 +736,7 @@
         color: rgba(255, 255, 255, 0.7);
       }
 
-      /* ───── P7 system-performance 专属（performance-page 04.0） ───── */
+      /* ───── P7 system-performance specific (performance-page 04.0) ───── */
 
       .archive-perf-list {
         position: absolute;
@@ -797,15 +797,15 @@
         text-align: right;
       }
 
-      /* ───── P8 global-impact 专属（market-page 05.0） ───── */
+      /* ───── P8 global-impact specific (market-page 05.0) ───── */
 
       .page-shell[data-bg-mode="market"] {
         background: linear-gradient(
           0deg,
-          #2563eb 0%,                            /* 底部：vivid blue */
-          #1e40af 7%,                            /* 上 75px：deep blue */
-          #15225a 14%,                           /* 上 150px：dark navy */
-          #0a0a0a 26%,                           /* 上 280px：纯黑（分界点下移） */
+          #2563eb 0%,                            /* bottom: vivid blue */
+          #1e40af 7%,                            /* up 75px: deep blue */
+          #15225a 14%,                           /* up 150px: dark navy */
+          #0a0a0a 26%,                           /* up 280px: pure black (cutover lowered) */
           #0a0a0a 100%
         );
       }
@@ -820,7 +820,7 @@
 
       .archive-mega-stat {
         position: absolute;
-        top: 280px;                              /* 顶部对齐 page-title (top: 280) */
+        top: 280px;                              /* top-aligned with page-title (top: 280) */
         left: var(--grid-margin-x);
         font-family: var(--font-display);
         font-size: 280px;
@@ -833,7 +833,7 @@
 
       .archive-mega-stat-label {
         position: absolute;
-        top: 600px;                              /* 紧跟 $5.5 下方 */
+        top: 600px;                              /* sits just below $5.5 */
         left: 320px;
         font-family: var(--font-display);
         font-size: 32px;
@@ -847,8 +847,8 @@
       .archive-impact-rule {
         position: absolute;
         top: 720px;
-        left: 360px;                             /* 左端不顶页面边缘——arrow 在 64-284，留 76px 水平 gap */
-        right: var(--grid-margin-x);             /* 右端顶到页面边缘 */
+        left: 360px;                             /* left edge does not touch page edge — arrow occupies 64-284, leaves 76px horizontal gap */
+        right: var(--grid-margin-x);             /* right edge hugs the page edge */
         height: 1px;
         margin: 0;
         border: 0;
@@ -858,7 +858,7 @@
 
       .archive-arrow {
         position: absolute;
-        top: 684px;                              /* 中心 36（viewBox y=36）落在 y=720，跟 rule 同一水平面 */
+        top: 684px;                              /* center 36 (viewBox y=36) lands at y=720, same baseline as the rule */
         left: var(--grid-margin-x);
         color: var(--foreground);
         z-index: 2;
@@ -880,14 +880,14 @@
         color: var(--muted-foreground);
       }
 
-      /* ───── P9 global-reach 专属（market sub-page 05.1） ───── */
+      /* ───── P9 global-reach specific (market sub-page 05.1) ───── */
 
       .archive-stage-grid {
         position: absolute;
-        top: 280px;                              /* 跟 archive-page-title GLOBAL REACH 顶对齐 */
+        top: 280px;                              /* top-aligned with archive-page-title GLOBAL REACH */
         left: 480px;
         right: var(--grid-margin-x);
-        bottom: var(--grid-margin-bottom);       /* 底部保留 56 空隙，跟其他页一致 */
+        bottom: var(--grid-margin-bottom);       /* keep 56 bottom gap, consistent with other pages */
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         z-index: 2;
@@ -896,7 +896,7 @@
         position: relative;
         border-left: 1px solid
           color-mix(in srgb, var(--foreground) 30%, transparent);
-        padding: 0 32px;                         /* 顶 padding 去掉，stage-num 顶端 = grid 顶端 = y=280 */
+        padding: 0 32px;                         /* top padding removed; stage-num top = grid top = y=280 */
         display: flex;
         flex-direction: column;
         gap: 16px;
@@ -924,14 +924,14 @@
         line-height: 1.4;
         color: var(--muted-foreground);
       }
-      /* P9 stage-col 内 bar-chart 定位 + 默认宽 + tone 调色板 */
+      /* bar-chart position + default width + tone palette inside P9 stage-col */
       .archive-stage-col .bar-chart {
         position: absolute;
         left: 32px;
         right: 32px;
         bottom: 0;
         height: 480px;
-        --bar-w: 10px;                          /* 列内 bars 统一 10px 宽 */
+        --bar-w: 10px;                          /* unified 10px bar width inside the column */
       }
       .archive-stage-col[data-tone="blue"] .bar-chart .bar {
         background: #2563eb;
@@ -942,11 +942,11 @@
       .archive-stage-col[data-tone="muted-mid"] .bar-chart .bar {
         background: rgba(10, 10, 10, 0.4);
       }
-      /* dark 用 bar-chart 默认 var(--foreground) */
+      /* dark uses bar-chart default var(--foreground) */
 
       /* ===========================================================
-         § RUNTIME CSS — canonical（来源 framework/deck.html，不要在此改）
-         framework 一旦更新，此段需重新同步过来
+         § RUNTIME CSS — canonical (sourced from framework/deck.html, do NOT edit here)
+         When the framework updates, this block must be re-synced
          =========================================================== */
 
       :root {
@@ -1267,7 +1267,7 @@
         display: none;
       }
 
-      /* ============ PREVIEW MODE (?preview=N，演讲者 iframe 单页无 chrome) ============ */
+      /* ============ PREVIEW MODE (?preview=N, presenter iframe single-page chrome-less) ============ */
       body.is-preview .topbar,
       body.is-preview .sidebar {
         display: none !important;
@@ -1281,14 +1281,14 @@
         box-shadow: none;
       }
 
-      /* ============ NOTES（演讲者逐字稿，主视图永远隐藏） ============ */
+      /* ============ NOTES (presenter verbatim, always hidden in main view) ============ */
       .slide-shell .notes,
       .thumb-frame .notes,
       .overview-frame .notes {
         display: none !important;
       }
 
-      /* ============ OVERVIEW OVERLAY (O 键) ============ */
+      /* ============ OVERVIEW OVERLAY (O key) ============ */
       .overview-overlay {
         position: fixed;
         inset: 0;
@@ -1372,7 +1372,7 @@
           size: 1920px 1080px;
           margin: 0;
         }
-        /* print-color-adjust 必须挂 selector，裸写会被 drop —— 否则 dark/accent 主题印成白底 */
+        /* print-color-adjust must hang on a selector — bare declarations get dropped, otherwise dark/accent themes print on white */
         * {
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
@@ -1398,7 +1398,7 @@
           overflow: visible !important;
           background: var(--background) !important;
         }
-        /* 强制所有 slide-shell 显示（不只 .active）—— v2 默认 display:none + .active 切显 */
+        /* Force every slide-shell to display (not just .active) — v2 default is display:none + .active toggle */
         .slide-shell {
           position: relative !important;
           display: block !important;
@@ -1470,9 +1470,9 @@
 
         <main class="canvas" id="canvas">
           <!-- ===========================================================
-               § SLIDES — 来自 content.md（每页一个 .slide-shell）
-               每个 .page-shell 必须有 data-title="..."（O 键 / NEXT 卡用）
-               应内嵌 <div class="notes">…</div>（S 键 SCRIPT 卡读取）
+               § SLIDES — from content.md (one .slide-shell per page)
+               Each .page-shell must carry data-title="..." (used by O key / NEXT card)
+               Should embed <div class="notes">…</div> (read by S key SCRIPT card)
                =========================================================== -->
 
           <!-- ═══════════════════════════════ P1 — Cover ═══════════════════════════════ -->
@@ -1501,18 +1501,19 @@
               </h1>
 
               <div class="notes">
-                开场白：大家好，今天我想用十分钟的时间，介绍一下
-                <strong>FAULTLINE</strong> 在做的事——一个面向全球关键
-                基础设施的<strong>实时地质风险情报网络</strong>。
+                Opening: Hi everyone. In the next 10 minutes, I'd like to introduce
+                what <strong>FAULTLINE</strong> is doing — a <strong>real-time
+                geological risk intelligence network</strong> for global critical infrastructure.
                 <br /><br />
-                先做一个简单类比：现在所有大型工程项目都装了大量传感器，
-                但传感器读数是<strong>孤岛式</strong>的——大坝有自己的
-                监控系统，桥梁有自己的，地铁有自己的，没有人在做横向
-                关联。我们要解决的就是这个"孤岛"问题。
+                First, a quick analogy: every large engineering project today carries
+                a lot of sensors, but the readings are <strong>siloed</strong> — dams
+                have their own monitoring system, bridges have theirs, subways have
+                theirs, no one is correlating across them. The "silo" problem is
+                what we're solving.
                 <br /><br />
-                接下来，我会先讲三个数据点说明问题的<strong>规模</strong>，
-                然后看我们的产品怎么落地，最后用全球部署情况说明我们已经
-                到的位置。
+                Next, I'll start with three data points showing the <strong>scale</strong>
+                of the problem, then walk through how our product lands in the field,
+                and finally use global deployment to show where we are now.
               </div>
             </section>
           </div>
@@ -1944,7 +1945,7 @@
                   </div>
                   <div class="gauge-track">
                     <div class="bar-chart" style="--bar-w: 2px">
-                      <!-- 50 bars: 1-37 bright, 38-50 dim. marker 在 73%（约 37.5 / 50） -->
+                      <!-- 50 bars: 1-37 bright, 38-50 dim. marker at 73% (≈ 37.5 / 50) -->
                       <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
                       <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
                       <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
@@ -2000,7 +2001,7 @@
               <div class="chrome-bottom-left"></div>
               <div class="chrome-bottom-right"></div>
 
-              <!-- 左半：image-frame placeholder + 上叠 perf-overlay -->
+              <!-- Left half: image-frame placeholder + perf-overlay on top -->
               <div
                 class="archive-image-frame"
                 style="left: 64px; right: auto; width: 580px"
@@ -2008,7 +2009,7 @@
                 [ image placeholder ]
               </div>
 
-              <!-- 右半：page-title + page-number + 2 perf-rows -->
+              <!-- Right half: page-title + page-number + 2 perf-rows -->
               <div class="archive-page-title" style="left: 720px">
                 <span>SYSTEM<br />PERFORMANCE</span>
               </div>
@@ -2093,7 +2094,7 @@
               </div>
               <div class="chrome-bottom-right"></div>
 
-              <!-- 左半：huge $5.5 + label + arrow -->
+              <!-- Left half: huge $5.5 + label + arrow -->
               <div class="archive-mega-stat">$5.5</div>
               <div class="archive-mega-stat-label">TRILLION MONITORED</div>
               <hr class="archive-impact-rule" />
@@ -2121,7 +2122,7 @@
                 />
               </svg>
 
-              <!-- 右半：page-title + page-number + 段落 -->
+              <!-- Right half: page-title + page-number + paragraph -->
               <div class="archive-page-title" style="left: 880px">
                 <span>GLOBAL IMPACT</span>
               </div>
@@ -2177,7 +2178,7 @@
               <div class="chrome-bottom-left"></div>
               <div class="chrome-bottom-right"></div>
 
-              <!-- 左 zone: GLOBAL REACH 标题 + body + 5.1 page number -->
+              <!-- Left zone: GLOBAL REACH title + body + 5.1 page number -->
               <div class="archive-page-title">
                 <span>GLOBAL<br />REACH</span>
               </div>
@@ -2196,7 +2197,7 @@
                 5.1
               </div>
 
-              <!-- 右 zone: 4 stage columns -->
+              <!-- Right zone: 4 stage columns -->
               <div class="archive-stage-grid">
                 <div class="archive-stage-col" data-tone="blue">
                   <div class="stage-num">230K</div>
@@ -2253,16 +2254,16 @@
               </div>
 
               <div class="notes">
-                收尾页：用三个递进的<strong>数量级</strong>来收束：从 LOCAL
-                部署的 230 台站，到 REGIONAL 的 14K 台，再到我们的远期目标
-                ——<strong>1.4M 行星级网格</strong>。
+                Closing: wrap up with three escalating <strong>orders of magnitude</strong> —
+                from LOCAL deployment at 230 stations, to REGIONAL at 14K stations, and our
+                long-range goal — <strong>1.4M planetary grid</strong>.
                 <br /><br />
-                每一个数量级的跨越，背后都是不同的技术挑战：LOCAL 解决的是
-                "有没有"，REGIONAL 解决的是"互联互通"，PLANETARY 要解决
-                "全球统一观测"。
+                Each leap between magnitudes is a different technical challenge: LOCAL
+                solves "do they exist", REGIONAL solves "are they connected",
+                PLANETARY solves "global unified observation".
                 <br /><br />
-                我们今天处于 REGIONAL 阶段的中段。如果对 FAULTLINE 在做的事
-                感兴趣，欢迎下来聊。<strong>谢谢。</strong>
+                We sit in the middle of the REGIONAL stage today. If FAULTLINE's work
+                resonates, let's chat after. <strong>Thank you.</strong>
               </div>
             </section>
           </div>
@@ -2272,13 +2273,13 @@
 
     <script>
       /* =========================================================
-         § RUNTIME JS — canonical（来源 framework/deck.html，不要在此改）
-         含：翻页 / hash 深链 / preview / present / overview / 演讲者窗口
-             / 数字键 / 滚轮 / fit-scale / 打印 / 主题循环
-         framework 一旦更新，此段需重新同步过来
+         § RUNTIME JS — canonical (sourced from framework/deck.html, do NOT edit here)
+         Includes: paging / hash deep-link / preview / present / overview / presenter window
+                   / number keys / scroll wheel / fit-scale / print / theme cycling
+         When the framework updates, this block must be re-synced
          ========================================================= */
       (function () {
-        // ===== 状态 =====
+        // ===== State =====
         const slides = Array.from(document.querySelectorAll(".slide-shell"));
         const total = slides.length;
         const canvas = document.getElementById("canvas");
@@ -2286,19 +2287,19 @@
         const pageCountEl = document.getElementById("pageCount");
         let current = 0;
 
-        // ===== Preview 模式（?preview=N，演讲者 iframe 用） =====
+        // ===== Preview mode (?preview=N, used by presenter iframe) =====
         const params = new URLSearchParams(location.search);
         const previewParam = params.get("preview");
         const isPreview = previewParam !== null;
         if (isPreview) document.body.classList.add("is-preview");
 
-        // ===== BroadcastChannel：主窗口 ↔ presenter =====
+        // ===== BroadcastChannel: main window ↔ presenter =====
         let channel = null;
         try {
           channel = new BroadcastChannel("getslide-presenter");
         } catch (e) {}
 
-        // ===== 缩略图（preview 模式跳过） =====
+        // ===== Thumbnails (skipped in preview mode) =====
         if (!isPreview) {
           if (pageCountEl)
             pageCountEl.textContent = String(total).padStart(2, "0");
@@ -2322,7 +2323,7 @@
           });
         }
 
-        // ===== 翻页（统一入口） =====
+        // ===== Paging (unified entry) =====
         function goto(i, opts) {
           opts = opts || {};
           i = Math.max(0, Math.min(total - 1, i));
@@ -2340,7 +2341,7 @@
           }
         }
 
-        // ===== 启动定位：?preview 优先 → URL hash → 0 =====
+        // ===== Startup positioning: ?preview wins → URL hash → 0 =====
         let bootIdx = 0;
         if (isPreview) {
           bootIdx = parseInt(previewParam, 10) || 0;
@@ -2356,14 +2357,14 @@
           if (m) goto(parseInt(m[1], 10) - 1, { silent: true });
         });
 
-        // postMessage：presenter → 自家 iframe
+        // postMessage: presenter → its own iframe
         window.addEventListener("message", (e) => {
           if (e.data && e.data.type === "preview-goto" && typeof e.data.idx === "number") {
             goto(e.data.idx, { silent: true });
           }
         });
 
-        // BroadcastChannel：presenter ↔ 主窗口
+        // BroadcastChannel: presenter ↔ main window
         channel?.addEventListener("message", (e) => {
           if (isPreview) return;
           if (e.data && e.data.type === "goto" && typeof e.data.idx === "number") {
@@ -2371,10 +2372,10 @@
           }
         });
 
-        // ===== 键盘 =====
+        // ===== Keyboard =====
         window.addEventListener("keydown", (e) => {
           if (e.target.matches("input, textarea, [contenteditable]")) return;
-          // 字母快捷键（F/T/O/S）必须无任何修饰键，避免劫持 Cmd+S / Cmd+O 触发系统警告
+          // Letter shortcuts (F/T/O/S) must carry no modifier keys, avoiding hijack of Cmd+S / Cmd+O which triggers system warnings
           const plain = !e.metaKey && !e.ctrlKey && !e.altKey;
           if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(e.key)) {
             e.preventDefault();
@@ -2402,14 +2403,14 @@
           } else if (e.key === "Escape") {
             document.body.classList.remove("show-overview");
           } else if (plain && /^[0-9]$/.test(e.key)) {
-            // 数字键跳页：1-9 直跳第 N 页；0 跳到最后一页
+            // Number-key paging: 1-9 jumps directly to page N; 0 jumps to the last page
             e.preventDefault();
             const n = parseInt(e.key, 10);
             goto(n === 0 ? total - 1 : n - 1);
           }
         });
 
-        // ===== 演示模式（fullscreen） =====
+        // ===== Present mode (fullscreen) =====
         if (!isPreview) {
           document.addEventListener("fullscreenchange", () => {
             document.body.classList.toggle(
@@ -2442,7 +2443,7 @@
             });
         }
 
-        // ===== 滚轮翻页（preview 模式不接） =====
+        // ===== Scroll-wheel paging (skipped in preview mode) =====
         if (!isPreview) {
           let wheelLock = false;
           canvas.addEventListener(
@@ -2476,7 +2477,7 @@
         });
         ro.observe(canvas);
 
-        // ===== T 键：主题循环（外置 CSS 文件场景；archive 自包含暂时不接） =====
+        // ===== T key: theme cycling (external CSS files only; archive is self-contained, skipped) =====
         const themesAttr = document.body.dataset.themes;
         const themeBase = document.body.dataset.themeBase || "";
         const themes = themesAttr
@@ -2491,7 +2492,7 @@
           themeLink.href = themeBase + t + (t.endsWith(".css") ? "" : ".css");
         }
 
-        // ===== O 键：Overview 网格 =====
+        // ===== O key: Overview grid =====
         let overviewBuilt = false;
         function buildOverview() {
           if (overviewBuilt) return;
@@ -2536,7 +2537,7 @@
           document.body.classList.toggle("show-overview");
         }
 
-        // ===== S 键：Presenter Mode（独立窗口 + 4 张磁吸卡） =====
+        // ===== S key: Presenter Mode (separate window + 4 magnetic cards) =====
         let presenterWin = null;
         function openPresenter() {
           if (presenterWin && !presenterWin.closed) {
@@ -2705,7 +2706,7 @@
             '    document.querySelector("[data-bind=title-cur]").textContent=TITLES[cur]||"";',
             '    document.querySelector("[data-bind=title-next]").textContent=TITLES[Math.min(cur+1,TOTAL-1)]||"";',
             '    var sc=document.querySelector("[data-bind=script]"); var t=NOTES[cur];',
-            '    sc.innerHTML=(t&&t.length)?t:"<span class=script-empty>（这一页没有 notes）</span>";',
+            '    sc.innerHTML=(t&&t.length)?t:"<span class=script-empty>(no notes for this page)</span>";',
             '    document.getElementById("pageInfo").textContent=',
             '      String(cur+1).padStart(2,"0")+" / "+String(TOTAL).padStart(2,"0");',
             '    iframeCur.contentWindow&&iframeCur.contentWindow.postMessage({type:"preview-goto",idx:cur},"*");',
