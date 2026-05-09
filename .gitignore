@@ -48,3 +48,7 @@ scratch/
 # v1 archive (kept on disk for reference, not in git)
 /old/
 test-decks/
+
+# Internal decisions / development protocol (kept on disk, not in git)
+/PLAN.md
+/CLAUDE.md

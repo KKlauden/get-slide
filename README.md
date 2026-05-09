@@ -96,11 +96,9 @@ Decks are **self-contained snapshots**. Updating the skill (`git pull` + re-cp) 
 ## Repo structure
 
 ```
-getslide/
-├── CLAUDE.md                  ← project hard rules + skill routing (for AIs working in this repo)
+get-slide/
 ├── README.md                  ← you are reading this (GitHub landing)
-├── PLAN.md                    ← architecture decisions / roadmap (Chinese — internal)
-├── old/                       ← v1 archive
+├── LICENSE                    ← MIT
 └── skills/getslide/           ← skill bundle (the distribution unit)
     ├── SKILL.md               ← skill canonical entry (Claude Code auto-discovers)
     ├── framework/
@@ -120,8 +118,6 @@ getslide/
 - ✅ pitch + archive — two complete samples
 - ✅ Pre-flight 3 questions gate (top of SKILL.md)
 - ⏳ Submit to Anthropic plugin marketplace (plugin conversion TODO)
-
-Detailed roadmap: [`PLAN.md`](./PLAN.md) (Chinese — internal decisions log).
 
 ## Design principles
 
